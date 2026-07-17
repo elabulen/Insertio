@@ -44,10 +44,12 @@
           <h2>Parle-nous de toi</h2>
           <p>Complète ce formulaire en quelques secondes. Pas de formalités.</p>
 
-          <form id="contactForm">
+          <form id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="f7ebd52c-55e8-476f-804e-17fc0f4ab44f">
+            
             <div class="field-block">
               <label class="field-label" for="fullName">Bonjour, je m'appelle</label>
-              <input class="text-input" type="text" id="fullName" placeholder="Ton prénom et nom" required>
+              <input class="text-input" type="text" id="fullName" name="nom" placeholder="Ton prénom et nom" required>
             </div>
 
             <div class="field-block">
@@ -63,7 +65,7 @@
 
             <div class="field-block">
               <label class="field-label" for="goalField">parce que je veux</label>
-              <textarea class="text-input" id="goalField" placeholder="Ex : trouver un emploi stable, développer mes compétences…"></textarea>
+              <textarea class="text-input" id="goalField" name="message" placeholder="Ex : trouver un emploi stable, développer mes compétences…"></textarea>
             </div>
 
             <div class="field-block">
@@ -71,17 +73,17 @@
               <div class="two-col">
                 <div>
                   <span class="field-small-label">Courriel *</span>
-                  <input class="text-input" type="email" id="emailField" placeholder="ton@courriel.ch" required>
+                  <input class="text-input" type="email" id="emailField" name="email" placeholder="ton@courriel.ch" required>
                 </div>
                 <div>
                   <span class="field-small-label">Téléphone (optionnel)</span>
-                  <input class="text-input" type="tel" id="phoneField" placeholder="+41 78 000 00 00">
+                  <input class="text-input" type="tel" id="phoneField" name="telephone" placeholder="+41 78 000 00 00">
                 </div>
               </div>
             </div>
 
             <button type="submit" class="submit-btn">Envoyer ma demande</button>
-            <p class="form-note">L'envoi ouvrira ta messagerie avec ta demande déjà préparée.</p>
+            <p class="form-note">Ta demande sera envoyée directement à notre équipe.</p>
           </form>
         </div>
 
