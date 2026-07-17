@@ -25,26 +25,9 @@ if(teamMembers.length){
 // Contact page: chip toggle + mailto submit
 const chips = document.querySelectorAll('.chip');
 chips.forEach(chip=>{
-  chip.addEventListener('click', ()=> chip.classList.toggle('active'));
-});
-
-const contactForm = document.getElementById('contactForm');
-if(contactForm){
-  contactForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    const name = document.getElementById('fullName').value.trim();
-    const email = document.getElementById('emailField').value.trim();
-    const phone = document.getElementById('phoneField').value.trim();
-    const goal = document.getElementById('goalField').value.trim();
+  chip.addEventListener('click', ()=> {
+    chip.classList.toggle('active');
     const selected = Array.from(document.querySelectorAll('.chip.active')).map(c=>c.textContent.trim());
-
-    let body = `Nom : ${name}\n`;
-    body += `Email : ${email}\n`;
-    if(phone) body += `Téléphone : ${phone}\n`;
-    if(selected.length) body += `Je cherche : ${selected.join(', ')}\n`;
-    if(goal) body += `Objectif : ${goal}\n`;
-
-    const mailto = `mailto:contact@insertio.ch?subject=${encodeURIComponent('Nouvelle demande de contact — ' + (name || 'Site web'))}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+    document.getElementById('selectedChips').value = selected.join(', ');
   });
-}
+});
