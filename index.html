@@ -7,17 +7,18 @@
 <meta name="description" content="Insertio accompagne les jeunes, nouveaux arrivants et personnes en réinsertion vers un avenir professionnel épanouissant.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
+<header id="siteHeader">
   <div class="wrap nav">
     <a href="index.html" class="brand"><img src="logo.png" alt="Insertio" class="brand-logo"></a>
     <nav>
       <ul>
         <li><a href="index.html#top">Accueil</a></li>
+        <li><a href="index.html#programmes">Programmes</a></li>
         <li><a href="index.html#parcours">Parcours</a></li>
         <li><a href="index.html#valeurs">Valeurs</a></li>
         <li><a href="index.html#equipe">Équipe</a></li>
@@ -28,41 +29,82 @@
 </header>
 
 <main id="top">
-  <section class="hero">
-    <div class="wrap hero-wrap">
-      <div class="hero-left">
-        <span class="pill">Intégration socioprofessionnelle à Genève</span>
-        <h1>Votre nouveau <span class="accent">chapitre</span> commence ici</h1>
-        <p class="lead">Nous accompagnons les jeunes, les personnes issues de l'immigration et les adultes en réinsertion vers un avenir professionnel épanouissant. Coaching personnalisé, ateliers pratiques et soutien humain à chaque étape.</p>
-        <div class="btn-row">
-          <a href="contact.html" class="btn-primary">Commencer mon parcours</a>
-          <a href="#parcours" class="btn-secondary">Découvrir nos services</a>
-        </div>
+  <section class="hero-video" id="accueil">
+    <video class="hero-bg-video" autoplay muted loop playsinline poster="hero-poster.jpg">
+      <source src="hero-video.mp4" type="video/mp4">
+    </video>
+    <div class="hero-video-overlay"></div>
+    <div class="wrap hero-video-content">
+      <span class="pill pill-light">✦ Intégration socioprofessionnelle à Genève</span>
+      <h1>Votre nouveau <span class="accent">chapitre</span> commence ici</h1>
+      <p class="lead-light">De 16 à 30 ans, quel que soit ton statut, ta formation ou ton niveau d'employabilité : si tu as besoin d'un emploi ou d'un apprentissage, on t'accompagne. On identifie ensemble ce qui freine ton insertion, puis on te forme et on te coache sur plusieurs semaines, jusqu'au résultat.</p>
+      <div class="btn-row">
+        <a href="contact.html" class="btn-primary">Commencer mon parcours →</a>
+        <a href="#programmes" class="btn-secondary btn-secondary-light">Découvrir nos programmes</a>
       </div>
-      <div class="hero-right">
-        <div class="hero-visual">
-          <img src="illustration.png" alt="Illustration d'une équipe assemblant un puzzle, symbolisant la collaboration">
+    </div>
+  </section>
+
+  <section class="programmes" id="programmes">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Ce que nous proposons</span>
+        <h2>Trois programmes,<br><span class="accent">un objectif commun</span></h2>
+        <p>Deux parcours individuels adaptés à ta situation, et un troisième programme commun pour te connecter à d'autres jeunes et à des employeurs.</p>
+      </div>
+      <div class="program-grid reveal">
+
+        <div class="program-card">
+          <div class="program-bar"></div>
+          <div class="program-media"><img src="step-coaching.jpg" alt="Accompagnement individuel Tremplin"></div>
+          <div class="program-body">
+            <h3>Tremplin</h3>
+            <p class="program-sub">Jeunes issus de l'immigration (permis S, N, F) · 4 à 5 mois</p>
+            <p class="program-desc">Construire les compétences et repères nécessaires à une insertion professionnelle durable en Suisse.</p>
+            <ul class="program-list">
+              <li>Français métier &amp; administratif</li>
+              <li>Codes culturels et administratifs suisses</li>
+              <li>Reconnaissance des diplômes étrangers</li>
+              <li>Stage en entreprise de 4 semaines</li>
+            </ul>
+            <a href="contact.html" class="btn-outline">S'inscrire →</a>
+          </div>
         </div>
-        <div class="audience-grid">
-          <div class="audience-card">
-            <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
-            <h3>Jeunes</h3>
-            <div class="tag">16–25 ans</div>
-            <p>Programmes sur mesure pour lancer ta carrière</p>
-          </div>
-          <div class="audience-card">
-            <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg></div>
-            <h3>Nouveaux arrivants</h3>
-            <div class="tag">Immigration</div>
-            <p>Accompagnement pour bâtir ta vie professionnelle ici</p>
-          </div>
-          <div class="audience-card">
-            <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 15l3-4 3 3 5-7"/></svg></div>
-            <h3>Réinsertion</h3>
-            <div class="tag">Adultes</div>
-            <p>Un nouveau départ vers l'emploi qui te correspond</p>
+
+        <div class="program-card">
+          <div class="program-bar"></div>
+          <div class="program-media"><img src="step-ateliers.jpg" alt="Ateliers du programme Élan"></div>
+          <div class="program-body">
+            <h3>Élan</h3>
+            <p class="program-sub">Tous permis et nationalités · 3 mois</p>
+            <p class="program-desc">Clarifier ton projet professionnel et développer les compétences clés pour accéder au marché du travail genevois.</p>
+            <ul class="program-list">
+              <li>Orientation et réorientation professionnelle</li>
+              <li>Mentorat par des pairs déjà en emploi</li>
+              <li>Simulations d'entretiens</li>
+              <li>Stage optionnel de 2 à 3 semaines</li>
+            </ul>
+            <a href="contact.html" class="btn-outline">S'inscrire →</a>
           </div>
         </div>
+
+        <div class="program-card">
+          <div class="program-bar"></div>
+          <div class="program-media"><img src="step-reseautage.jpg" alt="Rencontre du programme commun Passerelles"></div>
+          <div class="program-body">
+            <h3>Passerelles</h3>
+            <p class="program-sub">Ouvert à tous les jeunes de Tremplin et Élan · séances mensuelles</p>
+            <p class="program-desc">Un espace de rencontre, de réseau et de cohésion entre pairs, autour d'activités concrètes.</p>
+            <ul class="program-list">
+              <li>Visites d'entreprise &amp; cafés des métiers</li>
+              <li>Job dating avec employeurs partenaires</li>
+              <li>Mentorat inversé entre jeunes</li>
+              <li>Défi collectif annuel devant un jury externe</li>
+            </ul>
+            <a href="contact.html" class="btn-outline">S'inscrire →</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -71,37 +113,52 @@
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">Ton parcours d'intégration</span>
-        <h2>Quatre étapes vers <span class="accent">ton emploi</span></h2>
+        <h2>Quatre étapes vers<br><span class="accent">ton emploi</span></h2>
         <p>Un chemin clair et structuré pour te guider de l'exploration à l'emploi. Chaque étape est conçue pour construire sur la précédente.</p>
       </div>
-      <div class="steps reveal">
-        <div class="step">
-          <div class="step-media"><img src="step-coaching.jpg" alt="Coach et bénéficiaire en séance de coaching individuel"></div>
-          <div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-media">
+            <img src="step-coaching.jpg" alt="Coach et bénéficiaire en séance de coaching individuel">
+            <div class="step-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+          </div>
+          <div class="step-body">
             <div class="step-num">01</div>
             <h3>Coaching individuel</h3>
             <p>Un accompagnement personnalisé avec un coach dédié pour définir ton projet professionnel, préparer tes entrevues et renforcer ta confiance.</p>
           </div>
         </div>
-        <div class="step">
-          <div class="step-media"><img src="step-ateliers.jpg" alt="Groupe de participants lors d'un atelier pratique"></div>
-          <div>
+
+        <div class="step reveal">
+          <div class="step-media">
+            <img src="step-ateliers.jpg" alt="Groupe de participants lors d'un atelier pratique">
+            <div class="step-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          </div>
+          <div class="step-body">
             <div class="step-num">02</div>
             <h3>Ateliers pratiques</h3>
             <p>Des sessions interactives en groupe : rédaction de CV, techniques de recherche d'emploi, compétences numériques et développement personnel.</p>
           </div>
         </div>
-        <div class="step">
-          <div class="step-media"><img src="step-stages.jpg" alt="Stagiaire accompagné en entreprise devant un écran"></div>
-          <div>
+
+        <div class="step reveal">
+          <div class="step-media">
+            <img src="step-stages.jpg" alt="Stagiaire accompagné en entreprise devant un écran">
+            <div class="step-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/></svg></div>
+          </div>
+          <div class="step-body">
             <div class="step-num">03</div>
             <h3>Stages en entreprise</h3>
             <p>Des placements en milieu de travail pour acquérir de l'expérience concrète et découvrir des secteurs d'activité qui t'inspirent.</p>
           </div>
         </div>
-        <div class="step">
-          <div class="step-media"><img src="step-reseautage.jpg" alt="Rencontre de réseautage professionnel entre plusieurs personnes"></div>
-          <div>
+
+        <div class="step reveal">
+          <div class="step-media">
+            <img src="step-reseautage.jpg" alt="Rencontre de réseautage professionnel entre plusieurs personnes">
+            <div class="step-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M8.5 14.5a4 4 0 100-8 4 4 0 000 8z"/><path d="M2 21a6.5 6.5 0 0113 0"/><path d="M15 3.5a4 4 0 010 8"/><path d="M22 21a6.5 6.5 0 00-6-6.5"/></svg></div>
+          </div>
+          <div class="step-body">
             <div class="step-num">04</div>
             <h3>Réseautage &amp; mentorat</h3>
             <p>Connecte-toi avec des professionnels, des mentors et un réseau d'entreprises partenaires sensibilisées à l'inclusion.</p>
@@ -120,24 +177,24 @@
       </div>
       <div class="values-grid reveal">
         <div class="value">
-          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 000-7.6z"/></svg></div>
+          <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 000-7.6z"/></svg></div>
           <h3>Bienveillance</h3>
-          <p>Chaque personne est accueillie avec respect et empathie, sans jugement.</p>
+          <p>Chaque personne est accueillie avec respect et empathie, sans jugement. Ton bien-être est au cœur de tout ce que nous faisons.</p>
         </div>
         <div class="value">
-          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div>
+          <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div>
           <h3>Engagement</h3>
-          <p>Nous nous engageons à tes côtés tout au long du parcours.</p>
+          <p>Nous nous engageons à tes côtés tout au long du parcours. Ta réussite est notre mission, et nous ne lâchons pas.</p>
         </div>
         <div class="value">
-          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a6 6 0 00-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0012 2z"/></svg></div>
+          <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a6 6 0 00-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0012 2z"/></svg></div>
           <h3>Innovation</h3>
-          <p>Des méthodes modernes et adaptées à la réalité du marché.</p>
+          <p>Des méthodes modernes et adaptées à la réalité du marché. Nous évoluons constamment pour te donner les meilleurs outils.</p>
         </div>
         <div class="value">
-          <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M2 20a7 7 0 0114 0"/><circle cx="18" cy="9" r="2.5"/><path d="M16.5 20a5.5 5.5 0 015.5-6"/></svg></div>
+          <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M2 20a7 7 0 0114 0"/><circle cx="18" cy="9" r="2.5"/><path d="M16.5 20a5.5 5.5 0 015.5-6"/></svg></div>
           <h3>Inclusion</h3>
-          <p>La diversité est notre force. Quelle que soit ton origine, tu as ta place ici.</p>
+          <p>La diversité est notre force. Quelle que soit ton origine, ton âge ou ton parcours, tu as ta place ici.</p>
         </div>
       </div>
     </div>
@@ -147,42 +204,62 @@
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">Les visages du soutien</span>
-        <h2>Une équipe qui <span class="accent">croit en toi</span></h2>
-        <p>Derrière chaque programme, il y a des personnes engagées. Clique sur un profil pour découvrir sa philosophie.</p>
+        <h2>Une équipe qui<br><span class="accent">croit en toi</span></h2>
+        <p>Derrière chaque programme, il y a des professionnels passionnés. Clique sur un profil pour découvrir sa philosophie.</p>
       </div>
       <div class="team-grid reveal">
 
-        <button type="button" class="member">
-          <div class="member-photo">
-            <span>TB</span>
-            <div class="member-philo"><p>« Je crois que chaque personne porte en elle le potentiel de transformer sa vie. Mon rôle, c'est de t'aider à le voir et à le concrétiser. »</p></div>
-          </div>
-          <div class="member-info"><h4>Tulin Bulen</h4><span>Directrice &amp; Coach emploi</span></div>
-        </button>
+        <div class="member-wrap">
+          <button type="button" class="member">
+            <div class="member-photo"><img src="team-tulin.jpg" alt="Tulin Bulen"></div>
+            <div class="member-overlay"></div>
+            <div class="member-text"><h4>Tulin Bulen</h4><span>Directrice &amp; Coach emploi</span></div>
+          </button>
+          <div class="member-panel"><div class="member-panel-inner">
+            <span class="eyebrow">Ma philosophie</span>
+            <p class="quote">« Je crois que chaque personne porte en elle le potentiel de transformer sa vie. Mon rôle, c'est de t'aider à le voir et à le concrétiser. »</p>
+            <a href="contact.html" class="btn-primary small">Me contacter</a>
+          </div></div>
+        </div>
 
-        <button type="button" class="member">
-          <div class="member-photo">
-            <span>JZ</span>
-            <div class="member-philo"><p>« L'intégration commence par une écoute sincère. Je m'engage à comprendre ton parcours pour construire, avec toi, la suite qui te correspond. »</p></div>
-          </div>
-          <div class="member-info"><h4>Jannah Zidane</h4><span>Spécialiste en intégration professionnelle</span></div>
-        </button>
+        <div class="member-wrap">
+          <button type="button" class="member">
+            <div class="member-photo"><span>JZ</span></div>
+            <div class="member-overlay"></div>
+            <div class="member-text"><h4>Jannah Zidane</h4><span>Spécialiste en intégration professionnelle</span></div>
+          </button>
+          <div class="member-panel"><div class="member-panel-inner">
+            <span class="eyebrow">Ma philosophie</span>
+            <p class="quote">« L'intégration commence par une écoute sincère. Je m'engage à comprendre ton parcours pour construire, avec toi, la suite qui te correspond. »</p>
+            <a href="contact.html" class="btn-primary small">Me contacter</a>
+          </div></div>
+        </div>
 
-        <button type="button" class="member">
-          <div class="member-photo">
-            <span>IG</span>
-            <div class="member-philo"><p>« Les compétences se construisent dans l'action. Mes ateliers sont pensés pour que chacun reparte avec des outils concrets, immédiatement utiles. »</p></div>
-          </div>
-          <div class="member-info"><h4>Ilhan Gebesce</h4><span>Responsable Ateliers</span></div>
-        </button>
+        <div class="member-wrap">
+          <button type="button" class="member">
+            <div class="member-photo"><img src="team-ilhan.jpg" alt="Ilhan Gebesce"></div>
+            <div class="member-overlay"></div>
+            <div class="member-text"><h4>Ilhan Gebesce</h4><span>Responsable Ateliers</span></div>
+          </button>
+          <div class="member-panel"><div class="member-panel-inner">
+            <span class="eyebrow">Ma philosophie</span>
+            <p class="quote">« Les compétences se construisent dans l'action. Mes ateliers sont pensés pour que chacun reparte avec des outils concrets, immédiatement utiles. »</p>
+            <a href="contact.html" class="btn-primary small">Me contacter</a>
+          </div></div>
+        </div>
 
-        <button type="button" class="member">
-          <div class="member-photo">
-            <span>AÖ</span>
-            <div class="member-philo"><p>« Chaque jeune a une histoire différente et mérite un accompagnement qui lui ressemble. Je suis là pour marcher à tes côtés, à ton rythme. »</p></div>
-          </div>
-          <div class="member-info"><h4>Aylin Öztürk</h4><span>Coordinatrice Jeunesse</span></div>
-        </button>
+        <div class="member-wrap">
+          <button type="button" class="member">
+            <div class="member-photo"><img src="team-aylin.jpg" alt="Aylin Öztürk"></div>
+            <div class="member-overlay"></div>
+            <div class="member-text"><h4>Aylin Öztürk</h4><span>Coordinatrice Jeunesse</span></div>
+          </button>
+          <div class="member-panel"><div class="member-panel-inner">
+            <span class="eyebrow">Ma philosophie</span>
+            <p class="quote">« Chaque jeune a une histoire différente et mérite un accompagnement qui lui ressemble. Je suis là pour marcher à tes côtés, à ton rythme. »</p>
+            <a href="contact.html" class="btn-primary small">Me contacter</a>
+          </div></div>
+        </div>
 
       </div>
     </div>
@@ -190,14 +267,17 @@
 
   <section class="cta-banner" id="contact">
     <div class="wrap">
-      <h2>Prêt à écrire <span class="accent">la suite de ton histoire</span> ?</h2>
+      <h2>Prêt à écrire<br><span class="accent">la suite de ton histoire</span> ?</h2>
       <p>Chaque grand parcours commence par un premier pas. Contacte-nous dès aujourd'hui et découvre comment nous pouvons t'accompagner vers l'emploi qui te correspond.</p>
-      <a href="contact.html" class="btn-primary">Commencer mon parcours</a>
+      <a href="contact.html" class="btn-primary">Commencer mon parcours →</a>
     </div>
   </section>
 </main>
 
 <footer>
+  <div class="wrap footer-top">
+    <button type="button" class="back-to-top" id="backToTop">Retour en haut ↑</button>
+  </div>
   <div class="wrap">
     <div class="footer-grid">
       <div>
@@ -217,25 +297,33 @@
       <div>
         <h5>Contact</h5>
         <ul class="footer-contact">
-          <li>24 rue Le-Royer, 1227 Les Acacias, Genève</li>
-          <li>+41 78 251 48 98</li>
-          <li>contact@insertio.ch</li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.5-7-11a7 7 0 0114 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>24 rue Le-Royer, 1227 Les Acacias, Genève</li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.3 1.8.6 2.7a2 2 0 01-.4 2.1L8 9.9a16 16 0 006 6l1.4-1.3a2 2 0 012.1-.4c.9.3 1.8.5 2.7.6a2 2 0 011.8 2.1z"/></svg></span><a href="tel:+41782514898">+41 78 251 48 98</a></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><a href="mailto:contact@insertio.ch">contact@insertio.ch</a></li>
         </ul>
       </div>
       <div>
         <h5>Heures d'ouverture</h5>
-        <ul>
-          <li>Lundi – Vendredi : 8h30 – 17h00</li>
-          <li>Samedi – Dimanche : Fermé</li>
+        <ul class="footer-hours">
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span><div><strong>Lundi – Vendredi</strong><span>8h30 – 17h00</span></div></li>
+          <li><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span><div><strong>Samedi – Dimanche</strong><span>Fermé</span></div></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 Insertio. Tous droits réservés.</span>
-      <span>Genève, Suisse</span>
+      <div class="footer-bottom-links">
+        <a href="#top">Politique de confidentialité</a>
+        <a href="#top">Conditions d'utilisation</a>
+        <a href="#top">Accessibilité</a>
+      </div>
     </div>
   </div>
 </footer>
+
+<div class="sticky-cta" id="stickyCta">
+  <a href="contact.html">Commencer mon parcours <span>→</span></a>
+</div>
 
 <script src="script.js"></script>
 </body>
