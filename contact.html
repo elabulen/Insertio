@@ -7,12 +7,12 @@
 <meta name="description" content="Contacte Insertio pour démarrer ton accompagnement vers l'emploi à Genève.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
+<header id="siteHeader">
   <div class="wrap nav">
     <a href="index.html" class="brand"><img src="logo.png" alt="Insertio" class="brand-logo"></a>
     <nav>
@@ -44,12 +44,14 @@
           <h2>Parle-nous de toi</h2>
           <p>Complète ce formulaire en quelques secondes. Pas de formalités.</p>
 
-          <form id="contactForm" action="https://api.web3forms.com/submit" method="POST">
-  <input type="hidden" name="access_key" value="f7ebd52c-55e8-476f-804e-17fc0f4ab44f">
-            
+          <form id="contactForm">
+            <input type="hidden" name="access_key" value="COLLE_TA_CLE_WEB3FORMS_ICI">
+            <input type="hidden" name="subject" value="Nouvelle demande de contact — Insertio">
+            <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
             <div class="field-block">
               <label class="field-label" for="fullName">Bonjour, je m'appelle</label>
-              <input class="text-input" type="text" id="fullName" name="nom" placeholder="Ton prénom et nom" required>
+              <input class="text-input" type="text" id="fullName" name="name" placeholder="Ton prénom et nom" required>
             </div>
 
             <div class="field-block">
@@ -61,6 +63,7 @@
                 <button type="button" class="chip">Soutien à l'intégration</button>
                 <button type="button" class="chip">Mentorat &amp; réseautage</button>
               </div>
+              <input type="hidden" id="selectedNeeds" name="Je cherche">
             </div>
 
             <div class="field-block">
@@ -77,13 +80,13 @@
                 </div>
                 <div>
                   <span class="field-small-label">Téléphone (optionnel)</span>
-                  <input class="text-input" type="tel" id="phoneField" name="telephone" placeholder="+41 78 000 00 00">
+                  <input class="text-input" type="tel" id="phoneField" name="phone" placeholder="+41 78 000 00 00">
                 </div>
               </div>
             </div>
-<input type="hidden" name="interets" id="selectedChips">
-            <button type="submit" class="submit-btn">Envoyer ma demande</button>
-            <p class="form-note">Ta demande sera envoyée directement à notre équipe.</p>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Envoyer ma demande</button>
+            <p class="form-note" id="formNote">Ta demande nous arrive directement, sans quitter le site.</p>
           </form>
         </div>
 
