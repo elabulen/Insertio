@@ -285,7 +285,16 @@ section{padding:96px 0;}
 .member-panel .eyebrow{margin-bottom:8px; font-size:0.78rem;}
 .member-panel p.quote{font-style:italic; color:var(--ink); font-size:0.92rem; line-height:1.55; margin-bottom:14px;}
 
-/* ---------- CTA banner ---------- */
+/* ---------- Temoignages (Canva images) ---------- */
+.temoignages{ background:#ECB510; padding:70px 0; }
+.temoin-wrap-simple{
+  display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;
+}
+.temoin-img{ width:100%; height:auto; border-radius:20px; display:block; }
+@media (max-width:760px){
+  .temoin-wrap-simple{ grid-template-columns:1fr; gap:20px; }
+}
+
 .cta-banner{
   position:relative;
   background:
