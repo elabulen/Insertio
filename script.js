@@ -4,24 +4,25 @@ const observer = new IntersectionObserver((entries)=>{
 }, {threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
-// Force hero video autoplay (mobile browsers need an explicit muted play() call,
-// retried across several lifecycle events since a single early call can fail silently)
-const heroVideo = document.getElementById('heroVideo');
-if(heroVideo){
-  heroVideo.muted = true;
-  heroVideo.defaultMuted = true;
-  heroVideo.setAttribute('muted', '');
+// Force muted autoplay videos to actually play (mobile browsers need an explicit
+// muted play() call, retried across several lifecycle events since a single early
+// call can fail silently). Applies to the hero video and the program card videos.
+function forceAutoplay(video){
+  if(!video) return;
+  video.muted = true;
+  video.defaultMuted = true;
+  video.setAttribute('muted', '');
   let played = false;
   const tryPlay = () => {
     if(played) return;
-    const p = heroVideo.play();
+    const p = video.play();
     if(p && typeof p.then === 'function'){
       p.then(()=>{ played = true; }).catch(()=>{});
     }
   };
   tryPlay();
   ['loadedmetadata','loadeddata','canplay','canplaythrough'].forEach(evt=>{
-    heroVideo.addEventListener(evt, tryPlay);
+    video.addEventListener(evt, tryPlay);
   });
   window.addEventListener('load', tryPlay);
   document.addEventListener('visibilitychange', ()=>{
@@ -31,8 +32,12 @@ if(heroVideo){
   document.addEventListener('touchstart', tryPlay, { once:true, passive:true });
   document.addEventListener('click', tryPlay, { once:true });
   // Manual fallback: tapping the video itself always starts it
-  heroVideo.addEventListener('click', ()=> heroVideo.play().catch(()=>{}));
+  video.addEventListener('click', ()=> video.play().catch(()=>{}));
 }
+
+const heroVideo = document.getElementById('heroVideo');
+forceAutoplay(heroVideo);
+document.querySelectorAll('.program-media video').forEach(forceAutoplay);
 
 // Header background on scroll
 const header = document.getElementById('siteHeader');
