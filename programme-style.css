@@ -56,6 +56,13 @@
 
 .section-gap{margin-bottom:48px;}
 
+/* ---- Titres de section centrés (Pour qui, Ce que comprend..., FAQ) ---- */
+.section-head{
+  text-align:center;
+  margin-left:auto;
+  margin-right:auto;
+}
+
 /* ---- Hero avec photo en fond (overlay violet, texte centré) ---- */
 .photo-hero{
   position:relative;
