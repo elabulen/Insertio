@@ -164,6 +164,12 @@ h1{
   transition:background .2s ease, color .2s ease;
 }
 .btn-outline:hover{background:var(--violet); color:#fff;}
+.program-btns{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.program-more{
+  font-size:0.85rem; font-weight:700; color:var(--violet);
+  display:inline-flex; align-items:center; gap:4px;
+}
+.program-more:hover{text-decoration:underline;}
 
 /* ---------- Section shared ---------- */
 section{padding:96px 0;}
