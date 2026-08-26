@@ -1,0 +1,68 @@
+/* ============================================
+   Programme pages — style calme & éditorial
+   (n'affecte que les pages qui l'importent)
+   ============================================ */
+
+.serif-accent{
+  font-family:'Instrument Serif', serif;
+  font-style:italic;
+  font-weight:400;
+  letter-spacing:0;
+}
+
+/* ---- Hero calme (remplace le bloc navy) ---- */
+.calm-hero{
+  background:var(--bg);
+  color:var(--ink);
+  padding:56px 0 64px;
+  border-bottom:1px solid var(--line);
+}
+.calm-hero .back-link{
+  display:inline-flex; align-items:center; gap:8px;
+  color:var(--muted); font-size:0.9rem; font-weight:600; margin-bottom:32px;
+  transition:color .2s ease;
+}
+.calm-hero .back-link:hover{color:var(--ink);}
+.calm-hero h1{
+  color:var(--ink);
+  font-size:clamp(2.1rem, 4.2vw, 3.2rem);
+  max-width:18ch;
+}
+.calm-hero p{
+  color:var(--muted);
+  max-width:56ch;
+  font-size:1.08rem;
+  margin-top:18px;
+}
+
+/* ---- Cartes douces pour le contenu ---- */
+.soft-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:40px 36px;
+  box-shadow:0 10px 34px rgba(20,20,43,0.05);
+}
+@media (max-width:640px){ .soft-card{padding:28px 24px;} }
+
+.soft-card .program-list{margin-bottom:0;}
+.soft-card .program-list li{margin-bottom:20px;}
+.soft-card .program-list li:last-child{margin-bottom:0;}
+
+.faq-card p{padding:22px 0; border-bottom:1px solid var(--line);}
+.faq-card p:last-child{border-bottom:none; padding-bottom:0;}
+.faq-card p:first-child{padding-top:0;}
+.faq-card strong{display:block; margin-bottom:8px; font-size:1.02rem;}
+
+.section-gap{margin-bottom:48px;}
+
+/* ---- Bannière CTA calme (remplace le bloc navy plein écran) ---- */
+.calm-cta{
+  background:var(--tint-violet);
+  border-radius:var(--r-lg);
+  padding:72px 48px;
+  text-align:center;
+}
+.calm-cta h2{margin-bottom:16px;}
+.calm-cta p{color:var(--muted); max-width:50ch; margin:0 auto 30px; font-size:1.05rem;}
+@media (max-width:640px){ .calm-cta{padding:48px 24px;} }
