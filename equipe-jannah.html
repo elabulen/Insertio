@@ -15,12 +15,13 @@
 <meta property="og:description" content="Découvre le parcours de Jannah, spécialiste en insertion socioprofessionnelle chez Insertio, association d&#x27;insertion professionnelle des jeunes à Genève.">
 <meta property="og:image" content="https://insertio.ch/profil-jannah.jpg">
 <meta property="og:locale" content="fr_CH">
+<script>document.documentElement.classList.add('js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=3">
 <link rel="stylesheet" href="programme-style.css?v=3">
-<link rel="stylesheet" href="equipe-style.css?v=3">
+<link rel="stylesheet" href="equipe-style.css?v=4">
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "Person", "name": "Jannah Zidane", "jobTitle": "Spécialiste en insertion socioprofessionnelle", "image": "https://insertio.ch/profil-jannah.jpg", "worksFor": {"@type": "NGO", "name": "Insertio", "url": "https://insertio.ch/"}, "email": "mailto:j.zidane@insertio.ch"}
 </script>
@@ -43,111 +44,84 @@
 </header>
 
 <main>
-  <section class="profile-hero">
+  <section class="p-hero">
     <div class="wrap">
       <nav class="breadcrumb" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">›</span><a href="index.html#equipe">Équipe</a><span aria-hidden="true">›</span><span aria-current="page">Jannah Zidane</span></nav>
-      <div class="profile-grid">
-        <div class="profile-photo"><img src="profil-jannah.jpg" alt="Portrait de Jannah"></div>
+      <div class="p-hero-grid">
+        <div class="p-photo"><img src="profil-jannah.jpg" alt="Portrait de Jannah"></div>
         <div>
           <h1>Jannah Zidane</h1>
-          <p class="profile-role">Spécialiste en insertion socioprofessionnelle</p>
-          <h2>Expertise</h2>
-          <ul class="tags"><li>Insertion socioprofessionnelle</li><li>Politiques sociales</li><li>Apprentissage</li></ul>
-          <p class="profile-bio">Formée en travail social puis en socioéconomie, Jannah allie une solide expérience socio-éducative et une expertise des politiques sociales. Ancienne formatrice et commissaire d'apprentissage, elle connaît de près le parcours des apprenti·es et les exigences de la formation professionnelle. Ses travaux portent sur le non-recours aux prestations sociales et sur leur digitalisation.</p>
-          <div class="profile-actions"><a href="https://calendly.com/contact-insertio/" class="btn-primary" target="_blank" rel="noopener">Prendre rendez-vous</a><a href="#contact" class="btn-ghost-light">Contacter Jannah</a></div>
+          <p class="p-role">Spécialiste en insertion socioprofessionnelle</p>
+          <p class="p-lead">Formée en travail social puis en socioéconomie, Jannah accompagne les jeunes vers une formation ou un emploi, et les aide à faire valoir leurs droits.</p>
+          <ul class="tags"><li>Insertion socioprofessionnelle</li><li>Politiques sociales</li><li>Apprentissage</li><li>Accès aux droits</li></ul>
+          <div class="p-actions"><a href="https://calendly.com/contact-insertio/" class="btn-primary" target="_blank" rel="noopener">Prendre rendez-vous</a><a href="#contact" class="btn-ghost-light">Contacter Jannah</a></div>
         </div>
       </div>
+      <dl class="p-stats"><div><dt>Travail social</dt><dd>Bachelor HETS Genève</dd></div><div><dt>Apprentissage</dt><dd>ancienne commissaire d'apprentissage</dd></div><div><dt>Non-recours</dt><dd>son sujet de recherche</dd></div></dl>
     </div>
   </section>
 
-  <section class="key-facts" aria-label="En bref">
+  <nav class="p-subnav" aria-label="Sommaire du profil">
+    <div class="wrap"><a href="#role">Son rôle</a><a href="#parcours">Parcours</a><a href="#formation">Formation</a><a href="#programmes-suivis">Programmes</a><a href="#contact">Contact</a></div>
+    <span class="p-progress" aria-hidden="true"></span>
+  </nav>
+
+  <section class="p-sec" id="role">
     <div class="wrap">
-      <ul class="facts-row">
-        <li><strong>Travail social</strong><span>Bachelor HETS Genève</span></li>
-        <li><strong>Apprentissage</strong><span>ancienne commissaire d'apprentissage</span></li>
-        <li><strong>Non-recours</strong><span>aux prestations sociales, son sujet de recherche</span></li>
-      </ul>
+      <div class="p-head fx"><h2>Son rôle</h2><p>Elle accompagne chaque jeune, du premier objectif jusqu'à la place de formation ou d'emploi.</p></div>
+      <div class="role-grid">
+          <article class="role-card fx" style="--i:0"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg></span><h3>Accompagner chaque jeune</h3><p>Elle suit les jeunes pas à pas dans leur projet d'insertion.</p><ul class="checks"><li>Clarifier un objectif réaliste</li><li>Lever les obstacles un par un</li><li>Avancer vers une formation ou un emploi</li></ul></article>
+          <article class="role-card fx" style="--i:1"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6"/></svg></span><h3>Ouvrir la voie de l'apprentissage</h3><p>Son expérience de la formation professionnelle aide les jeunes à trouver leur place.</p><ul class="checks"><li>Trouver une place d'apprentissage</li><li>Préparer l'entrée en entreprise</li><li>Réussir sa formation</li></ul></article>
+          <article class="role-card fx" style="--i:2"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>Faire valoir ses droits</h3><p>Spécialiste du non-recours, elle aide les jeunes à connaître et à obtenir les aides auxquelles ils ont droit.</p><ul class="checks"><li>Connaître les prestations existantes</li><li>S'y retrouver dans les démarches en ligne</li><li>Ne pas renoncer à ses droits</li></ul></article>
+      </div>
     </div>
   </section>
-
-  <section>
+  <section class="p-sec" id="parcours">
     <div class="wrap">
-      <div class="split">
-        <div><h2>Son rôle</h2><p class="split-intro">Ce que Jannah fait au quotidien pour les jeunes accompagnés par Insertio.</p></div>
-        <div class="accordion">
-          <details open>
-            <summary><div><h3>Accompagnement</h3><small>Suivi individuel des jeunes</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Elle suit les jeunes pas à pas dans leur projet d'insertion : clarifier un objectif, lever les obstacles et avancer vers une formation, un apprentissage ou un emploi.</p></div>
-          </details>
-          <details>
-            <summary><div><h3>Apprentissage</h3><small>Formation professionnelle</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Son expérience de formatrice et de commissaire d'apprentissage lui permet d'aider les jeunes à trouver une place d'apprentissage et à la réussir.</p></div>
-          </details>
-          <details>
-            <summary><div><h3>Accès aux droits</h3><small>Prestations et démarches</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Spécialiste du non-recours, elle aide les jeunes à connaître les aides auxquelles ils ont droit et à s'y retrouver dans des démarches de plus en plus numériques.</p></div>
-          </details>
-        </div>
-      </div>
-
-      <div class="split">
-        <div><h2>Formation</h2></div>
-        <div class="accordion">
-          <details open>
-            <summary><div><h3>Master</h3><small>Socioéconomie, orientation politiques sociales, Université de Genève</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Travaux sur le non-recours aux prestations sociales et sur la digitalisation de l'accès aux droits, notamment dans le cadre du projet GE-Inform.</p></div>
-          </details>
-          <details>
-            <summary><div><h3>Bachelor</h3><small>Travail social, HETS Genève</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Formation en travail social à la Haute école de travail social de Genève.</p></div>
-          </details>
-          <details>
-            <summary><div><h3>Socio-éducatif</h3><small>Formation initiale</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Une formation socio-éducative qui fonde son approche de terrain auprès des jeunes.</p></div>
-          </details>
-        </div>
-      </div>
-
-      <div class="split">
-        <div><h2>Parcours</h2><p class="split-intro">Les expériences qui nourrissent sa façon d'accompagner les jeunes.</p></div>
-        <div class="accordion">
-          <details open>
-            <summary><div><h3>Formation professionnelle</h3><small>Formatrice et commissaire d'apprentissage</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Elle a encadré des apprenti·es et suivi leur formation en entreprise, jusqu'aux examens. Elle connaît les attentes des entreprises formatrices comme les difficultés que rencontrent les jeunes.</p></div>
-          </details>
-          <details>
-            <summary><div><h3>Recherche</h3><small>Non-recours et digitalisation des prestations sociales</small></div><span class="toggle" aria-hidden="true"></span></summary>
-            <div class="acc-body"><p>Dans le cadre du projet GE-Inform, elle a étudié pourquoi des personnes ne demandent pas les prestations auxquelles elles ont droit, et comment la numérisation des démarches peut creuser ou réduire ces écarts.</p></div>
-          </details>
-        </div>
-      </div>
-
-      <div class="split">
-        <div><h2>Programmes suivis</h2><p class="split-intro">Les programmes dans lesquels tu peux être accompagné·e par Jannah.</p></div>
-        <div class="linked-programs">
-          <a href="programme-tremplin.html"><img src="programme-tremplin-hero.jpg" alt="" loading="lazy"><div><h3>Tremplin</h3><p>Jeunes issus de l'immigration (permis S, N, F), 4 à 5 mois.</p></div></a>
-          <a href="programme-elan.html"><img src="programme-elan-hero.jpg" alt="" loading="lazy"><div><h3>Élan</h3><p>Tous permis et nationalités, 3 mois.</p></div></a>
-        </div>
-      </div>
-
-      <div class="split" id="contact">
-        <div><h2>Contacter Jannah</h2><p class="split-intro">Pour une question, un premier échange ou un partenariat, écris-lui directement.</p></div>
-        <div class="contact-card">
-          <div class="contact-line"><span>E-mail professionnel</span><a href="mailto:j.zidane@insertio.ch">j.zidane@insertio.ch</a></div>
-          <div class="contact-actions">
-            <a href="mailto:j.zidane@insertio.ch" class="btn-primary">Écrire un e-mail</a>
-            <a href="https://calendly.com/contact-insertio/" class="btn-outline" target="_blank" rel="noopener">Prendre rendez-vous</a>
-          </div>
-        </div>
-      </div>
-
-      <nav class="team-nav" aria-label="Autres membres de l'équipe">
-        <a href="equipe-ela.html">← Ela</a>
-        <a href="index.html#equipe">Toute l'équipe</a>
-        <a href="equipe-ilhan.html">Ilhan →</a>
-      </nav>
+      <div class="p-head fx"><h2>Parcours</h2><p>Une expérience de la formation professionnelle et de la recherche sur l'accès aux droits.</p></div>
+      <div class="tl"><span class="tl-fill" aria-hidden="true"></span><ol class="tl-items">
+        <li class="fx"><span class="tl-dot" aria-hidden="true"></span><div class="tl-card"><span class="tl-when">Aujourd'hui</span><h3>Spécialiste en insertion socioprofessionnelle</h3><p class="tl-org">Insertio, Genève</p><p>Elle accompagne les jeunes dans leur projet de formation et d'emploi.</p></div></li>
+        <li class="fx"><span class="tl-dot" aria-hidden="true"></span><div class="tl-card"><span class="tl-when">Recherche</span><h3>Non-recours et digitalisation des prestations sociales</h3><p class="tl-org">Projet GE-Inform</p><p>Elle a étudié pourquoi des personnes ne demandent pas les aides auxquelles elles ont droit, et l'effet de la numérisation des démarches.</p></div></li>
+        <li class="fx"><span class="tl-dot" aria-hidden="true"></span><div class="tl-card"><span class="tl-when">Formation professionnelle</span><h3>Formatrice et commissaire d'apprentissage</h3><p class="tl-org">Genève</p><p>Elle a encadré des apprenti·es et suivi leur formation en entreprise jusqu'aux examens.</p><details class="more"><summary><span class="plus">Voir le détail</span><span class="less">Masquer</span></summary><div class="more-body"><ul class="dots"><li>Connaissance des attentes des entreprises formatrices</li><li>Accompagnement des difficultés des apprenti·es</li></ul></div></details></div></li>
+      </ol></div>
     </div>
   </section>
+  <section class="p-sec" id="formation">
+    <div class="wrap">
+      <div class="p-head fx"><h2>Formation</h2><p>Du travail social aux politiques sociales.</p></div>
+      <div class="card-grid">
+        <article class="info-card fx" style="--i:0"><span class="tl-when">Master</span><h3>Master en socioéconomie</h3><p class="tl-org">Université de Genève, orientation politiques sociales</p><p>Travaux sur le non-recours aux prestations sociales et la digitalisation de l'accès aux droits.</p></article>
+        <article class="info-card fx" style="--i:1"><span class="tl-when">Bachelor</span><h3>Bachelor en travail social</h3><p class="tl-org">HETS Genève</p><p>Formation en travail social à la Haute école de travail social de Genève.</p></article>
+        <article class="info-card fx" style="--i:0"><span class="tl-when">Formation initiale</span><h3>Formation socio-éducative</h3><p>Une base socio-éducative qui fonde son approche de terrain auprès des jeunes.</p></article>
+      </div>
+    </div>
+  </section>
+  <section class="p-sec" id="programmes-suivis">
+    <div class="wrap">
+      <div class="p-head fx"><h2>Programmes suivis</h2><p>Les programmes dans lesquels tu peux être accompagné·e par Jannah.</p></div>
+      <div class="linked-programs">
+          <a href="programme-tremplin.html" class="fx" style="--i:0"><img src="programme-tremplin-hero.jpg" alt="" loading="lazy"><div><h3>Tremplin</h3><p>Jeunes issus de l'immigration (permis S, N, F), 4 à 5 mois.</p><span class="go">Découvrir le programme</span></div></a>
+          <a href="programme-elan.html" class="fx" style="--i:1"><img src="programme-elan-hero.jpg" alt="" loading="lazy"><div><h3>Élan</h3><p>Tous permis et nationalités, 3 mois.</p><span class="go">Découvrir le programme</span></div></a>
+      </div>
+    </div>
+  </section>
+  <section class="p-sec" id="contact">
+    <div class="wrap">
+      <div class="p-head fx"><h2>Contacter Jannah</h2><p>Pour une question, un premier échange ou un partenariat, écris-lui directement.</p></div>
+      <div class="contact-card fx">
+        <div class="contact-line"><span>E-mail professionnel</span><a href="mailto:j.zidane@insertio.ch">j.zidane@insertio.ch</a></div>
+        <div class="contact-actions"><a href="mailto:j.zidane@insertio.ch" class="btn-primary">Écrire un e-mail</a><a href="https://calendly.com/contact-insertio/" class="btn-outline" target="_blank" rel="noopener">Prendre rendez-vous</a></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <nav class="team-nav" aria-label="Autres membres de l'équipe">
+      <a href="equipe-ela.html">← Ela</a>
+      <a href="index.html#equipe">Toute l'équipe</a>
+      <a href="equipe-ilhan.html">Ilhan →</a>
+    </nav>
+  </div>
 
   <section>
     <div class="wrap">
@@ -201,5 +175,6 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="equipe.js?v=4"></script>
 </body>
 </html>
