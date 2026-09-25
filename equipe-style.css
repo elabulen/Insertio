@@ -171,3 +171,15 @@ a.member{display:block; color:inherit;}
 a.member:focus-visible{outline:2px solid var(--pink); outline-offset:4px;}
 a.member .member-text{line-height:1.3;}
 a.member .member-text span{display:block; margin-top:4px;}
+
+/* Cartes rôle : 2 ou 3 selon le profil */
+.role-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+
+/* ---------- Accueil : 4 programmes ---------- */
+@media (min-width:1200px){ .program-grid{grid-template-columns:repeat(4,1fr); gap:20px;} }
+@media (min-width:700px) and (max-width:1199px){ .program-grid{grid-template-columns:repeat(2,1fr);} }
+
+/* ---------- Accueil : vidéo de présentation plein écran ---------- */
+section.video-band{padding:0; background:#EEEAF9;}
+.band-video{display:block; width:100%; height:auto; max-height:100vh; aspect-ratio:16/9; object-fit:contain; margin:0 auto; background:#EEEAF9;}
+.program-media{overflow:hidden;}
