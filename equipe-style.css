@@ -90,3 +90,9 @@
 @media (min-width:821px) and (max-width:1099px){ .team-grid{grid-template-columns:repeat(3,1fr);} }
 .member-panel .profile-link{display:inline-block; margin-top:14px; margin-left:14px; font-weight:700; font-size:0.9rem; color:var(--violet);}
 .member-panel .profile-link:hover{color:var(--pink);}
+
+/* ---- Accueil : la carte entière ouvre la page profil ---- */
+.member-card{position:relative;}
+a.member{display:block; color:inherit;}
+a.member:focus-visible{outline:2px solid var(--pink); outline-offset:4px;}
+a.member .member-text{line-height:1.3;} a.member .member-text span{display:block; margin-top:4px;}
