@@ -26,6 +26,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="site-ui.css?v=1">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="programme-style.css?v=3">
 
@@ -44,22 +45,46 @@
 </head>
 <body>
 
+<a class="skip-link" href="#contenu">Aller au contenu</a>
 <header id="siteHeader">
   <div class="wrap nav">
-    <a href="index.html" class="brand"><img src="logo.png" alt="Insertio" class="brand-logo"></a>
-    <nav>
-      <ul>
-        <li><a href="index.html#top">Accueil</a></li>
-        <li><a href="index.html#programmes">Programmes</a></li>
+    <a href="index.html" class="brand" aria-label="Insertio, accueil"><img src="logo.png" alt="Insertio" class="brand-logo"></a>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <ul class="nav-list">
+        <li><a href="index.html">Accueil</a></li>
+        <li class="has-menu">
+          <button type="button" class="menu-btn" aria-expanded="false" aria-controls="menu-programmes">Programmes <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="menu" id="menu-programmes">
+            <a href="index.html#programmes" class="menu-all"><span class="menu-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span><span><strong>Tous les programmes</strong><small>Comparer les 4 programmes</small></span></a>
+            <a href="programme-tremplin.html"><span class="menu-ico" style="background:#5D5FEC" aria-hidden="true">T</span><span><strong>Tremplin</strong><small>Permis S, N, F · français B1 · 4 à 5 mois</small></span></a><a href="programme-elan.html"><span class="menu-ico" style="background:#8B5CF6" aria-hidden="true">É</span><span><strong>Élan</strong><small>Tous permis et nationalités · 3 mois</small></span></a><a href="programme-passerelles.html" aria-current="page"><span class="menu-ico" style="background:#C04FB0" aria-hidden="true">P</span><span><strong>Passerelles</strong><small>Réseau et rencontres · mensuel</small></span></a><a href="programme-pole-numerique.html"><span class="menu-ico" style="background:#E85C9A" aria-hidden="true">N</span><span><strong>Pôle numérique</strong><small>Tout public · lundi et jeudi 13h – 17h</small></span></a>
+          </div>
+        </li>
         <li><a href="index.html#parcours">Parcours</a></li>
-        <li><a href="index.html#equipe">Équipe</a></li>
+        <li class="has-menu">
+          <button type="button" class="menu-btn" aria-expanded="false" aria-controls="menu-equipe">Équipe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="menu menu-team" id="menu-equipe">
+            <a href="index.html#equipe" class="menu-all"><span class="menu-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg></span><span><strong>Toute l'équipe</strong><small>Les 5 visages d'Insertio</small></span></a>
+            <a href="equipe-tulin.html"><img class="menu-avatar" src="team-tulin.jpg" alt="" loading="lazy"><span><strong>Tulin</strong><small>Directrice générale &amp; coach emploi</small></span></a><a href="equipe-ela.html"><img class="menu-avatar" src="team-ela.jpg" alt="" loading="lazy"><span><strong>Ela</strong><small>Coordinatrice des programmes d'insertion</small></span></a><a href="equipe-jannah.html"><img class="menu-avatar" src="team-jannah.jpg" alt="" loading="lazy"><span><strong>Jannah</strong><small>Spécialiste en insertion socioprofessionnelle</small></span></a><a href="equipe-ilhan.html"><img class="menu-avatar" src="team-ilhan.jpg" alt="" loading="lazy"><span><strong>Ilhan</strong><small>Soutien ateliers et administration</small></span></a><a href="equipe-aylin.html"><img class="menu-avatar" src="team-aylin.jpg" alt="" loading="lazy"><span><strong>Aylin</strong><small>Responsable du pôle coordination</small></span></a>
+          </div>
+        </li>
+        <li><a href="contact.html">Contact</a></li>
       </ul>
     </nav>
-    <a href="contact.html" class="cta">Nous contacter</a>
+    <a href="contact.html#rdv" class="cta cta-rdv" data-rdv><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Prendre <span class="lbl-long">rendez-vous</span><span class="lbl-short" hidden>RDV</span></span></a>
+    <button type="button" class="burger" aria-expanded="false" aria-controls="mobileMenu" aria-label="Ouvrir le menu"><span></span></button>
   </div>
 </header>
+<div class="mobile-menu" id="mobileMenu">
+  <a class="m-link" href="index.html">Accueil</a>
+  <details class="m-group"><summary>Programmes</summary><div class="m-sub"><a href="index.html#programmes"><span class="menu-ico" style="background:var(--grad)" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span><span>Tous les programmes</span></a><a href="programme-tremplin.html"><span class="menu-ico" style="background:#5D5FEC" aria-hidden="true">T</span><span>Tremplin<small>Permis S, N, F · français B1 · 4 à 5 mois</small></span></a><a href="programme-elan.html"><span class="menu-ico" style="background:#8B5CF6" aria-hidden="true">É</span><span>Élan<small>Tous permis et nationalités · 3 mois</small></span></a><a href="programme-passerelles.html"><span class="menu-ico" style="background:#C04FB0" aria-hidden="true">P</span><span>Passerelles<small>Réseau et rencontres · mensuel</small></span></a><a href="programme-pole-numerique.html"><span class="menu-ico" style="background:#E85C9A" aria-hidden="true">N</span><span>Pôle numérique<small>Tout public · lundi et jeudi 13h – 17h</small></span></a></div></details>
+  <a class="m-link" href="index.html#parcours">Parcours</a>
+  <details class="m-group"><summary>Équipe</summary><div class="m-sub"><a href="index.html#equipe"><span class="menu-ico" style="background:var(--grad)" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg></span><span>Toute l'équipe</span></a><a href="equipe-tulin.html"><img class="menu-avatar" src="team-tulin.jpg" alt="" loading="lazy"><span>Tulin<small>Directrice générale &amp; coach emploi</small></span></a><a href="equipe-ela.html"><img class="menu-avatar" src="team-ela.jpg" alt="" loading="lazy"><span>Ela<small>Coordinatrice des programmes d'insertion</small></span></a><a href="equipe-jannah.html"><img class="menu-avatar" src="team-jannah.jpg" alt="" loading="lazy"><span>Jannah<small>Spécialiste en insertion socioprofessionnelle</small></span></a><a href="equipe-ilhan.html"><img class="menu-avatar" src="team-ilhan.jpg" alt="" loading="lazy"><span>Ilhan<small>Soutien ateliers et administration</small></span></a><a href="equipe-aylin.html"><img class="menu-avatar" src="team-aylin.jpg" alt="" loading="lazy"><span>Aylin<small>Responsable du pôle coordination</small></span></a></div></details>
+  <a class="m-link" href="contact.html">Contact</a>
+  <a class="m-cta" href="contact.html#rdv" data-rdv>Prendre rendez-vous</a>
+  <p class="m-note">Premier rendez-vous gratuit et sans engagement</p>
+</div>
 
-<main>
+<main id="contenu">
   <section class="photo-hero">
     <img src="programme-passerelles-hero.jpg" alt="" class="hero-bg">
     <div class="wrap">
@@ -105,11 +130,15 @@
       <div class="calm-cta">
         <h2>Prêt à rejoindre<br><span class="accent">le programme Passerelles&nbsp;?</span></h2>
       <p>Contacte-nous dès aujourd'hui pour un premier échange sans engagement sur ta situation et tes objectifs.</p>
-      <a href="contact.html#rdv" class="btn-primary">Commencer mon parcours →</a>
+      <a href="contact.html#rdv" data-rdv class="btn-primary">Commencer mon parcours →</a>
       </div>
     </div>
   </section>
 </main>
+
+<div class="sticky-cta" id="stickyCta">
+  <a href="contact.html#rdv" data-rdv>Prendre rendez-vous <span>→</span></a>
+</div>
 
 <footer>
   <div class="wrap">
@@ -152,5 +181,6 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="site-ui.js?v=1"></script>
 </body>
 </html>
