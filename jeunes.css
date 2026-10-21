@@ -132,20 +132,18 @@ body.vc-page{background:#0B0B18; color:#fff; min-height:100vh;}
 
 /* v2 : vignettes (étiquette du domaine au-dessus du prénom) */
 .j-info span.j-role{display:block;}
-.j-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));}
+.j-grid{grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:26px;}
+.j-card{aspect-ratio:4/5;}
+.j-info{left:24px; right:24px; bottom:24px;}
+.j-info strong{font-size:1.8rem;}
+.j-info span{font-size:0.95rem;}
+.j-info .j-tag{font-size:0.84rem; padding:7px 14px;}
 .j-card::after{background:linear-gradient(to top, rgba(10,10,24,0.94) 0%, rgba(10,10,24,0.45) 45%, rgba(10,10,24,0) 70%);}
 .j-info .j-tag{position:static; display:inline-flex; align-items:center; width:auto; max-width:100%; margin:0 0 10px; padding:6px 12px; font-size:0.78rem; box-shadow:none;}
 .j-info .j-tag::before{flex:none;}
 .j-info span.j-tag{color:var(--ink); font-weight:800;}
 @media (max-width:560px){
-  .j-grid{grid-template-columns:1fr 1fr; gap:12px;}
-  .j-card{border-radius:22px;}
-  .j-info{left:12px; right:12px; bottom:12px;}
-  .j-info strong{font-size:1.15rem;}
-  .j-info span{font-size:0.78rem;}
-  .j-info .j-tag{font-size:0.68rem; padding:5px 9px; margin-bottom:6px;}
-  .j-info .j-open{display:none;}
+  .j-grid{grid-template-columns:1fr; gap:18px;}
+  .j-card{aspect-ratio:4/4.6;}
+  .j-card img{object-position:center 12%;}
 }
-.filters{margin-top:-64px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:4px;}
-.filters::-webkit-scrollbar{display:none;}
-.chip-f{flex:none;}

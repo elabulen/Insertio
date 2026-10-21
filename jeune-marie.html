@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="vc-actions">
-      <a class="act primary" href="jeune-marie.vcf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ajouter aux contacts</a>
+      <a class="act primary" href="jeune-marie.vcf" data-add><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ajouter aux contacts</a>
       <button type="button" class="act" data-open="contactSheet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14h4"/></svg>Contactez-moi</button>
       <button type="button" class="act" data-share><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Partager</button>
       <button type="button" class="act" data-open="qrSheet" style="grid-column:1 / -1"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v1M14 20h1M17 17h4v4h-4z"/></svg>Afficher mon QR code</button>
@@ -65,7 +65,7 @@
     <button type="button" class="round" data-open="qrSheet" aria-label="Afficher mon QR code"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v1M14 20h1M17 17h4v4h-4z"/></svg></button>
     <button type="button" class="round" data-share aria-label="Partager ma carte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button>
     <button type="button" class="round chat" data-open="contactSheet" aria-label="Contactez-moi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14h4"/></svg></button>
-    <a class="add" href="jeune-marie.vcf"><span>Ajouter aux<br>contacts</span><span class="plus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></a>
+    <a class="add" href="jeune-marie.vcf" data-add><span>Ajouter aux<br>contacts</span><span class="plus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></a>
   </nav>
   <button type="button" class="chat-fab" data-open="contactSheet"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14h4"/></svg></span>Contactez-moi</button>
 </div>
@@ -84,7 +84,17 @@
     <img class="face" src="jeune-marie.jpg" alt="">
     <h2 id="ctT">Contacter Marie</h2>
     <p>Choisissez comment me joindre</p>
-    <div class="opts"><a class="opt" href="mailto:marieadelie2006@gmail.com"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="m3 7 9 6 9-6"/></svg></span><span>Écrire un e-mail<small>marieadelie2006@gmail.com</small></span></a><a class="opt" href="jeune-marie.vcf"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span>Ajouter aux contacts<small>Avec photo, e-mail et liens</small></span></a><a class="opt" href="contact.html#message"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></span><span>Passer par Insertio<small>L'association qui m'accompagne</small></span></a></div>
+    <div class="opts"><a class="opt" href="mailto:marieadelie2006@gmail.com"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="m3 7 9 6 9-6"/></svg></span><span>Écrire un e-mail<small>marieadelie2006@gmail.com</small></span></a><a class="opt" href="jeune-marie.vcf" data-add><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span>Ajouter aux contacts<small>Avec photo, e-mail et liens</small></span></a><a class="opt" href="contact.html#message"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></span><span>Passer par Insertio<small>L'association qui m'accompagne</small></span></a></div>
+    <form method="dialog"><button class="close">Fermer</button></form>
+  </div>
+</dialog>
+<dialog class="sheet" id="addSheet" aria-labelledby="adT">
+  <div class="sheet-in">
+    <img class="face" src="jeune-marie.jpg" alt="">
+    <h2 id="adT">Enregistrer Marie</h2>
+    <p>Photo, e-mail et liens ajoutés à vos contacts.</p>
+    <ol class="steps" id="addSteps"></ol>
+    <a class="go-add" href="jeune-marie.vcf">Ouvrir la fiche contact</a>
     <form method="dialog"><button class="close">Fermer</button></form>
   </div>
 </dialog>
@@ -103,9 +113,18 @@
     var d=document.getElementById(b.getAttribute('data-open'));
     if(d.showModal) d.showModal(); else d.setAttribute('open','');
   }); });
+  var ua=navigator.userAgent, ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), android=/Android/.test(ua);
+  var steps=ios ? ['Touchez « Ouvrir la fiche contact ».', 'Faites défiler la fiche <b>jusqu’en bas</b> et touchez <b>« Créer un contact »</b>.', 'Sur les iPhone récents, le bouton <b>✓</b> en haut à gauche enregistre aussi le contact.']
+    : android ? ['Touchez « Ouvrir la fiche contact ».', 'Ouvrez le fichier téléchargé.', 'Choisissez <b>Contacts</b>, puis <b>« Enregistrer »</b>.']
+    : ['Cliquez sur « Ouvrir la fiche contact » : un fichier .vcf se télécharge.', 'Ouvrez-le : il s’ajoute à Contacts, Outlook ou Google Contacts.'];
+  document.getElementById('addSteps').innerHTML=steps.map(function(x,i){ return '<li><span class="n">'+(i+1)+'</span><span class="t">'+x+'</span></li>'; }).join('');
+  document.querySelectorAll('[data-add]').forEach(function(a){ a.addEventListener('click', function(ev){
+    ev.preventDefault(); document.querySelectorAll('dialog[open]').forEach(function(d){ d.close(); });
+    var d=document.getElementById('addSheet'); if(d.showModal) d.showModal(); else window.location.href=a.getAttribute('href');
+  }); });
   document.querySelectorAll('dialog').forEach(function(d){
     d.addEventListener('click', function(ev){ if(ev.target===d) d.close(); });
-    d.querySelectorAll('.opt').forEach(function(a){ a.addEventListener('click', function(){ setTimeout(function(){ d.close(); },300); }); });
+    d.querySelectorAll('.opt:not([data-add])').forEach(function(a){ a.addEventListener('click', function(){ setTimeout(function(){ d.close(); },300); }); });
   });
 })();
 </script>

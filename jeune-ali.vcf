@@ -2,14 +2,10 @@ BEGIN:VCARD
 VERSION:3.0
 N:Oner;Ali Rohat;;;
 FN:Ali Rohat Oner
-ORG:Restauration
 TITLE:Professionnel de la restauration
 EMAIL;TYPE=INTERNET,WORK:contact@insertio.ch
 URL:https://insertio.ch/jeune-ali.html
 ADR;TYPE=WORK:;;;Genève;;;Suisse
-NOTE:Domaine : Restauration — Contact : contact@insertio.ch (Insertio) 
- — Carte : https://insertio.ch/jeune-ali.html
-CATEGORIES:Insertio
 PHOTO;ENCODING=b;TYPE=JPEG:/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYFBAcGBgYI
  BwcICxILCwoKCxYPEA0SGhYbGhkWGRgcICgiHB4mHhgZIzAkJiorLS4tGyIyNTEsNSgsLSz/2w
  BDAQcICAsJCxULCxUsHRkdLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCws

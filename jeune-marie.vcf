@@ -2,14 +2,10 @@ BEGIN:VCARD
 VERSION:3.0
 N:Armand;Marie;;;
 FN:Marie Armand
-ORG:Social & petite enfance
 TITLE:Agent d'accompagnement
 EMAIL;TYPE=INTERNET,PREF:marieadelie2006@gmail.com
 URL:https://insertio.ch/jeune-marie.html
 ADR;TYPE=WORK:;;;Genève;;;Suisse
-NOTE:Domaine : Social & petite enfance — Langues : Français — Carte : 
- https://insertio.ch/jeune-marie.html
-CATEGORIES:Insertio
 PHOTO;ENCODING=b;TYPE=JPEG:/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYFBAcGBgYI
  BwcICxILCwoKCxYPEA0SGhYbGhkWGRgcICgiHB4mHhgZIzAkJiorLS4tGyIyNTEsNSgsLSz/2w
  BDAQcICAsJCxULCxUsHRkdLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCws
