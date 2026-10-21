@@ -16,7 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=3">
 <link rel="stylesheet" href="site-ui.css?v=1">
-<link rel="stylesheet" href="jeunes.css?v=1">
+<link rel="stylesheet" href="jeunes.css?v=2">
 </head>
 <body>
 
@@ -66,24 +66,34 @@
     <div class="wrap">
       <span class="pill-soft">Pour les entreprises et partenaires</span>
       <h1>Nos <span class="accent">jeunes</span></h1>
-      <p>Les jeunes que nous accompagnons, prêts à rejoindre votre équipe. Chaque profil ouvre sa carte de visite digitale : son parcours, ce qu'il recherche, et un contact direct.</p>
+      <p>Les jeunes que nous accompagnons, prêts à rejoindre votre équipe. Chaque profil ouvre sa carte de visite digitale : ses atouts, son parcours en bref et un contact direct.</p>
     </div>
   </section>
 
   <section class="nj-list">
     <div class="wrap">
-      <div class="filters" role="group" aria-label="Filtrer par domaine"><button type="button" class="chip-f active" data-f="all" aria-pressed="true">Tous les domaines</button><button type="button" class="chip-f" data-f="social" aria-pressed="false">Social &amp; petite enfance</button><button type="button" class="chip-f" data-f="vente" aria-pressed="false">Vente &amp; jardinerie</button></div>
-      <p class="count" aria-live="polite"><span id="jCount">2</span> profils</p>
+      <div class="filters" role="group" aria-label="Filtrer par domaine"><button type="button" class="chip-f active" data-f="all" aria-pressed="true">Tous les domaines</button><button type="button" class="chip-f" data-f="socio" aria-pressed="false">Socioéconomie &amp; analyse de données</button><button type="button" class="chip-f" data-f="commerce" aria-pressed="false">Commerce &amp; administration</button><button type="button" class="chip-f" data-f="restauration" aria-pressed="false">Restauration</button><button type="button" class="chip-f" data-f="social" aria-pressed="false">Social &amp; petite enfance</button><button type="button" class="chip-f" data-f="vente" aria-pressed="false">Vente &amp; jardinerie</button></div>
+      <p class="count" aria-live="polite"><span id="jCount">5</span> profils</p>
       <div class="j-grid">
+        <a class="j-card" href="jeune-ando.html" data-s="socio" aria-label="Ouvrir la carte de visite de Ando, Socioéconomie &amp; analyse de données">
+          <img src="jeune-ando.jpg" alt="" loading="lazy">
+          <span class="j-info"><span class="j-tag">Socioéconomie &amp; analyse de données</span><strong>Ando</strong><span>Étudiante en Master de socioéconomie</span><span class="j-open">Voir sa carte →</span></span>
+        </a>
+        <a class="j-card" href="jeune-melissa.html" data-s="commerce" aria-label="Ouvrir la carte de visite de Melissa, Commerce &amp; administration">
+          <img src="jeune-melissa.jpg" alt="" loading="lazy">
+          <span class="j-info"><span class="j-tag">Commerce &amp; administration</span><strong>Melissa</strong><span>Future employée de commerce CFC</span><span class="j-open">Voir sa carte →</span></span>
+        </a>
+        <a class="j-card" href="jeune-ali.html" data-s="restauration" aria-label="Ouvrir la carte de visite de Ali, Restauration">
+          <img src="jeune-ali.jpg" alt="" loading="lazy">
+          <span class="j-info"><span class="j-tag">Restauration</span><strong>Ali</strong><span>Professionnel de la restauration</span><span class="j-open">Voir sa carte →</span></span>
+        </a>
         <a class="j-card" href="jeune-marie.html" data-s="social" aria-label="Ouvrir la carte de visite de Marie, Social &amp; petite enfance">
           <img src="jeune-marie.jpg" alt="" loading="lazy">
-          <span class="j-tag">Social &amp; petite enfance</span>
-          <span class="j-info"><strong>Marie</strong><span>Recherche : emploi · Saint-Julien-en-Genevois</span><span class="j-open">Voir sa carte →</span></span>
+          <span class="j-info"><span class="j-tag">Social &amp; petite enfance</span><strong>Marie</strong><span>Agent d&#x27;accompagnement</span><span class="j-open">Voir sa carte →</span></span>
         </a>
         <a class="j-card" href="jeune-mia.html" data-s="vente" aria-label="Ouvrir la carte de visite de Mia, Vente &amp; jardinerie">
           <img src="jeune-mia.jpg" alt="" loading="lazy">
-          <span class="j-tag">Vente &amp; jardinerie</span>
-          <span class="j-info"><strong>Mia</strong><span>Recherche : emploi · Étrembières</span><span class="j-open">Voir sa carte →</span></span>
+          <span class="j-info"><span class="j-tag">Vente &amp; jardinerie</span><strong>Mia</strong><span>Conseillère de vente en jardinerie</span><span class="j-open">Voir sa carte →</span></span>
         </a>
       </div>
       <div class="emp-cta">

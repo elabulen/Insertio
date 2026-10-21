@@ -129,3 +129,23 @@ body.vc-page{background:#0B0B18; color:#fff; min-height:100vh;}
 .toast{position:fixed; left:50%; bottom:100px; transform:translate(-50%,16px); opacity:0; background:#fff; color:var(--ink); padding:12px 20px; border-radius:var(--r-full); font-weight:700; transition:opacity .25s ease, transform .25s ease; pointer-events:none; z-index:30;}
 .toast.on{opacity:1; transform:translate(-50%,0);}
 @media (prefers-reduced-motion: reduce){ .j-card, .j-card img, .round{transition:none;} }
+
+/* v2 : vignettes (étiquette du domaine au-dessus du prénom) */
+.j-info span.j-role{display:block;}
+.j-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));}
+.j-card::after{background:linear-gradient(to top, rgba(10,10,24,0.94) 0%, rgba(10,10,24,0.45) 45%, rgba(10,10,24,0) 70%);}
+.j-info .j-tag{position:static; display:inline-flex; align-items:center; width:auto; max-width:100%; margin:0 0 10px; padding:6px 12px; font-size:0.78rem; box-shadow:none;}
+.j-info .j-tag::before{flex:none;}
+.j-info span.j-tag{color:var(--ink); font-weight:800;}
+@media (max-width:560px){
+  .j-grid{grid-template-columns:1fr 1fr; gap:12px;}
+  .j-card{border-radius:22px;}
+  .j-info{left:12px; right:12px; bottom:12px;}
+  .j-info strong{font-size:1.15rem;}
+  .j-info span{font-size:0.78rem;}
+  .j-info .j-tag{font-size:0.68rem; padding:5px 9px; margin-bottom:6px;}
+  .j-info .j-open{display:none;}
+}
+.filters{margin-top:-64px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:4px;}
+.filters::-webkit-scrollbar{display:none;}
+.chip-f{flex:none;}
