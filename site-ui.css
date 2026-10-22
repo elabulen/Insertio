@@ -83,7 +83,7 @@
 .m-link[href="nos-jeunes.html"]{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
 
 /* ---------- Instagram ---------- */
-.ig-section{padding:8px 0 96px;}
+.ig-section{padding:80px 0 0;}
 .ig-section .wrap{background:linear-gradient(180deg,var(--tint-violet),rgba(240,240,254,0) 85%); border-radius:var(--r-lg); padding-top:56px; padding-bottom:8px;}
 @media (max-width:640px){ .ig-section .wrap{border-radius:28px; padding-top:40px;} }
 .ig-head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:36px;}
