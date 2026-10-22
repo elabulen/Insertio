@@ -1,5 +1,5 @@
 /* InsertiO – fonctionnement hors connexion. Ne met en cache que l'application, jamais les dossiers des jeunes. */
-const V = "insertio-5.1";
+const V = "insertio-5.2";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "logo.png", "icon-192.png", "icon-512.png", "icon-maskable.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

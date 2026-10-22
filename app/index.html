@@ -297,7 +297,7 @@ details.addc{margin-bottom:12px}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "5.1"; IO.ARTIFACT = false;
+IO.VERSION = "5.2"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1343,7 +1343,7 @@ const T = IO.Team = {
     try{ const f=await IO.Store.getShared("equipe.json"); this.data=Object.assign({},DEFAULTS,f?JSON.parse(await f.text()):{}); }
     catch(e){ this.data=Object.assign({},DEFAULTS); }
     this.data.membres=this.data.membres||[];
-    let id=null; try{ id=await IO.KV.get("me"); }catch(e){}
+    let id=null; try{ id=sessionStorage.getItem("insertio_me"); }catch(e){}
     this.me=this.data.membres.find(m=>m.id===id)||null;
     await this.loadLogo(); this.apply();
   },
@@ -1367,8 +1367,8 @@ const T = IO.Team = {
     const b=document.getElementById("whoBtn");
     if(b){ b.hidden=!this.me; b.textContent=this.me?(U.firstName(this.me.nom)+" · changer"):""; }
   },
-  async login(m){ this.me=m; try{ await IO.KV.set("me",m.id); }catch(e){} this.apply(); },
-  async logout(){ this.me=null; try{ await IO.KV.set("me",""); }catch(e){} this.apply(); },
+  async login(m){ this.me=m; try{ sessionStorage.setItem("insertio_me",m.id); }catch(e){} this.apply(); },
+  async logout(){ this.me=null; try{ sessionStorage.removeItem("insertio_me"); }catch(e){} this.apply(); },
   needsLogin(){ return this.data.membres.length>0 && !this.me; },
   isMine(j){ if(!this.me) return true; const f=U.slug(U.firstName(this.me.nom)).toLowerCase(); return !!f && U.slug(j.referent||"").toLowerCase().split("_").includes(f); },
 
