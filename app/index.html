@@ -297,7 +297,7 @@ details.addc{margin-bottom:12px}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "5.0"; IO.ARTIFACT = false;
+IO.VERSION = "5.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -851,20 +851,36 @@ const Local = {
 /* ---------------- Mode dossier partagé (File System Access) */
 let root=null; const dirMap=new Map();
 async function perm(h, ask){ if(!h.queryPermission) return "granted"; const o={mode:"readwrite"}; let p=await h.queryPermission(o); if(p!=="granted"&&ask) p=await h.requestPermission(o); return p; }
-async function jeunesDir(){ return root.getDirectoryHandle("Jeunes",{create:true}); }
+/* Dossier des jeunes : « 06 Les Jeunes » s'il existe dans le dossier choisi, sinon « Jeunes ».
+   Un sous-dossier par jeune, à son nom (« Prénom Nom »). Les documents sont rangés directement dedans,
+   les fiches d'entretien dans « Fiches ». Le fichier jeune.json contient le dossier de l'application. */
+let jdName=null;
+async function jeunesDir(){
+  if(!jdName){ jdName="Jeunes"; for await (const [n,h] of root.entries()){ if(h.kind==="directory" && /^\d*\s*les jeunes$/i.test(n.trim())){ jdName=n; break; } } }
+  return root.getDirectoryHandle(jdName,{create:true});
+}
+const safeName = s => String(s||"").normalize("NFC").replace(/[\\/:*?"<>|\u0000-\u001f]/g," ").replace(/\s+/g," ").trim().replace(/[. ]+$/,"").slice(0,80) || "Jeune";
+const SKIP = n => n==="jeune.json"||n==="desktop.ini"||n.startsWith(".")||n.startsWith("~$");
 async function readJson(dir){ try{ const fh=await dir.getFileHandle("jeune.json"); const f=await fh.getFile(); return JSON.parse(await f.text()); }catch(e){ return null; } }
 async function writeFile(dir, name, data){ const fh=await dir.getFileHandle(name,{create:true}); const w=await fh.createWritable(); await w.write(data); await w.close(); }
 async function exists(dir, name){ try{ await dir.getFileHandle(name); return true; }catch(e){ return false; } }
+async function dirExists(dir, name){ try{ await dir.getDirectoryHandle(name); return true; }catch(e){ return false; } }
 async function dirOf(j, create){
   const jd=await jeunesDir();
   let name=dirMap.get(j.id);
-  if(!name){ // recherche par suffixe (dossier créé par un·e collègue)
-    for await (const [n,h] of jd.entries()){ if(h.kind==="directory" && n.endsWith("__"+j.id.slice(-6))){ const d=await readJson(h); if(d&&d.id===j.id){ name=n; break; } } }
+  if(!name){ // dossier créé par un·e collègue : on cherche le jeune.json qui porte cet identifiant
+    for await (const [n,h] of jd.entries()){ if(h.kind!=="directory") continue; const d=await readJson(h); if(d&&d.id===j.id){ name=n; break; } }
   }
-  if(!name){ if(!create) return null; name=dirNameFor(j); }
+  if(!name){
+    if(!create||!j.nom) return null;
+    const base=safeName(j.nom); name=base;
+    // dossier déjà existant au même nom : on le reprend s'il n'appartient à aucun autre jeune
+    for(let i=2; await dirExists(jd,name); i++){ const d=await readJson(await jd.getDirectoryHandle(name)); if(!d||d.id===j.id) break; name=base+" ("+i+")"; }
+  }
   dirMap.set(j.id,name);
   return jd.getDirectoryHandle(name,{create:!!create});
 }
+async function subDir(d, sub, create){ return sub==="Fiches" ? d.getDirectoryHandle("Fiches",{create:!!create}) : d; }
 const Folder = {
   kind:"folder", get label(){ return root?("Dossier partagé « "+root.name+" »"):"Dossier partagé"; },
   async status(){ if(!root) return "none"; try{ return (await perm(root,false))==="granted"?"ok":"permission"; }catch(e){ return "permission"; } },
@@ -875,7 +891,7 @@ const Folder = {
   },
   async get(id){ const d=await dirOf({id},false); if(!d) return null; const j=await readJson(d); if(j){ j._dir=dirMap.get(id); j._base=j.updatedAt; j._snap=JSON.stringify(j); } return j; },
   async save(j){
-    const d=await dirOf(j,true); const disk=await readJson(d);
+    const d=await dirOf(j,true); if(!d) throw new Error("dossier introuvable"); const disk=await readJson(d);
     let out=j;
     if(disk && disk.updatedAt && disk.updatedAt!==j._base && Date.parse(disk.updatedAt)>Date.parse(j._base||0)){ out=IO.merge3(disk,j,j._snap?JSON.parse(j._snap):null); out.updatedAt=U.now(); out._merged=true; }
     const txt=JSON.stringify(clean(out),null,2);
@@ -885,16 +901,17 @@ const Folder = {
   async remove(id){ const name=dirMap.get(id); if(!name) return; await (await jeunesDir()).removeEntry(name,{recursive:true}); dirMap.delete(id); },
   async listFiles(id){
     const d=await dirOf({id},false); if(!d) return []; const out=[];
-    for(const sub of SUBS){ let sd; try{ sd=await d.getDirectoryHandle(sub); }catch(e){ continue; }
-      for await (const [n,h] of sd.entries()){ if(h.kind!=="file"||n.startsWith(".")||n.startsWith("~$")) continue; const f=await h.getFile(); out.push({sub,name:n,size:f.size,type:f.type||typeOf(n),lastModified:f.lastModified}); } }
+    const scan=async(dir,sub)=>{ for await (const [n,h] of dir.entries()){ if(h.kind!=="file"||SKIP(n)) continue; const f=await h.getFile(); out.push({sub,name:n,size:f.size,type:f.type||typeOf(n),lastModified:f.lastModified}); } };
+    await scan(d,"Documents");
+    try{ await scan(await d.getDirectoryHandle("Fiches"),"Fiches"); }catch(e){}
     return out.sort((a,b)=>b.lastModified-a.lastModified);
   },
   async addFile(id, sub, blob, name, overwrite){
-    const d=await dirOf({id},true); const sd=await d.getDirectoryHandle(sub,{create:true});
+    const j=IO.App&&IO.App.jeunes.get(id); const d=await dirOf(j||{id},true); if(!d) throw new Error("dossier introuvable"); const sd=await subDir(d,sub,true);
     const final= overwrite?name:await uniqueName(n=>exists(sd,n),name);
     await writeFile(sd,final,blob); return final; },
-  async readFile(id, sub, name){ const d=await dirOf({id},false); if(!d) return null; const sd=await d.getDirectoryHandle(sub); return (await sd.getFileHandle(name)).getFile(); },
-  async deleteFile(id, sub, name){ const d=await dirOf({id},false); const sd=await d.getDirectoryHandle(sub); await sd.removeEntry(name); },
+  async readFile(id, sub, name){ const d=await dirOf({id},false); if(!d) return null; const sd=await subDir(d,sub); return (await sd.getFileHandle(name)).getFile(); },
+  async deleteFile(id, sub, name){ const d=await dirOf({id},false); const sd=await subDir(d,sub); await sd.removeEntry(name); },
 };
 
 /* ---------------- Façade */
@@ -922,7 +939,7 @@ const Store = IO.Store = {
   async pickFolder(){
     const h=await window.showDirectoryPicker({id:"insertio-jeunes",mode:"readwrite"});
     if((await perm(h,true))!=="granted") throw new Error("permission");
-    root=h; dirMap.clear(); this.a=Folder; await IO.KV.set("rootHandle",h); await IO.KV.set("mode","folder"); return h.name;
+    root=h; jdName=null; dirMap.clear(); this.a=Folder; await IO.KV.set("rootHandle",h); await IO.KV.set("mode","folder"); return h.name;
   },
   async useHandle(h){ root=h; dirMap.clear(); this.a=Folder; await IO.KV.set("mode","folder"); try{ await IO.KV.set("rootHandle",h); }catch(e){} }, // tests
   async reconnect(){ if(!root) return "none"; const p=await perm(root,true); return p==="granted"?"ok":"permission"; },
@@ -1732,7 +1749,7 @@ function rdvDialog(j){
 async function tabDocuments(body,j){
   const drop=h("label",{class:"drop",for:"fileIn"},'<b>Déposer des fichiers ici</b><span>ou cliquer pour choisir (CV, diplômes, certificats, photos de documents…)</span><input type="file" id="fileIn" multiple hidden>');
   body.appendChild(drop);
-  if(Store.mode==="folder") body.appendChild(h("p",{class:"sub-n"},"Les fichiers sont rangés dans « Jeunes / "+esc(j._dir||"")+" / Documents ». On peut aussi y déposer des fichiers directement depuis l'explorateur ou le Finder."));
+  if(Store.mode==="folder") body.appendChild(h("p",{class:"sub-n"},"Les fichiers sont rangés dans le dossier « "+esc(j._dir||"")+" » du OneDrive. Tout ce que tu y déposes depuis l'Explorateur apparaît aussi ici."));
   const list=h("div",{class:"files"}); body.appendChild(list);
   async function render(){
     let files=[]; try{ files=await Store.listFiles(j.id); }catch(e){ list.innerHTML='<p class="empty">Lecture impossible : '+esc(e.message||e)+'</p>'; return; }
