@@ -159,3 +159,12 @@
 .faq-item[open] .faq-ic::after{transform:translate(-50%,-50%) rotate(0);}
 .faq-item p{color:var(--muted); padding:0 0 20px; line-height:1.65;}
 @media (max-width:900px){ .faq-grid{grid-template-columns:1fr; gap:24px;} .faq-home{padding:72px 0;} }
+
+/* ---------- Partenaires ---------- */
+.partners{padding:0 0 88px;}
+.partners h2{font-size:0.95rem; font-weight:700; color:var(--muted); text-align:center; margin-bottom:22px;}
+.partner-list{list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap:20px;}
+.partner-list a{display:grid; place-items:center; width:260px; height:110px; padding:18px 26px; background:#fff; border:1px solid var(--line); border-radius:22px; transition:border-color .2s ease, transform .2s ease;}
+.partner-list a:hover{border-color:rgba(93,95,236,0.35); transform:translateY(-2px);}
+.partner-list img{max-width:100%; max-height:70px; object-fit:contain;}
+@media (max-width:640px){ .partner-list a{width:calc(50vw - 30px); height:86px; padding:12px 14px;} .partner-list img{max-height:52px;} }
