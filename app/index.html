@@ -297,7 +297,7 @@ details.addc{margin-bottom:12px}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "5.3"; IO.ARTIFACT = false;
+IO.VERSION = "5.4"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1385,7 +1385,7 @@ const T = IO.Team = {
     const para=esc(main).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1">$1</a>').replace(/\n/g,"<br>");
     let out='<div style="font-family:Segoe UI,Arial,sans-serif;font-size:11pt;color:#1C2135;line-height:1.45">'+para+'</div>';
     if(this.data.signature){
-      const logo=this.logoCustom&&this.logoData?this.logoData:new URL("logo.png",location.href).href, L=this.sigLines();
+      const logo=this.logoCustom&&this.logoData?this.logoData:"https://insertio.ch/app/logo.png", L=this.sigLines();
       out+='<table cellpadding="0" cellspacing="0" style="margin-top:14px;font-family:Segoe UI,Arial,sans-serif;font-size:10pt;color:#545B76"><tr>'+
         '<td style="padding-right:14px;border-right:2px solid #5568DB;vertical-align:middle"><img src="'+logo+'" width="130" alt="InsertiO" style="display:block"></td>'+
         '<td style="padding-left:14px;vertical-align:middle"><b style="color:#1C2135;font-size:11pt">'+esc(L[0])+'</b><br>'+L.slice(1).map(x=>esc(x).replace(esc(this.data.site),'<a href="https://'+esc(this.data.site)+'" style="color:#5568DB">'+esc(this.data.site)+'</a>')).join("<br>")+'</td></tr></table>';
@@ -1393,8 +1393,8 @@ const T = IO.Team = {
     return out;
   },
   async copyRich(text, html){
-    try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]); U.toast("Copié avec le logo : colle-le dans un nouveau mail Outlook (Ctrl+V)",4500); }
-    catch(e){ U.copy(text); }
+    try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]); U.toast("Copié avec le logo : colle-le dans un nouveau mail Outlook (Ctrl+V)",4500); return true; }
+    catch(e){ U.copy(text); return false; }
   },
   calBase(){ return (this.me&&this.me.calendly)||this.data.calendly||""; },
   calLink(nom,mail){ const b=this.calBase(); if(!b) return ""; try{ const u=new URL(b); if(nom) u.searchParams.set("name",nom); if(mail) u.searchParams.set("email",mail); return u.toString(); }catch(e){ return b; } },
@@ -1422,6 +1422,19 @@ const T = IO.Team = {
     const L=["Bonjour"+(U.firstName(j.nom)?" "+U.firstName(j.nom):"")+",","","Petit rappel : on se voit "+when+(r.heure?" à "+U.fmtTime(r.heure):"")+(r.lieu?", "+r.lieu:"")+(r.objet?" ("+r.objet.toLowerCase()+")":"")+".","","Si tu as un empêchement, préviens-nous en répondant à ce message.","","À bientôt,",(IO.App.settings.accomp||"L'équipe")+" – Insertio"];
     return {subject:"Insertio – rappel de ton rendez-vous "+(when==="demain"?"de demain":"du "+U.fmtDate(r.date)), body:L.join("\n")}; },
   mailLink(to,m){ return U.mailto(to,m.subject,this.withSig(m.body)); },
+  /* Ouvre le mail dans Outlook avec le message mis en forme (signature + logo) dans le presse-papiers.
+     Un lien mailto ne transporte que du texte : le corps est donc collé (Ctrl+V) dans Outlook. */
+  richMail(a, to, getM){
+    a.addEventListener("click", async e=>{
+      e.preventDefault();
+      const m=getM(), text=this.withSig(m.body), html=this.html(m.body);
+      let ok=false;
+      try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]); ok=true; }catch(err){}
+      location.href = ok ? U.mailto(to,m.subject,"") : U.mailto(to,m.subject,text);
+      if(ok) U.toast("Outlook s'ouvre : clique dans le message et fais Ctrl+V pour coller le texte avec la signature et le logo.",9000);
+    });
+    return a;
+  },
 
   /* ---------- Boîte « message au jeune » */
   messageBox(box, m, mail, nom, rdv){
@@ -1433,17 +1446,17 @@ const T = IO.Team = {
       const pre=h("pre",{class:"msg"}); pre.textContent=full; box.appendChild(pre);
       if(this.calBase()){ const c=h("label",{class:"chk plain",style:"margin-top:8px"},'<input type="checkbox"'+(withCal?" checked":"")+'><span>Ajouter le lien Calendly pour que le jeune choisisse son prochain rendez-vous</span>'); c.querySelector("input").addEventListener("change",e=>{ withCal=e.target.checked; draw(); }); box.appendChild(c); }
       const r=h("div",{class:"btn-row"});
-      const o=h("a",{class:"btn primary",href:U.mailto(mail,m.subject,full)},"Ouvrir dans Outlook");
+      const o=this.richMail(h("a",{class:"btn primary",href:U.mailto(mail,m.subject,full)},"Ouvrir dans Outlook"),mail,()=>({subject:m.subject,body}));
       const c=h("button",{type:"button",class:"btn"},"Copier avec le logo"); c.addEventListener("click",()=>this.copyRich(full,this.html(body)));
       const s=h("button",{type:"button",class:"btn"},"Copier l'objet"); s.addEventListener("click",()=>U.copy(m.subject));
       r.append(o); if(rdv&&rdv.get){ r.appendChild(this.outlookBtn(rdv.j,rdv.get,"Ajouter le RDV au calendrier Outlook")); } r.append(c,s); box.appendChild(r);
-      box.appendChild(h("p",{class:"sub-n"},(mail?"":"Ajoute l'e-mail du jeune dans son profil pour que le destinataire soit rempli. ")+"Dans Outlook, vérifie le champ « De » : choisis ton adresse @insertio.ch. Pour le logo : « Copier avec le logo », puis colle dans un nouveau mail."+(rdv&&rdv.get?" Le bouton calendrier ouvre Outlook avec le rendez-vous rempli et le jeune invité : clique sur Enregistrer, Outlook lui envoie l'invitation.":"")));
+      box.appendChild(h("p",{class:"sub-n"},(mail?"":"Ajoute l'e-mail du jeune dans son profil pour que le destinataire soit rempli. ")+"« Ouvrir dans Outlook » crée le mail (destinataire et objet) et garde le message avec ta signature et le logo prêt à coller : clique dans le corps du mail et fais Ctrl+V. Vérifie le champ « De » : ton adresse @insertio.ch."+(rdv&&rdv.get?" Le bouton calendrier ouvre Outlook avec le rendez-vous rempli et le jeune invité : clique sur Enregistrer, Outlook lui envoie l'invitation.":"")));
     };
     draw();
   },
   calButtons(j){
     if(!this.calBase()) return [];
-    const a=h("a",{class:"btn",href:this.mailLink(j.mail,this.calMsg(j))},"Envoyer le lien Calendly");
+    const a=this.richMail(h("a",{class:"btn",href:this.mailLink(j.mail,this.calMsg(j))},"Envoyer le lien Calendly"),j.mail,()=>this.calMsg(j));
     const b=h("a",{class:"btn",href:this.calLink(j.nom,j.mail),target:"_blank",rel:"noopener"},"Réserver sur Calendly");
     return [a,b];
   },
@@ -1456,7 +1469,7 @@ const T = IO.Team = {
     items.sort((a,b)=>(a.r.date+(a.r.heure||"")).localeCompare(b.r.date+(b.r.heure||"")));
     card("Rappels à envoyer",items.length,list(items,x=>{ const li=h("li",{class:"row"});
       li.innerHTML='<div class="rmain"><b>'+esc(x.j.nom||"Sans nom")+'</b><span class="faint">'+esc(IO.App.rdvWhen(x.r))+(x.j.mail?"":' · <span class="warn-t">pas d\'e-mail</span>')+'</span></div>';
-      const ra=h("div",{class:"racts"}); const a=h("a",{class:"btn primary",href:this.mailLink(x.j.mail,this.reminder(x.j,x.r))},"Envoyer le rappel");
+      const ra=h("div",{class:"racts"}); const a=this.richMail(h("a",{class:"btn primary",href:this.mailLink(x.j.mail,this.reminder(x.j,x.r))},"Envoyer le rappel"),x.j.mail,()=>this.reminder(x.j,x.r));
       a.addEventListener("click",()=>{ x.r.rappel=U.now(); IO.touch(x.r); IO.App.save(x.j); setTimeout(()=>{ li.classList.add("done"); a.textContent="Rappel ouvert dans Outlook"; },300); });
       ra.append(a,h("a",{class:"btn",href:"#/j/"+x.j.id},"Dossier")); li.appendChild(ra); return li; },""));
   },
