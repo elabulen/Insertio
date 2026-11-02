@@ -297,7 +297,7 @@ details.addc{margin-bottom:12px}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "5.2"; IO.ARTIFACT = false;
+IO.VERSION = "5.3"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1216,7 +1216,7 @@ function mount(root, data, opts){
     if(focusLast){ const l=box.querySelectorAll("input.a"); l[l.length-1].focus(); } }
 
   /* ---------- message */
-  function renderMsg(){ const box=$("msgBox"); if(!box) return; const m=IO.Msg.premier(S); IO.UI.messageBox(box, m, S.mail, S.nom); }
+  function renderMsg(){ const box=$("msgBox"); if(!box) return; const m=IO.Msg.premier(S); IO.UI.messageBox(box, m, S.mail, S.nom, {j:S, get:()=>({date:S.rdv_date,heure:S.rdv_heure,lieu:S.rdv_lieu,objet:"Entretien de suivi"})}); }
 
   /* ---------- vue jeune */
   function openYouth(){
@@ -1327,7 +1327,7 @@ function mount(root, data, opts){
 (function(){
 "use strict";
 const IO=window.IO, U=IO.U, h=U.h, esc=U.esc;
-const DEFAULTS={membres:[],lieu:"Locaux Insertio, rue Le-Royer 24, Les Acacias",adresse:"Rue Le-Royer 24, 1227 Les Acacias",tel:"+41 76 207 60 60",mail:"contact@insertio.ch",site:"insertio.ch",calendly:"https://calendly.com/contact-insertio",signature:true};
+const DEFAULTS={membres:[],lieu:"Locaux Insertio, rue Le-Royer 24, Les Acacias",adresse:"Rue Le-Royer 24, 1227 Les Acacias",tel:"+41 76 207 60 60",mail:"contact@insertio.ch",site:"insertio.ch",calendly:"https://calendly.com/contact-insertio",signature:true,outlook:"live"};
 const EQUIPE=[
   {nom:"Ela Öztürk",fonction:"Coordinatrice des programmes d'insertion",mail:"e.ozturk@insertio.ch"},
   {nom:"Tulin Bulen",fonction:"Directrice et coach emploi",mail:"t.bulen@insertio.ch"},
@@ -1398,6 +1398,23 @@ const T = IO.Team = {
   },
   calBase(){ return (this.me&&this.me.calendly)||this.data.calendly||""; },
   calLink(nom,mail){ const b=this.calBase(); if(!b) return ""; try{ const u=new URL(b); if(nom) u.searchParams.set("name",nom); if(mail) u.searchParams.set("email",mail); return u.toString(); }catch(e){ return b; } },
+  outlookCal(j, r){
+    if(!r||!r.date) return "";
+    const pad=n=>String(n).padStart(2,"0"), hm=(r.heure||"09:00").slice(0,5);
+    const st=new Date(r.date+"T"+hm+":00"), dur=/premier/i.test(r.objet||"")?90:60, en=new Date(st.getTime()+dur*60000);
+    const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes())+":00";
+    const host=this.data.outlook==="office"?"https://outlook.office.com":"https://outlook.live.com";
+    const who=(this.me&&this.me.nom)||IO.App.settings.accomp||"";
+    const body=["Rendez-vous Insertio avec "+(j.nom||"le jeune")+(j.programme?" (programme "+j.programme+")":"")+".", who?"Accompagnant·e : "+who+".":"", "", "Si tu as un empêchement, préviens-nous en répondant à ce message."].filter((x,i)=>x||i===2).join("\n");
+    const q=new URLSearchParams({path:"/calendar/action/compose",rru:"addevent",subject:"Insertio – "+(r.objet||"Rendez-vous")+" – "+(j.nom||""),startdt:iso(st),enddt:iso(en),location:r.lieu||this.data.lieu||"",body});
+    if(j.mail) q.set("to",j.mail);
+    return host+"/calendar/0/deeplink/compose?"+q.toString().replace(/\+/g,"%20");
+  },
+  outlookBtn(j, getR, label){
+    const a=h("a",{class:"btn",target:"_blank",rel:"noopener",href:"#"},label||"Ajouter au calendrier Outlook");
+    a.addEventListener("click",e=>{ const r=getR(); const u=r&&r.date?this.outlookCal(j,r):""; if(!u){ e.preventDefault(); U.toast("Indique d'abord la date du rendez-vous"); return; } a.href=u; });
+    return a;
+  },
   insertCal(body,link){ if(!link) return body; const line="Pour choisir ton prochain rendez-vous, réserve le créneau qui te convient ici :\n"+link; const k=["\n\nSi tu as une question","\n\nÀ bientôt"].find(x=>body.includes(x)); return k?body.replace(k,"\n\n"+line+k):body+"\n\n"+line; },
   calMsg(j){ const L=["Bonjour"+(U.firstName(j.nom)?" "+U.firstName(j.nom):"")+",","","Pour fixer ton prochain rendez-vous chez Insertio, choisis le créneau qui te convient ici :",this.calLink(j.nom,j.mail),"","Tu recevras une confirmation par e-mail. Si aucun créneau ne te va, réponds simplement à ce message.","","À bientôt,",(IO.App.settings.accomp||"L'équipe")+" – Insertio"];
     return {subject:"Insertio – choisis ton prochain rendez-vous", body:L.join("\n")}; },
@@ -1407,7 +1424,7 @@ const T = IO.Team = {
   mailLink(to,m){ return U.mailto(to,m.subject,this.withSig(m.body)); },
 
   /* ---------- Boîte « message au jeune » */
-  messageBox(box, m, mail, nom){
+  messageBox(box, m, mail, nom, rdv){
     let withCal=false;
     const draw=()=>{
       box.innerHTML="";
@@ -1419,8 +1436,8 @@ const T = IO.Team = {
       const o=h("a",{class:"btn primary",href:U.mailto(mail,m.subject,full)},"Ouvrir dans Outlook");
       const c=h("button",{type:"button",class:"btn"},"Copier avec le logo"); c.addEventListener("click",()=>this.copyRich(full,this.html(body)));
       const s=h("button",{type:"button",class:"btn"},"Copier l'objet"); s.addEventListener("click",()=>U.copy(m.subject));
-      r.append(o,c,s); box.appendChild(r);
-      box.appendChild(h("p",{class:"sub-n"},(mail?"":"Ajoute l'e-mail du jeune dans son profil pour que le destinataire soit rempli. ")+"Dans Outlook, vérifie le champ « De » : choisis ton adresse @insertio.ch. Pour le logo : « Copier avec le logo », puis colle dans un nouveau mail."));
+      r.append(o); if(rdv&&rdv.get){ r.appendChild(this.outlookBtn(rdv.j,rdv.get,"Ajouter le RDV au calendrier Outlook")); } r.append(c,s); box.appendChild(r);
+      box.appendChild(h("p",{class:"sub-n"},(mail?"":"Ajoute l'e-mail du jeune dans son profil pour que le destinataire soit rempli. ")+"Dans Outlook, vérifie le champ « De » : choisis ton adresse @insertio.ch. Pour le logo : « Copier avec le logo », puis colle dans un nouveau mail."+(rdv&&rdv.get?" Le bouton calendrier ouvre Outlook avec le rendez-vous rempli et le jeune invité : clique sur Enregistrer, Outlook lui envoie l'invitation.":"")));
     };
     draw();
   },
@@ -1496,6 +1513,8 @@ const T = IO.Team = {
     const g=h("div",{class:"row2"});
     [["lieu","Lieu de rendez-vous par défaut"],["adresse","Adresse (signature)"],["tel","Téléphone du bureau"],["mail","E-mail de contact"],["site","Site internet"],["calendly","Lien Calendly de l'association"]].forEach(([k,l])=>{ const d=h("div"); d.appendChild(h("label",{class:"flab",for:"a_"+k},l)); const i=h("input",{class:"f",id:"a_"+k}); i.value=this.data[k]||""; i.addEventListener("input",()=>{ this.data[k]=i.value; save(); }); d.appendChild(i); g.appendChild(d); });
     as.appendChild(g);
+    const od=h("div",{style:"margin-top:12px"}); od.appendChild(h("label",{class:"flab",for:"a_outlook"},"Calendrier Outlook utilisé"));
+    const os=h("select",{class:"f",id:"a_outlook"}); os.innerHTML='<option value="live">Outlook.com (compte Microsoft de contact@insertio.ch)</option><option value="office">Microsoft 365 (compte professionnel ou université)</option>'; os.value=this.data.outlook||"live"; os.addEventListener("change",()=>{ this.data.outlook=os.value; save(); }); od.appendChild(os); as.appendChild(od);
     const sg=h("label",{class:"chk",style:"margin-top:12px"},'<input type="checkbox"'+(this.data.signature?" checked":"")+'><span>Ajouter ma signature (nom, fonction, coordonnées, logo) aux messages<br><small class="faint">À décocher si une signature est déjà réglée dans Outlook, pour éviter les doublons.</small></span>');
     sg.querySelector("input").addEventListener("change",e=>{ this.data.signature=e.target.checked; save(); }); as.appendChild(sg);
     as.appendChild(h("p",{class:"sub-n"},"Calendly : le lien s'ouvre avec le nom et l'e-mail du jeune déjà remplis. Avec l'offre gratuite de Calendly, les rappels automatiques ne sont pas inclus : l'accueil affiche donc chaque jour les rappels à envoyer pour les rendez-vous du lendemain."));
@@ -1528,7 +1547,7 @@ const live = IO.live;
 
 /* ================================================================ Composants partagés */
 IO.UI = {
-  messageBox(box, m, mail, nom){ IO.Team.messageBox(box, m, mail, nom); },
+  messageBox(box, m, mail, nom, rdv){ IO.Team.messageBox(box, m, mail, nom, rdv); },
   confirmInline(btn, label, onYes){
     const wrap=h("span",{class:"confirm-inline"}); const y=h("button",{type:"button",class:"btn danger"},label||"Confirmer"); const n=h("button",{type:"button",class:"btn"},"Annuler");
     y.addEventListener("click",onYes); n.addEventListener("click",()=>wrap.replaceWith(btn)); wrap.append(y,n); btn.replaceWith(wrap); y.focus();
@@ -1702,7 +1721,7 @@ function tabSuivi(body,j){
   fut.forEach(r=>{ const li=h("li",{class:"row"}); const overdue=r.date<today; li.innerHTML='<div class="rmain"><b>'+esc(rdvWhen(r))+'</b><span class="faint">'+esc(r.objet||"Rendez-vous")+(r.lieu?" · "+esc(r.lieu):"")+(overdue?' · <span class="warn-t">à renseigner</span>':"")+'</span></div>';
     const ra=h("div",{class:"racts"});
     if(r.date<=today){ const b=h("button",{type:"button",class:"btn primary"},"Faire le suivi"); b.addEventListener("click",()=>startSuivi(j,r.id)); ra.appendChild(b); }
-    const ic=h("button",{type:"button",class:"btn",title:"Ajouter à mon agenda"},"Agenda"); ic.addEventListener("click",()=>U.download("Insertio_RDV_"+U.slug(j.nom)+"_"+r.date+".ics",U.ics(j,r,App.settings),"text/calendar"));
+    const ic=IO.Team.outlookBtn(j,()=>r,"Outlook");
     const x=h("button",{type:"button",class:"btn"},"Annuler"); x.addEventListener("click",()=>IO.UI.confirmInline(x,"Annuler le RDV",()=>{ r.statut="annule"; IO.touch(r); save(j); route(); }));
     ra.append(ic,x); li.appendChild(ra); ul.appendChild(li); });
   const addR=h("button",{type:"button",class:"btn"},"Planifier un rendez-vous"); addR.addEventListener("click",()=>rdvDialog(j)); const rbr=rs.appendChild(h("div",{class:"btn-row"})); rbr.appendChild(addR); IO.Team.calButtons(j).forEach(b=>rbr.appendChild(b));
@@ -2301,7 +2320,7 @@ S.view=async(main,id,sid)=>{
   const rs=h("div",{class:"q"}); field(rs,"resume","Résumé pour le jeune (repris dans le message)","textarea",{placeholder:"Ex. On a terminé ton CV et choisi trois entreprises à contacter."}); s8.appendChild(rs);
   const ns=h("div",{class:"q"}); field(ns,"notes","Notes de l'accompagnant·e (internes)","textarea",{placeholder:"Observations, points de vigilance, à transmettre à l'équipe"}); s8.appendChild(ns);
   const mb=h("div",{class:"msgbox q"}); s8.appendChild(mb);
-  function renderMsg(){ IO.UI.messageBox(mb,IO.Msg.suivi(j,sv),j.mail,j.nom); }
+  function renderMsg(){ IO.UI.messageBox(mb,IO.Msg.suivi(j,sv),j.mail,j.nom,{j, get:()=>({date:sv.rdv_date,heure:sv.rdv_heure,lieu:sv.rdv_lieu,objet:sv.rdv_objet})}); }
   const er=h("div",{class:"btn-row"});
   const f1=h("button",{type:"button",class:"btn primary",id:"saveCR"},"Enregistrer le compte rendu dans le dossier"); f1.addEventListener("click",async()=>{ try{ await A.flushAll(); await IO.Store.addFile(j.id,"Fiches",new Blob([IO.Fiche.suivi(j,sv)],{type:"text/html"}),(sv.date||U.today())+"_"+U.slug(REF.modeleLabel(sv.modele)).toLowerCase()+"_"+sv.id.slice(-4)+".html",true); U.toast("Compte rendu enregistré dans « Fiches »"); }catch(e){ U.toast("Non enregistré : "+(e.message||e),5000); } });
   const f2=h("button",{type:"button",class:"btn"},"Télécharger le compte rendu en PDF"); f2.addEventListener("click",()=>U.openHtml(IO.Fiche.suivi(j,sv),true,U.slug(REF.modeleLabel(sv.modele))+"_"+(U.slug(j.nom)||"jeune")+"_"+(sv.date||U.today())+".pdf"));
