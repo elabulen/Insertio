@@ -273,6 +273,7 @@ details.addc{margin-bottom:12px}
 .pinbox{text-align:left;margin-top:6px}
 .members{display:flex;flex-direction:column;gap:12px}
 .member{border:1px solid var(--border);border-radius:12px;padding:4px 12px 12px;background:var(--surface-2)}
+.sigprev{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin:6px 0;overflow-x:auto}
 .logo-prev{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .logo-prev img{max-height:52px;max-width:230px;background:#fff;padding:8px;border-radius:8px;border:1px solid var(--border)}
 .filters .chk{flex:0 0 auto;padding:9px 12px}
@@ -297,7 +298,7 @@ details.addc{margin-bottom:12px}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "5.4"; IO.ARTIFACT = false;
+IO.VERSION = "5.5"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1380,6 +1381,17 @@ const T = IO.Team = {
   },
   stripSignoff(body){ const L=body.split("\n"); const last=(L[L.length-1]||"").trim(); if(/ – Insertio$/.test(last)||last==="L'équipe Insertio") L.pop(); return L.join("\n"); },
   withSig(body){ if(!this.data.signature) return body; return this.stripSignoff(body)+"\n"+this.sigLines().join("\n"); },
+  sigHtml(){
+    const logo=this.logoCustom&&this.logoData?this.logoData:"https://insertio.ch/app/logo.png", L=this.sigLines();
+    return '<table cellpadding="0" cellspacing="0" style="font-family:Segoe UI,Arial,sans-serif;font-size:10pt;color:#545B76"><tr>'+
+      '<td style="padding-right:14px;border-right:2px solid #5568DB;vertical-align:middle"><img src="'+logo+'" width="130" alt="InsertiO" style="display:block"></td>'+
+      '<td style="padding-left:14px;vertical-align:middle"><b style="color:#1C2135;font-size:11pt">'+esc(L[0])+'</b><br>'+L.slice(1).map(esc).join("<br>")+'</td></tr></table>';
+  },
+  async copySig(){
+    const html=this.sigHtml(), text=this.sigLines().join("\n");
+    try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]); U.toast("Signature copiée : colle-la dans Outlook (Paramètres → Signatures)",6000); }
+    catch(e){ U.toast("Copie impossible ici : sélectionne la signature affichée et fais Ctrl+C",6000); }
+  },
   html(body){
     const main=this.data.signature?this.stripSignoff(body):body;
     const para=esc(main).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1">$1</a>').replace(/\n/g,"<br>");
@@ -1428,6 +1440,7 @@ const T = IO.Team = {
     a.addEventListener("click", async e=>{
       e.preventDefault();
       const m=getM(), text=this.withSig(m.body), html=this.html(m.body);
+      if(!this.data.signature){ location.href=U.mailto(to,m.subject,text); return; }
       let ok=false;
       try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]); ok=true; }catch(err){}
       location.href = ok ? U.mailto(to,m.subject,"") : U.mailto(to,m.subject,text);
@@ -1497,6 +1510,13 @@ const T = IO.Team = {
     if(this.me){ me.appendChild(h("p",null,'Connectée : <b>'+esc(this.me.nom)+'</b>'+(this.me.fonction?' · '+esc(this.me.fonction):''))); const b=h("button",{type:"button",class:"btn"},"Changer de profil"); b.addEventListener("click",async()=>{ await this.logout(); IO.App.go("#/"); }); me.appendChild(h("div",{class:"btn-row"})).appendChild(b); }
     else if(this.data.membres.length){ me.appendChild(h("p",{class:"sub-n"},"Aucun profil choisi sur cet ordinateur.")); const b=h("button",{type:"button",class:"btn primary"},"Choisir mon profil"); b.addEventListener("click",()=>IO.App.go("#/")); me.appendChild(h("div",{class:"btn-row"})).appendChild(b); }
     else me.appendChild(h("p",{class:"sub-n"},"Crée d'abord les profils de l'équipe ci-dessous."));
+    if(this.me){
+      me.appendChild(h("div",{class:"sub-h"},"Ma signature Outlook avec le logo"));
+      const pv=h("div",{class:"sigprev"}); pv.innerHTML=this.sigHtml(); me.appendChild(pv);
+      const cb=h("button",{type:"button",class:"btn primary"},"Copier ma signature"); cb.addEventListener("click",()=>this.copySig());
+      me.appendChild(h("div",{class:"btn-row"})).appendChild(cb);
+      me.appendChild(h("p",{class:"sub-n"},"À faire une seule fois : dans Outlook, Paramètres → Comptes → Signatures (ou Fichier → Options → Courrier → Signatures), crée une signature « Insertio », colle (Ctrl+V), enregistre et choisis-la pour les nouveaux messages. Puis décoche plus bas « Ajouter ma signature » : l'application ouvrira les mails avec le texte déjà rempli, et Outlook ajoutera ta signature avec le logo."));
+    }
     main.appendChild(me);
 
     // Équipe
