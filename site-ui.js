@@ -1,6 +1,7 @@
 // Insertio : menus déroulants, menu mobile et prise de rendez-vous en fenêtre.
 (function(){
-  var CAL_URL = 'https://calendly.com/contact-insertio/30min?hide_gdpr_banner=1&primary_color=5d5fec';
+  // Lien de réservation Calendly. Si le lien change dans Calendly, il suffit de le modifier ici et dans contact.html.
+  var CAL_URL = 'https://calendly.com/contact-insertio/1h?hide_gdpr_banner=1&primary_color=5d5fec';
   var header = document.getElementById('siteHeader');
 
   // Hauteur de l'en-tête (pour placer le menu mobile juste dessous)
@@ -71,41 +72,51 @@
   }
 
   // ---------- Prise de rendez-vous en fenêtre (Calendly) ----------
-  var loading = null;
-  function loadCalendly(cb){
-    if(window.Calendly && window.Calendly.initPopupWidget) return cb(true);
-    if(!loading){
-      loading = [];
-      var css = document.createElement('link');
-      css.rel = 'stylesheet'; css.href = 'https://assets.calendly.com/assets/external/widget.css';
-      document.head.appendChild(css);
-      var s = document.createElement('script');
-      s.src = 'https://assets.calendly.com/assets/external/widget.js'; s.async = true;
-      s.onload = function(){ loading.forEach(function(f){ f(true); }); loading = null; };
-      s.onerror = function(){ loading.forEach(function(f){ f(false); }); loading = null; };
-      document.head.appendChild(s);
-    }
-    if(loading) loading.push(cb);
+  // Le calendrier est préparé en arrière-plan (fenêtre cachée) peu après l'arrivée sur la page,
+  // ou dès qu'on survole le bouton : au clic, il s'affiche tout de suite, sans attendre le chargement.
+  ['https://calendly.com', 'https://assets.calendly.com'].forEach(function(h){
+    var l = document.createElement('link'); l.rel = 'preconnect'; l.href = h; l.crossOrigin = ''; document.head.appendChild(l);
+  });
+  var modal = null, frame = null;
+  function prepare(){
+    if(modal) return;
+    var st = document.createElement('style');
+    st.textContent = '.cal-modal{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:rgba(20,20,43,.55);padding:16px;visibility:hidden;opacity:0;transition:opacity .18s}'+
+      '.cal-modal.open{visibility:visible;opacity:1}'+
+      '.cal-box{position:relative;width:100%;max-width:1000px;height:min(760px,calc(100vh - 32px));background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(20,20,43,.35)}'+
+      '.cal-box iframe{position:relative;z-index:1;width:100%;height:100%;border:0;background:transparent}'+
+      '.cal-wait{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;color:#5d5fec}'+
+      '.cal-close{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:#14142b;color:#fff;font-size:22px;line-height:40px;cursor:pointer}'+
+      '@media (max-width:640px){.cal-modal{padding:0}.cal-box{height:100%;max-width:none;border-radius:0}}';
+    document.head.appendChild(st);
+    modal = document.createElement('div'); modal.className = 'cal-modal'; modal.setAttribute('role','dialog'); modal.setAttribute('aria-modal','true'); modal.setAttribute('aria-label','Prendre rendez-vous');
+    modal.innerHTML = '<div class="cal-box"><div class="cal-wait">Chargement du calendrier…</div><button type="button" class="cal-close" aria-label="Fermer">×</button></div>';
+    frame = document.createElement('iframe'); frame.title = 'Prendre rendez-vous avec Insertio'; frame.src = CAL_URL; frame.setAttribute('allow','payment');
+    modal.querySelector('.cal-box').appendChild(frame);
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e){ if(e.target === modal || e.target.closest('.cal-close')) closeCal(); });
   }
-  // Préchargement discret dès que la page est prête
-  window.addEventListener('load', function(){ setTimeout(function(){ loadCalendly(function(){}); }, 1500); });
+  var lastFocus = null;
+  function openCal(){ prepare(); lastFocus = document.activeElement; modal.classList.add('open'); document.documentElement.style.overflow = 'hidden'; modal.querySelector('.cal-close').focus(); }
+  function closeCal(){ if(!modal) return; modal.classList.remove('open'); document.documentElement.style.overflow = ''; if(lastFocus && lastFocus.focus) lastFocus.focus(); }
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal && modal.classList.contains('open')) closeCal(); });
 
   var onContactPage = !!document.getElementById('rdv');
+  var hasButton = !!document.querySelector('[data-rdv]');
+  var saveData = navigator.connection && navigator.connection.saveData;
+  if(!onContactPage && hasButton){
+    // préparation en arrière-plan, quand la page a fini de se charger
+    window.addEventListener('load', function(){ if(!saveData) setTimeout(prepare, 2500); });
+    // ou dès qu'on approche le bouton
+    ['mouseover','touchstart','focusin'].forEach(function(ev){
+      document.addEventListener(ev, function(e){ if(e.target.closest && e.target.closest('[data-rdv]')) prepare(); }, {passive:true});
+    });
+  }
   document.addEventListener('click', function(e){
     var a = e.target.closest('[data-rdv]');
     if(!a) return;
     if(onContactPage) return; // sur la page contact, on descend simplement au calendrier
     e.preventDefault();
-    var fallback = a.getAttribute('href') || 'contact.html#rdv';
-    var tip = document.createElement('div');
-    tip.className = 'rdv-loading'; tip.setAttribute('role', 'status'); tip.textContent = 'Ouverture du calendrier…';
-    document.body.appendChild(tip);
-    var done = false;
-    var t = setTimeout(function(){ if(!done){ done = true; tip.remove(); window.location.href = fallback; } }, 5000);
-    loadCalendly(function(ok){
-      if(done) return; done = true; clearTimeout(t); tip.remove();
-      if(ok && window.Calendly){ window.Calendly.initPopupWidget({url: CAL_URL}); }
-      else { window.location.href = fallback; }
-    });
+    openCal();
   });
 })();
