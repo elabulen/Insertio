@@ -280,10 +280,185 @@ details.addc{margin-bottom:12px}
 #whoBtn{white-space:nowrap}
 
 </style>
+<style>
+/* ====================================================================
+   InsertiO 6 – style épuré : fond clair, une seule couleur d'accent,
+   beaucoup d'espace, typographie système, contrôles « segmentés ».
+   ==================================================================== */
+:root{
+  --bg:#F5F5F7; --surface:#FFFFFF; --surface-2:#F2F2F5; --border:#E3E3E8; --hair:rgba(0,0,0,.07);
+  --text:#1D1D1F; --text-dim:#6E6E73; --text-faint:#8E8E93;
+  --navy:#1D1D1F; --blue:#4F5BD5; --blue-dim:#EEF0FC; --pink:#C2477A; --pink-dim:#F8EBF1;
+  --good:#248A3D; --good-dim:#E9F6EC; --warn:#B25000; --warn-dim:#FFF3E3; --crit:#D70015; --crit-dim:#FDEBEC;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 24px rgba(0,0,0,.05); --on-accent:#FFFFFF;
+  --f-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",Inter,Roboto,sans-serif;
+  --f-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Inter,Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#000000; --surface:#1C1C1E; --surface-2:#2C2C2E; --border:#3A3A3C; --hair:rgba(255,255,255,.09);
+  --text:#F5F5F7; --text-dim:#A1A1A6; --text-faint:#8E8E93; --navy:#F5F5F7; --blue:#8C94F2; --blue-dim:#25284A;
+  --good:#30D158; --good-dim:#14301C; --warn:#FF9F0A; --warn-dim:#33240B; --crit:#FF453A; --crit-dim:#3A1715;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --on-accent:#0B0B12; } }
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#1C1C1E; --surface-2:#2C2C2E; --border:#3A3A3C; --hair:rgba(255,255,255,.09);
+  --text:#F5F5F7; --text-dim:#A1A1A6; --text-faint:#8E8E93; --navy:#F5F5F7; --blue:#8C94F2; --blue-dim:#25284A;
+  --good:#30D158; --good-dim:#14301C; --warn:#FF9F0A; --warn-dim:#33240B; --crit:#FF453A; --crit-dim:#3A1715;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --on-accent:#0B0B12; }
+
+body{font-size:15px;line-height:1.5;letter-spacing:-.003em}
+a{color:var(--blue)}
+
+/* Barre du haut : translucide, navigation en pastilles */
+.topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--hair)}
+.topbar .in{max-width:1080px;padding:12px 24px;gap:20px}
+.nav{gap:4px;justify-content:center}
+.nav a{font-size:14px;font-weight:500;padding:7px 14px;border-radius:999px;color:var(--text-dim)}
+.nav a:hover{background:var(--surface-2);color:var(--text)}
+.nav a.on{background:var(--text);color:var(--surface)}
+.tbtn{border:none;background:var(--surface-2);border-radius:999px;padding:7px 12px;font-weight:500}
+.save-state{font-size:12.5px}
+
+.wrap{max-width:1080px;padding:36px 24px 120px}
+.page-h{margin:0 0 28px;align-items:center}
+.page-h h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,4.4vw,38px);letter-spacing:-.025em}
+.lead{font-size:17px}
+.back{font-weight:500;color:var(--blue);margin-bottom:10px}
+.sub-n{font-size:13.5px;color:var(--text-dim)}
+.sub-h{font-size:17px;font-weight:600;margin:30px 0 6px;letter-spacing:-.01em}
+
+/* Cartes */
+.dash{gap:20px}
+.dcard,.card{background:var(--surface);border:none;border-radius:20px;padding:24px 26px;box-shadow:var(--shadow)}
+.dcard h2{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 14px}
+.count{background:var(--surface-2);color:var(--text-dim);font-weight:600}
+.row{padding:14px 0;border-top:1px solid var(--hair);gap:14px}
+.rmain b{font-weight:600}
+.rmain .faint{font-size:13.5px}
+.empty{font-style:normal;color:var(--text-faint);font-size:14px;padding:10px 0}
+.alert{border-radius:14px;padding:14px 16px;font-size:14px;background:var(--surface-2)}
+.alert b{color:var(--text)} .alert.info{background:var(--blue-dim)} .alert.info b{color:var(--text)}
+
+/* Pastilles neutres : la couleur n'est plus un code */
+.pill,.pill.tremplin,.pill.elan,.pill.passerelles,.pill.attente,.pill.num{background:var(--surface-2);color:var(--text-dim);font-weight:600;font-size:12.5px;padding:3px 10px}
+
+/* Boutons */
+.btn{border:none;background:var(--surface-2);border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;min-height:40px;color:var(--text);transition:background .15s,transform .05s}
+.btn:hover{background:color-mix(in srgb,var(--surface-2) 85%,var(--text) 15%);border:none}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--blue);color:var(--on-accent)}
+.btn.primary:hover{background:color-mix(in srgb,var(--blue) 88%,#000 12%)}
+.btn.danger{color:var(--crit);background:var(--surface-2)}
+.btn-row{gap:10px;margin-top:16px}
+.icon-btn{border:none;background:var(--surface-2);border-radius:999px}
+
+/* Champs */
+input.f,textarea.f,select.f{border:1px solid var(--border);border-radius:12px;padding:11px 13px;font-size:15px;min-height:46px;background:var(--surface)}
+input.f:focus,textarea.f:focus,select.f:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 18%,transparent)}
+textarea.f{min-height:96px;line-height:1.5}
+.flab{font-size:13px;font-weight:500;color:var(--text-dim);margin-bottom:6px}
+.row2{gap:16px 20px;margin-top:18px}
+.chk{border:1px solid var(--border);border-radius:12px}
+.opt{border:1px solid var(--border);border-radius:12px}
+.opt[aria-pressed="true"],.opt[aria-checked="true"]{border-color:var(--blue);background:var(--blue-dim)}
+
+/* Onglets : contrôle segmenté */
+.tabs{display:inline-flex;gap:2px;background:var(--surface-2);padding:4px;border-radius:14px;border:none;margin:0 0 28px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{border:none;border-radius:10px;padding:8px 16px;font-weight:500;font-size:14px;color:var(--text-dim)}
+.tabs a.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* Tableaux */
+.tbl{border:none;border-radius:20px;box-shadow:var(--shadow)}
+.tbl th,.tbl td{padding:14px 18px;border-top:1px solid var(--hair);font-size:14.5px}
+.tbl thead th{background:transparent;font-size:12px;letter-spacing:.06em;color:var(--text-faint);font-weight:600}
+.tbl tbody tr:hover td{background:color-mix(in srgb,var(--surface-2) 50%,transparent)}
+.kpi{border-radius:16px;padding:14px 16px;background:var(--surface-2)} .kpi b{font-size:24px;font-weight:600}
+.modal{background:rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+.sheet{border:none;border-radius:22px;padding:26px;background:var(--surface)}
+.sheet-h h2{font-family:var(--f-display);font-weight:700;font-size:24px;letter-spacing:-.02em}
+.login{border:none;border-radius:24px;box-shadow:var(--shadow)}
+.login h1{font-family:var(--f-display);font-weight:700;letter-spacing:-.02em}
+.toast{border-radius:999px;padding:10px 18px;font-size:14px;bottom:100px}
+.drop{border-radius:20px;border:2px dashed var(--border)}
+.member{border:none;background:var(--surface-2);border-radius:16px}
+
+/* ---------- Nouveaux éléments ---------- */
+.v-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.v-head h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,4.4vw,38px);letter-spacing:-.025em;margin:0;line-height:1.1}
+.v-head .meta{color:var(--text-dim);font-size:15px;margin-top:6px}
+.home-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.home-grid{grid-template-columns:1fr}}
+.stack{display:flex;flex-direction:column;gap:20px}
+.sec-t{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);margin:0 0 10px}
+.prog{display:flex;align-items:center;gap:12px;min-width:160px}
+.prog .bar{flex:1;height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.prog .bar i{display:block;height:100%;border-radius:3px;background:var(--blue)}
+.prog .lbl{font-size:13px;color:var(--text-dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.hero{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);padding:28px 30px;margin-bottom:24px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 28px;align-items:center}
+@media (max-width:720px){.hero{grid-template-columns:1fr;padding:22px}}
+.hero h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,4vw,34px);letter-spacing:-.025em;margin:0}
+.hero .meta{color:var(--text-dim);margin-top:4px}
+.hero .prog{margin-top:18px;max-width:420px}
+.hero .prog .bar{height:8px;border-radius:4px}
+.hero-act{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.hero-act .btn{min-width:200px}
+.seances{list-style:none;margin:0;padding:0}
+.sess{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 4px;border-top:1px solid var(--hair);cursor:pointer;border-radius:12px;text-decoration:none;color:inherit}
+.seances li:first-child .sess{border-top:none}
+.sess:hover{background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
+.num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:15px;background:var(--surface-2);color:var(--text-dim);font-variant-numeric:tabular-nums}
+.sess.faite .num{background:var(--blue);color:var(--on-accent)}
+.sess.manquee .num{background:var(--surface-2);color:var(--crit);box-shadow:inset 0 0 0 2px var(--crit-dim)}
+.sess.next .num{box-shadow:inset 0 0 0 2px var(--blue);color:var(--blue);background:var(--surface)}
+.sess .t{font-weight:600;font-size:15.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sess .s{font-size:13.5px;color:var(--text-dim);margin-top:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tag{font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--text-dim)}
+.tag.coach{background:var(--pink-dim);color:var(--pink)}
+.sess .go{color:var(--text-faint);font-size:20px}
+.stepper{display:inline-flex;align-items:center;background:var(--surface-2);border-radius:999px;padding:3px}
+.stepper button{border:none;background:var(--surface);width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08);color:var(--text)}
+.stepper b{min-width:44px;text-align:center;font-variant-numeric:tabular-nums;font-size:16px}
+.ctrl-row{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;margin-bottom:8px}
+.ctrl-row > div{display:flex;flex-direction:column;gap:6px}
+.ctrl-row .f{min-width:170px}
+.ctrl-row > .f{width:auto;flex:0 1 220px}
+.ctrl-row > input[type=text].f{flex:1 1 260px}
+.segc{display:inline-flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:2px;flex-wrap:wrap}
+.segc button{border:none;background:none;border-radius:9px;padding:8px 16px;font-size:14px;font-weight:500;color:var(--text-dim);cursor:pointer}
+.segc button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.field{margin-top:22px}
+.field > label{display:block;font-size:13px;font-weight:500;color:var(--text-dim);margin-bottom:8px}
+.reprise{background:var(--blue-dim);border-radius:20px;padding:20px 22px;margin-bottom:20px}
+.reprise h3{margin:0 0 6px;font-size:15px;font-weight:600}
+.reprise p{margin:0 0 8px;white-space:pre-wrap}
+.rlist{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rlist li{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border-radius:12px;padding:10px 12px}
+.rlist li.done span{text-decoration:line-through;color:var(--text-faint)}
+.rlist input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--blue);flex-shrink:0}
+.rlist li span{flex:1}
+.rlist li button{border:none;background:none;color:var(--text-faint);cursor:pointer;font-size:18px;line-height:1}
+.mic{display:inline-flex;align-items:center;gap:8px}
+.mic.on{background:var(--crit);color:#fff}
+.mic.on::before{content:"";width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.interim{font-size:14px;color:var(--text-dim);font-style:italic;margin-top:8px;min-height:1em}
+.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:center;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));pointer-events:none}
+.actionbar .in{pointer-events:auto;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:999px;padding:8px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.actionbar .btn{min-height:44px;padding:10px 20px}
+.pager{display:flex;gap:8px;align-items:center}
+.pager a{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--surface-2);text-decoration:none;color:var(--text);font-size:18px}
+.pager a[aria-disabled="true"]{opacity:.35;pointer-events:none}
+.endbox{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid var(--hair)}
+.done-banner{background:var(--good-dim);border-radius:16px;padding:14px 18px;margin-bottom:18px}
+.coach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px}
+.hint{font-size:13px;color:var(--text-faint);margin-top:6px}
+
+.wrap.wrap-seance{padding-bottom:150px}
+</style>
 <header class="topbar"><div class="in">
   <a class="logo" href="#/" aria-label="InsertiO, accueil"><img id="logoImg" src="logo.png" alt="InsertiO"></a>
   <nav class="nav" aria-label="Navigation principale">
-    <a href="#/">Accueil</a><a href="#/jeunes">Jeunes</a><a href="#/guide">Guide</a><a href="#/reglages">Réglages</a>
+    <a href="#/">Accueil</a><a href="#/jeunes">Jeunes</a><a href="#/coaching">Coaching</a><a href="#/guide">Guide</a><a href="#/reglages">Réglages</a>
   </nav>
   <button type="button" class="tbtn" id="whoBtn" hidden title="Changer de profil"></button><button type="button" class="tbtn" id="installBtn" hidden>Installer</button>
   <span class="save-state" id="saveState" aria-live="polite"></span>
@@ -298,7 +473,7 @@ details.addc{margin-bottom:12px}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "5.5"; IO.ARTIFACT = false;
+IO.VERSION = "6.0"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -733,7 +908,7 @@ IO.merge = (a, b) => {
   if(!a) return b; if(!b) return a;
   const newer = (Date.parse(b.updatedAt||0) > Date.parse(a.updatedAt||0)) ? b : a, older = newer===a?b:a;
   const out = Object.assign({}, older, newer);
-  ["entretiens","suivis","rdv","actions","documents","objectifs","candidatures"].forEach(k=>{
+  ["entretiens","suivis","rdv","actions","documents","objectifs","candidatures","seances","passages"].forEach(k=>{
     const map=new Map();
     [...(older[k]||[]),...(newer[k]||[])].forEach(x=>{ const p=map.get(x.id); if(!p || Date.parse(x.updatedAt||0)>=Date.parse(p.updatedAt||0)) map.set(x.id,x); });
     out[k]=[...map.values()];
@@ -746,7 +921,7 @@ IO.merge = (a, b) => {
    pour chaque champ simple, ce que j'ai modifié depuis l'ouverture l'emporte ; sinon la version du disque. */
 IO.merge3 = (disk, mine, base) => {
   const out = IO.merge(disk, mine);
-  const skip = new Set(["entretiens","suivis","rdv","actions","documents","objectifs","candidatures","docs","updatedAt"]);
+  const skip = new Set(["entretiens","suivis","rdv","actions","documents","objectifs","candidatures","seances","passages","docs","updatedAt"]);
   const keys = new Set([...Object.keys(disk), ...Object.keys(mine)]);
   keys.forEach(k=>{ if(skip.has(k)||k[0]==="_") return;
     const changedByMe = !base || JSON.stringify(mine[k])!==JSON.stringify(base[k]);
@@ -1377,7 +1552,7 @@ const T = IO.Team = {
   sigLines(){
     const m=this.me||{}, d=this.data;
     return [m.nom||"L'équipe Insertio", (m.fonction?m.fonction+" · ":"")+"Insertio Genève",
-      [m.tel||d.tel, m.mail||d.mail].filter(Boolean).join(" · "), [d.adresse,d.site].filter(Boolean).join(" · ")].filter(Boolean);
+      [m.tel||d.tel, d.mail||m.mail].filter(Boolean).join(" · "), [d.adresse,d.site].filter(Boolean).join(" · ")].filter(Boolean);
   },
   stripSignoff(body){ const L=body.split("\n"); const last=(L[L.length-1]||"").trim(); if(/ – Insertio$/.test(last)||last==="L'équipe Insertio") L.pop(); return L.join("\n"); },
   withSig(body){ if(!this.data.signature) return body; return this.stripSignoff(body)+"\n"+this.sigLines().join("\n"); },
@@ -1440,7 +1615,11 @@ const T = IO.Team = {
     a.addEventListener("click", async e=>{
       e.preventDefault();
       const m=getM(), text=this.withSig(m.body), html=this.html(m.body);
-      if(!this.data.signature){ location.href=U.mailto(to,m.subject,text); return; }
+      if(!this.data.signature){ const url=U.mailto(to,m.subject,text);
+        if(url.length<=1800){ location.href=url; return; }
+        /* Lien trop long pour Windows (le mail s'ouvrirait vide, sans objet) : le texte passe par le presse-papiers. */
+        try{ await navigator.clipboard.writeText(text); }catch(err){}
+        location.href=U.mailto(to,m.subject,""); U.toast("Outlook s'ouvre avec l'objet. Le message est long : clique dans le mail et fais Ctrl+V pour le coller.",9000); return; }
       let ok=false;
       try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]); ok=true; }catch(err){}
       location.href = ok ? U.mailto(to,m.subject,"") : U.mailto(to,m.subject,text);
@@ -1461,8 +1640,7 @@ const T = IO.Team = {
       const r=h("div",{class:"btn-row"});
       const o=this.richMail(h("a",{class:"btn primary",href:U.mailto(mail,m.subject,full)},"Ouvrir dans Outlook"),mail,()=>({subject:m.subject,body}));
       const c=h("button",{type:"button",class:"btn"},"Copier avec le logo"); c.addEventListener("click",()=>this.copyRich(full,this.html(body)));
-      const s=h("button",{type:"button",class:"btn"},"Copier l'objet"); s.addEventListener("click",()=>U.copy(m.subject));
-      r.append(o); if(rdv&&rdv.get){ r.appendChild(this.outlookBtn(rdv.j,rdv.get,"Ajouter le RDV au calendrier Outlook")); } r.append(c,s); box.appendChild(r);
+            r.append(o); if(rdv&&rdv.get){ r.appendChild(this.outlookBtn(rdv.j,rdv.get,"Ajouter le RDV au calendrier Outlook")); } if(this.data.signature) r.append(c); box.appendChild(r);
       box.appendChild(h("p",{class:"sub-n"},(mail?"":"Ajoute l'e-mail du jeune dans son profil pour que le destinataire soit rempli. ")+"« Ouvrir dans Outlook » crée le mail (destinataire et objet) et garde le message avec ta signature et le logo prêt à coller : clique dans le corps du mail et fais Ctrl+V. Vérifie le champ « De » : ton adresse @insertio.ch."+(rdv&&rdv.get?" Le bouton calendrier ouvre Outlook avec le rendez-vous rempli et le jeune invité : clique sur Enregistrer, Outlook lui envoie l'invitation.":"")));
     };
     draw();
@@ -1620,7 +1798,9 @@ function sorted(){ return [...App.jeunes.values()].sort((a,b)=>(a.nom||"").local
 
 /* ================================================================ Navigation */
 const routes=[
-  [/^#?\/?$/, viewHome], [/^#\/jeunes$/, viewJeunes], [/^#\/j\/([^/]+)(?:\/(parcours|suivi|suivis|candidatures|documents|profil))?$/, viewJeune],
+  [/^#?\/?$/, m=>IO.V6.home(m)], [/^#\/jeunes$/, viewJeunes], [/^#\/coaching$/, m=>IO.V6.coaching(m)],
+  [/^#\/j\/([^/]+)(?:\/(parcours|suivi|suivis|coaching|objectifs|candidatures|documents|profil))?$/, (m,id,t)=>IO.V6.jeune(m,id,t)],
+  [/^#\/j\/([^/]+)\/seance\/(\d+)$/, (m,id,n)=>IO.V6.seance(m,id,n)],
   [/^#\/j\/([^/]+)\/e\/([^/]+)$/, viewEntretien], [/^#\/j\/([^/]+)\/s\/([^/]+)$/, (m,id,sid)=>IO.Suivi.view(m,id,sid)], [/^#\/guide$/, viewGuide], [/^#\/reglages$/, viewSettings],
 ];
 function go(hash){ IO.navHash=hash; route(); }
@@ -1691,14 +1871,15 @@ function viewJeunes(main){
     const needle=f.q.trim().toLowerCase();
     const rows=sorted().filter(j=>(!f.statut||j.statut===f.statut)&&(!f.mine||IO.Team.isMine(j))&&(!needle||[j.nom,j.programme,j.referent,j.commune].join(" ").toLowerCase().includes(needle)));
     if(!rows.length){ box.innerHTML='<p class="empty">Aucun jeune ne correspond.</p>'; return; }
-    box.innerHTML='<table class="tbl"><thead><tr><th>Nom</th><th>Âge</th><th>Programme</th><th>Prochain RDV</th><th>Dernier contact</th><th>Référent·e</th></tr></thead><tbody>'+
-      rows.map(j=>{ const n=IO.nextRdv(j), a=U.ageOf(j.naissance); return '<tr><td><a href="#/j/'+j.id+'"><b>'+esc(j.nom||"Sans nom")+'</b></a>'+(j.statut!=="actif"?' <span class="pill num">'+esc(statutLabel(j.statut))+'</span>':'')+'</td><td>'+(a!=null?a:"")+'</td><td>'+progPill(j)+'</td><td>'+(n?esc(rdvWhen(n)):'<span class="faint">—</span>')+'</td><td>'+esc(U.fmtDate(IO.lastContact(j)))+'</td><td>'+esc(j.referent||"")+'</td></tr>'; }).join("")+'</tbody></table>';
+    box.innerHTML='<table class="tbl"><thead><tr><th>Nom</th><th>Âge</th><th>Programme</th><th>Avancement</th><th>Prochain RDV</th><th>Référent·e</th></tr></thead><tbody>'+
+      rows.map(j=>{ const n=IO.nextRdv(j), a=U.ageOf(j.naissance); return '<tr><td><a href="#/j/'+j.id+'"><b>'+esc(j.nom||"Sans nom")+'</b></a>'+(j.statut!=="actif"?' <span class="pill num">'+esc(statutLabel(j.statut))+'</span>':'')+'</td><td>'+(a!=null?a:"")+'</td><td>'+progPill(j)+'</td><td style="min-width:170px">'+IO.V6.progressCell(j)+'</td><td>'+(n?esc(rdvWhen(n)):'<span class="faint">—</span>')+'</td><td>'+esc(j.referent||"")+'</td></tr>'; }).join("")+'</tbody></table>';
   }
   q.addEventListener("input",render); st.addEventListener("change",render); render(); q.focus();
 }
 
 /* ================================================================ Nouveau jeune */
 function newJeuneDialog(){
+  if(IO.V6) return IO.V6.newJeune();
   modal('<div class="sheet-h"><h2>Nouveau jeune</h2></div><form id="nj"><div class="row2"><div><label class="flab" for="nj_nom">Prénom et nom</label><input class="f" id="nj_nom" required autocomplete="off"></div><div><label class="flab" for="nj_nai">Date de naissance (facultatif)</label><input class="f" id="nj_nai" type="date"></div></div>'+
     '<p class="sub-n" id="njDup"></p><div class="btn-row"><button class="btn primary" type="submit" data-a="ent">Commencer le premier entretien</button><button class="btn" type="submit" data-a="only">Créer le dossier seulement</button><button class="btn" type="button" id="njCancel">Annuler</button></div></form>',
     (sh,close)=>{
@@ -1870,7 +2051,8 @@ function viewGuide(main){
   '</tbody></table></div><p class="sub-n">Les durées sont indicatives : elles s\'ajustent à l\'aisance du jeune, sans sacrifier l\'écoute. Le chrono de la grille aide à se situer.</p>'+
   '<h2 class="g2">Points d\'attention</h2><ul class="glist"><li><b>Image :</b> un refus est respecté sans relance. Pour un·e mineur·e, l\'autorisation est signée par le représentant légal.</li><li><b>Données :</b> informer le jeune de ce qu\'on note, pourquoi, qui y a accès, et de son droit de consulter ou faire corriger ses données. Ne noter que ce qui sert l\'accompagnement.</li><li><b>Mineur·e :</b> formation obligatoire jusqu\'à 18 ans à Genève (FO18). Sans formation : coordonner avec CAP Formations.</li><li><b>Permis B études :</b> 15 h par semaine au maximum pendant les cours, 40 h pendant les vacances, sur autorisation de l\'OCPM.</li><li><b>CV :</b> autonome → retravaille seul avec des pistes ; semi-autonome → Pôle numérique ou atelier ; non autonome → temps dédié en individuel.</li></ul>'+
   '<h2 class="g2">Après l\'entretien</h2><ul class="glist"><li>Dans la clôture : « Enregistrer la fiche dans le dossier ».</li><li>Envoyer au jeune le message (bouton « Ouvrir dans la messagerie » ou « Copier »).</li><li>Informer la ou le responsable du programme retenu.</li><li>Si une vidéo est prévue : transmettre l\'autorisation au pôle communication.</li></ul>'+
-  '<h2 class="g2">Les entretiens de suivi (tout l\'accompagnement)</h2><p class="lead">Chaque suivi suit le même déroulé, sur plusieurs mois. Le dossier garde la mémoire : ce qu\'on s\'est dit la dernière fois, les actions prévues, les objectifs et leur évolution.</p>'+
+  '<h2 class="g2">Les séances (Élan, Tremplin) et le Pôle numérique</h2><ul class="glist"><li><b>Planification automatique :</b> en choisissant le programme, les séances se créent (Élan : 13, Tremplin : 16), une par semaine. Le nombre se modifie à tout moment avec − et +.</li><li><b>Coaching :</b> les séances 5 et 6 sont des séances de coaching avec la coach emploi (1. gestion du stress et sophrologie, 2. simulation d\'entretien) ; une 3e séance (coaching) peut être ajoutée dans l\'onglet Coaching du dossier.</li><li><b>Chaque séance :</b> date, présence, ce qui s\'est passé (ou bouton « Dicter »), ce qu\'on transmet à la personne suivante, des rappels. La séance suivante affiche tout en haut « À reprendre ».</li><li><b>Dictée :</b> commencer une phrase par « rappel » crée un rappel pour la prochaine séance.</li><li><b>Trois boutons :</b> Enregistrer (la fiche PDF se range dans le dossier du jeune), Mail au jeune (Outlook, objet rempli), Calendrier Outlook.</li><li><b>Fin de parcours :</b> « Terminer le parcours » avec la situation à la sortie, à tout moment : les statistiques comptent les séances réalisées.</li><li><b>Pôle numérique :</b> une fiche par passage (date, ce qui a été fait).</li></ul>'+
+  '<h2 class="g2">Les entretiens de suivi détaillés (ancienne grille)</h2><p class="lead">Chaque suivi suit le même déroulé, sur plusieurs mois. Le dossier garde la mémoire : ce qu\'on s\'est dit la dernière fois, les actions prévues, les objectifs et leur évolution.</p>'+
   '<div class="tablewrap"><table class="tbl"><thead><tr><th>Étape</th><th>Durée</th><th>Contenu</th></tr></thead><tbody>'+
   '<tr><td><b>1. Accueil</b></td><td class="nw">5 min</td><td>Relire « la dernière fois ». Présence, comment ça va, ce qui s\'est passé depuis.</td></tr>'+
   '<tr><td><b>2. Retour sur les actions</b></td><td class="nw">10 min</td><td>Pour chaque action : fait, en cours ou pas fait, et pourquoi. Sans jugement : ce qui bloque est une information.</td></tr>'+
@@ -1923,7 +2105,7 @@ function viewSettings(main){
   main.appendChild(ab);
 }
 
-Object.assign(App,{save,go,route,startSuivi,actionAdder,pickFiles,modal,rdvWhen,flushAll,rdvDialog,progPill,getJ,banner,tabBase:tabSuivi,sorted});
+Object.assign(App,{tabDocuments,tabProfil,save,go,route,startSuivi,actionAdder,pickFiles,modal,rdvWhen,flushAll,rdvDialog,progPill,getJ,banner,tabBase:tabSuivi,sorted});
 
 /* ================================================================ Démarrage */
 window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); App.installEvt=e; const b=$("installBtn"); if(b) b.hidden=false; });
@@ -2422,6 +2604,422 @@ S.homeCards=(js,card,list)=>{
     const r=h("div",{class:"racts"}); const b=h("button",{type:"button",class:"btn"},"Faire le bilan"); b.addEventListener("click",()=>S.create(x.j,null,x.d.modele)); r.append(b,h("a",{class:"btn",href:"#/j/"+x.j.id},"Dossier")); li.appendChild(r); return li; },""));
   const rel=[]; js.filter(j=>j.statut!=="clos").forEach(j=>relances(j,3).forEach(c=>rel.push({j,c}))); rel.sort((a,b)=>a.c.relance.localeCompare(b.c.relance));
   if(rel.length) card("Candidatures à relancer",rel.length,list(rel.slice(0,12),x=>{ const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(x.c.entreprise)+(x.c.poste?" · "+esc(x.c.poste):"")+'</b><span class="faint">'+esc(x.j.nom)+' · relance le '+esc(U.fmtDate(x.c.relance))+'</span></div><div class="racts"><a class="btn" href="#/j/'+x.j.id+'/candidatures">Candidatures</a></div>'; return li; },""));
+};
+})();
+
+</script>
+<script>
+/* InsertiO 6 – parcours en séances numérotées, coaching, Pôle numérique (passages),
+   accueil épuré, dictée vocale, fiche PDF rangée automatiquement dans le dossier. */
+(function(){
+"use strict";
+const IO=window.IO, U=IO.U, REF=IO.REF, h=U.h, esc=U.esc, live=IO.live;
+const A=()=>IO.App;
+
+/* ================================================================ Référentiels */
+REF.SEANCES={elan:13,tremplin:16};
+REF.COACH_POS=[5,6];
+REF.COACHING=[{n:1,t:"Gestion du stress et sophrologie"},{n:2,t:"Simulation d'entretien"},{n:3,t:"Coaching"}];
+REF.PRESENCE6=[{k:"present",t:"Présent·e"},{k:"absent",t:"Absent·e"},{k:"excuse",t:"Excusé·e"}];
+REF.PROG_CHOIX=[{k:"elan",v:"Élan",t:"Élan",d:"13 séances"},{k:"tremplin",v:"Tremplin",t:"Tremplin",d:"16 séances"},{k:"pole",v:"Pôle numérique seulement",t:"Pôle numérique",d:"une fiche par passage"},{k:"",v:"",t:"À définir",d:"après le premier entretien"}];
+const RAPPEL_RE=/^\s*(rappels?|à faire|a faire|penser à|penser a|il faudra|ne pas oublier( de)?|la prochaine fois|pour la prochaine (séance|fois)|prochaine séance|à transmettre|a transmettre)\b[\s:,.-]*/i;
+
+/* ================================================================ Modèle */
+const kind=j=>{ const k=REF.decisionKey(j.programme); if(k) return k; return /num/i.test(j.programme||"")?"pole":null; };
+const ensure=j=>{ j.seances=j.seances||[]; j.passages=j.passages||[]; j.parcours=j.parcours||{}; j.rdv=j.rdv||[]; j.actions=j.actions||[]; j.docs=j.docs||{}; migrate(j); return j; };
+function migrate(j){
+  if(j.parcours.v6) return; j.parcours.v6=true;
+  const done=live(j.suivis).filter(s=>s.presence==="present"||s.presence==="absent"||s.presence==="excuse").sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  if(kind(j)==="pole"){ done.forEach(s=>j.passages.push({id:U.uid("p"),date:s.date,fait:s.resume||s.depuis||s.notes||"",accomp:s.accomp||"",legacy:s.id,createdAt:U.now(),updatedAt:U.now()})); return; }
+  done.forEach((s,i)=>j.seances.push({id:U.uid("se"),n:i+1,type:"suivi",date:s.date,heure:s.heure||"",presence:s.presence,accomp:s.accomp||"",
+    resume:[s.depuis,s.resume].filter(Boolean).join("\n\n"),transmis:s.notes||"",rappels:[],legacy:s.id,createdAt:U.now(),updatedAt:U.now()}));
+}
+const nbSeances=j=>{ const p=j.parcours||{}; if(p.nb!=null&&p.nb!=="") return +p.nb; const k=kind(j); return REF.SEANCES[k]||null; };
+const debutOf=j=>{ const p=j.parcours||{}; if(p.debut) return p.debut; const e=IO.premier(j); return (e&&e.data.date_ent)||String(j.createdAt||U.now()).slice(0,10); };
+const addDays=(iso,d)=>{ const x=new Date(iso+"T12:00"); x.setDate(x.getDate()+d); return x.toISOString().slice(0,10); };
+const plannedDate=(j,n)=>{
+  const doneBefore=live(j.seances||[]).filter(s=>s.n<n&&s.date&&["present","absent","excuse"].includes(s.presence)).sort((a,b)=>b.n-a.n)[0];
+  let d=doneBefore?addDays(doneBefore.date,7*(n-doneBefore.n)):addDays(debutOf(j),7*(n-1));
+  const s=live(j.seances||[]).find(x=>x.n===n); if(s&&s.date&&["present","absent","excuse"].includes(s.presence)) return s.date;
+  /* séance pas encore faite : la prochaine est au plus tôt cette semaine, les suivantes s'enchaînent */
+  let first=null; for(let i=1;i<n;i++){ const x=live(j.seances||[]).find(y=>y.n===i); if(!(x&&x.date&&["present","absent","excuse"].includes(x.presence))){ first=i; break; } }
+  const k=first||n; const lag=U.daysFrom(doneBefore&&doneBefore.n<k?addDays(doneBefore.date,7*(k-doneBefore.n)):addDays(debutOf(j),7*(k-1)));
+  if(lag<0) d=addDays(d,-lag);
+  return d;
+};
+const getS=(j,n)=>live(j.seances).find(s=>s.n===n)||null;
+const isDone=s=>!!(s&&s.date&&["present","absent","excuse"].includes(s.presence));
+const typeOf=(j,n)=>{ const s=getS(j,n); if(s&&s.type) return s.type; return REF.COACH_POS.includes(n)&&["elan","tremplin"].includes(kind(j))?"coaching":"suivi"; };
+const coachIdx=(j,n)=>{ let c=0; for(let i=1;i<=n;i++) if(typeOf(j,i)==="coaching") c++; return c; };
+const coachTheme=(j,n)=>{ const s=getS(j,n); if(s&&s.theme) return s.theme; const c=coachIdx(j,n); return (REF.COACHING[c-1]||REF.COACHING[2]).t; };
+const maxN=j=>Math.max(nbSeances(j)||0,...live(j.seances).map(s=>s.n));
+const doneCount=j=>live(j.seances).filter(s=>s.presence==="present"&&s.date).length;
+const nextN=j=>{ const N=maxN(j); for(let n=1;n<=N;n++){ if(!isDone(getS(j,n))) return n; } return N?N+1:1; };
+const finished=j=>j.statut==="clos";
+function seanceFor(j,n){ ensure(j); let s=getS(j,n); if(!s){ s={id:U.uid("se"),n,type:typeOf(j,n),date:"",heure:"",presence:"",accomp:"",resume:"",transmis:"",rappels:[],createdAt:U.now(),updatedAt:U.now()}; if(s.type==="coaching") s.theme=coachTheme(j,n); j.seances.push(s); } return s; }
+function prevDone(j,n){ return live(j.seances).filter(s=>s.n<n&&isDone(s)).sort((a,b)=>b.n-a.n)[0]||null; }
+function openRappels(j){ const L=[]; live(j.seances).forEach(s=>(s.rappels||[]).forEach(r=>{ if(!r.done&&!r.deleted) L.push({j,s,r}); })); return L; }
+const titleOf=(j,n)=>typeOf(j,n)==="coaching"?"Coaching "+coachIdx(j,n):"Séance "+n;
+const label6=j=>{ const k=kind(j); return k==="pole"?"Pôle numérique":k?REF.PROGRAMMES[k].label:(j.programme||"Programme à définir"); };
+IO.V6={kind,nbSeances,doneCount,nextN,ensure};
+
+/* ================================================================ Composants */
+function progress(j,big){
+  const k=kind(j);
+  if(k==="pole"){ const n=live(ensure(j).passages).length; return '<div class="prog"><span class="lbl">'+n+' passage'+(n>1?"s":"")+'</span></div>'; }
+  const N=nbSeances(j); if(!N) return '<div class="prog"><span class="lbl">Programme à définir</span></div>';
+  const d=doneCount(ensure(j)); const pct=Math.min(100,Math.round(d/N*100));
+  return '<div class="prog"><div class="bar"><i style="width:'+pct+'%"></i></div><span class="lbl">'+(big?"Séance ":"")+d+' / '+N+'</span></div>';
+}
+IO.V6.progressCell=j=>progress(j,false);
+function segc(items,val,onPick){ const w=h("div",{class:"segc",role:"group"}); items.forEach(it=>{ const b=h("button",{type:"button","aria-pressed":String(it.k===val)},esc(it.t)); b.addEventListener("click",()=>{ val=it.k; w.querySelectorAll("button").forEach((x,i)=>x.setAttribute("aria-pressed",String(items[i].k===val))); onPick(val); }); w.appendChild(b); }); return w; }
+function field(parent,lab,el,hint){ const d=h("div",{class:"field"}); const id=el.id||U.uid("f"); el.id=id; d.appendChild(h("label",{for:id},esc(lab))); d.appendChild(el); if(hint) d.appendChild(h("p",{class:"hint"},hint)); parent.appendChild(d); return d; }
+function ta(val,ph,on){ const t=h("textarea",{class:"f",placeholder:ph||""}); t.value=val||""; t.addEventListener("input",()=>on(t.value)); return t; }
+function inp(type,val,on,attrs){ const i=h("input",Object.assign({class:"f",type},attrs||{})); i.value=val||""; i.addEventListener("input",()=>on(i.value)); i.addEventListener("change",()=>on(i.value)); return i; }
+const me=()=>(IO.Team.me&&IO.Team.me.nom)||A().settings.accomp||"";
+
+/* ================================================================ Nouveau jeune (avec programme) */
+IO.V6.newJeune=()=>{
+  A().modal('<div class="sheet-h"><h2>Nouveau jeune</h2></div><form id="nj6"><div class="row2"><div><label class="flab" for="nj_nom">Prénom et nom</label><input class="f" id="nj_nom" required autocomplete="off"></div><div><label class="flab" for="nj_nai">Date de naissance</label><input class="f" id="nj_nai" type="date"></div></div>'+
+    '<div class="field"><label>Programme</label><div id="nj_prog"></div><p class="hint" id="nj_hint"></p></div>'+
+    '<div class="row2"><div><label class="flab" for="nj_deb">Début de l\'accompagnement</label><input class="f" id="nj_deb" type="date"></div></div>'+
+    '<p class="sub-n" id="njDup"></p><div class="btn-row"><button class="btn primary" type="submit" data-a="ent">Créer et commencer le premier entretien</button><button class="btn" type="submit" data-a="only">Créer le dossier</button><button class="btn" type="button" id="njCancel">Annuler</button></div></form>',
+  (sh,close)=>{
+    let prog="", action="ent"; const nom=sh.querySelector("#nj_nom"); nom.focus(); sh.querySelector("#nj_deb").value=U.today();
+    const hint=sh.querySelector("#nj_hint"); const setHint=()=>{ const c=REF.PROG_CHOIX.find(x=>x.k===prog); hint.textContent=c?(c.k&&c.k!=="pole"?c.t+" : "+c.d+" planifiées automatiquement, une par semaine. Le nombre se modifie à tout moment.":c.d.charAt(0).toUpperCase()+c.d.slice(1)+"."):""; };
+    sh.querySelector("#nj_prog").appendChild(segc(REF.PROG_CHOIX.map(c=>({k:c.k,t:c.t})),prog,v=>{ prog=v; setHint(); })); setHint();
+    nom.addEventListener("input",()=>{ const v=U.slug(nom.value).toLowerCase(); const d=v.length>3?A().sorted().filter(j=>U.slug(j.nom).toLowerCase()===v):[]; sh.querySelector("#njDup").innerHTML=d.length?'Un dossier existe déjà à ce nom : <a href="#/j/'+d[0].id+'">ouvrir '+esc(d[0].nom)+'</a>':''; });
+    sh.querySelectorAll("button[type=submit]").forEach(b=>b.addEventListener("click",()=>{ action=b.dataset.a; }));
+    sh.querySelector("#njCancel").addEventListener("click",close);
+    sh.querySelector("#nj6").addEventListener("submit",async e=>{ e.preventDefault(); if(!nom.value.trim()) return;
+      const j=IO.blankJeune(A().settings); j.nom=nom.value.trim(); j.naissance=sh.querySelector("#nj_nai").value; if(IO.Team.me) j.referent=IO.Team.me.nom;
+      const c=REF.PROG_CHOIX.find(x=>x.k===prog); j.programme=c?c.v:""; j.parcours={debut:sh.querySelector("#nj_deb").value||U.today(),v6:true}; ensure(j);
+      A().jeunes.set(j.id,j); await A().save(j,true); close();
+      if(action==="ent"){ const en={id:U.uid("e"),type:"premier",createdAt:U.now(),updatedAt:U.now(),data:IO.blankEntretien(j,A().settings)}; j.entretiens.push(en); A().save(j); A().go("#/j/"+j.id+"/e/"+en.id); }
+      else A().go("#/j/"+j.id); });
+  });
+};
+
+/* ================================================================ Accueil */
+IO.V6.home=main=>{
+  const App=A(); const blocked=App.banner(main);
+  const name=me(); const hd=h("div",{class:"v-head"});
+  hd.innerHTML='<div><h1>'+(name?"Bonjour "+esc(U.firstName(name)):"Bonjour")+'</h1><div class="meta">'+esc(new Date().toLocaleDateString("fr-CH",{weekday:"long",day:"numeric",month:"long"}))+'</div></div>';
+  const nb=h("button",{type:"button",class:"btn primary",id:"newJeune"},"Nouveau jeune"); nb.disabled=blocked; nb.addEventListener("click",IO.V6.newJeune); hd.appendChild(nb); main.appendChild(hd);
+  if(blocked) return;
+  if(IO.Store.mode!=="folder") main.appendChild(h("div",{class:"alert info",style:"margin-bottom:20px"},'Les dossiers sont enregistrés sur cet ordinateur seulement. Pour les partager avec l\'équipe : <a href="#/reglages">Réglages → dossier partagé</a>.'));
+  const js=App.sorted().map(ensure), today=U.today(), active=js.filter(j=>j.statut!=="clos");
+  const grid=h("div",{class:"home-grid"}); const L=h("div",{class:"stack"}), R=h("div",{class:"stack"}); grid.append(L,R); main.appendChild(grid);
+  const card=(parent,title,count)=>{ const c=h("section",{class:"dcard"}); c.appendChild(h("h2",null,esc(title)+(count?' <span class="count">'+count+'</span>':''))); parent.appendChild(c); return c; };
+  // Cette semaine
+  const wk=[]; js.forEach(j=>live(j.rdv).forEach(r=>{ if(r.statut==="prevu"&&r.date&&r.date>=today&&U.daysFrom(r.date)<=7) wk.push({j,r}); }));
+  wk.sort((a,b)=>(a.r.date+(a.r.heure||"")).localeCompare(b.r.date+(b.r.heure||"")));
+  const late=[]; js.forEach(j=>live(j.rdv).forEach(r=>{ if(r.statut==="prevu"&&r.date&&r.date<today&&!live(j.seances).some(s=>s.date===r.date&&isDone(s))) late.push({j,r}); }));
+  const c1=card(L,"Cette semaine",wk.length); const u1=h("ul",{class:"rows"}); c1.appendChild(u1);
+  if(!wk.length) u1.appendChild(h("li",{class:"empty"},"Aucun rendez-vous dans les 7 prochains jours."));
+  wk.forEach(x=>{ const n=nextN(x.j); const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(x.j.nom||"Sans nom")+'</b><span class="faint">'+esc(App.rdvWhen(x.r))+' · '+esc(kind(x.j)==="pole"?"Pôle numérique":titleOf(x.j,n))+'</span></div>';
+    const a=h("div",{class:"racts"}); a.appendChild(h("a",{class:"btn"+(x.r.date===today?" primary":""),href:kind(x.j)==="pole"?"#/j/"+x.j.id:"#/j/"+x.j.id+"/seance/"+n},x.r.date===today?"Commencer":"Préparer")); li.appendChild(a); u1.appendChild(li); });
+  if(late.length){ const p=h("p",{class:"sub-n",style:"margin-top:12px"}); p.innerHTML=late.length+' rendez-vous passé'+(late.length>1?"s":"")+' sans séance renseignée : '+late.slice(0,4).map(x=>'<a href="#/j/'+x.j.id+'/seance/'+nextN(x.j)+'">'+esc(x.j.nom)+'</a>').join(", ")+(late.length>4?"…":""); c1.appendChild(p); }
+  // Rappels de la veille (Outlook)
+  IO.Team.homeCards(js,(t,cnt,body)=>{ const c=card(L,t,cnt); c.appendChild(body); },(items,render,empty)=>{ const ul=h("ul",{class:"rows"}); if(!items.length) ul.appendChild(h("li",{class:"empty"},esc(empty))); items.forEach(x=>ul.appendChild(render(x))); return ul; });
+  // Jeunes en cours
+  const c2=card(L,"Jeunes en cours",active.length); const u2=h("ul",{class:"rows"}); c2.appendChild(u2);
+  if(!active.length) u2.appendChild(h("li",{class:"empty"},"Aucun jeune en cours. Commence par « Nouveau jeune »."));
+  active.sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,10).forEach(j=>{ const li=h("li",{class:"row"});
+    li.innerHTML='<div class="rmain"><a href="#/j/'+j.id+'"><b>'+esc(j.nom||"Sans nom")+'</b></a><span class="faint">'+esc(label6(j))+(j.referent?" · "+esc(j.referent):"")+'</span></div><div style="flex:0 0 200px">'+progress(j)+'</div>'; u2.appendChild(li); });
+  if(js.length>10) c2.appendChild(h("a",{class:"more",href:"#/jeunes"},"Tous les jeunes →"));
+  // À reprendre (rappels transmis)
+  const rp=openRappels({seances:[]}); js.filter(j=>j.statut!=="clos").forEach(j=>openRappels(j).forEach(x=>rp.push(x)));
+  const c3=card(R,"À reprendre",rp.length);
+  if(!rp.length) c3.appendChild(h("p",{class:"empty"},"Rien à reprendre. Les rappels notés en fin de séance apparaissent ici."));
+  else { const ul=h("ul",{class:"rlist"}); rp.slice(0,15).forEach(x=>{ const li=h("li"); const cb=h("input",{type:"checkbox","aria-label":"Fait"}); cb.addEventListener("change",()=>{ x.r.done=cb.checked; x.r.doneAt=U.now(); IO.touch(x.s); App.save(x.j); li.classList.toggle("done",cb.checked); });
+      const sp=h("span"); sp.innerHTML=esc(x.r.t)+'<br><a class="faint" style="font-size:13px" href="#/j/'+x.j.id+'/seance/'+x.s.n+'">'+esc(x.j.nom)+' · '+esc(titleOf(x.j,x.s.n))+'</a>'; li.append(cb,sp); ul.appendChild(li); }); c3.appendChild(ul); }
+  // Actions en retard et relances
+  const lateA=[]; active.forEach(j=>live(j.actions).forEach(a=>{ if(!a.done&&a.quand&&a.quand<today) lateA.push({j,a}); }));
+  if(lateA.length){ const c4=card(R,"Actions en retard",lateA.length); const ul=h("ul",{class:"rows"}); lateA.slice(0,8).forEach(x=>{ const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(x.a.a)+'</b><span class="faint"><a href="#/j/'+x.j.id+'/objectifs">'+esc(x.j.nom)+'</a> · '+esc(x.a.qui)+' · '+esc(U.fmtDate(x.a.quand))+'</span></div>'; ul.appendChild(li); }); c4.appendChild(ul); }
+  // Coaching à venir
+  const co=[]; active.forEach(j=>{ if(!["elan","tremplin"].includes(kind(j))) return; const N=maxN(j); for(let n=1;n<=N;n++){ if(typeOf(j,n)==="coaching"&&!isDone(getS(j,n))){ const d=plannedDate(j,n); if(U.daysFrom(d)<=14) co.push({j,n,d}); break; } } });
+  if(co.length){ const c5=card(R,"Coaching à venir",co.length); const ul=h("ul",{class:"rows"}); co.sort((a,b)=>a.d.localeCompare(b.d)).forEach(x=>{ const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><a href="#/j/'+x.j.id+'/seance/'+x.n+'"><b>'+esc(x.j.nom)+'</b></a><span class="faint">'+esc(coachTheme(x.j,x.n))+' · semaine du '+esc(U.fmtDate(x.d))+'</span></div>'; ul.appendChild(li); }); c5.appendChild(ul); }
+};
+
+/* ================================================================ Dossier d'un jeune */
+IO.V6.jeune=async(main,id,tab)=>{
+  const App=A(); if(App.banner(main)) return;
+  const j=await App.getJ(id); if(!j){ main.appendChild(h("p",{class:"empty"},"Dossier introuvable.")); return; }
+  ensure(j); const k=kind(j); tab=tab||"parcours"; if(tab==="suivi") tab="parcours";
+  main.appendChild(h("a",{class:"back",href:"#/jeunes"},"‹ Jeunes"));
+  const hero=h("section",{class:"hero"}); const age=U.ageOf(j.naissance);
+  const left=h("div"); left.innerHTML='<h1>'+esc(j.nom||"Sans nom")+'</h1><div class="meta">'+[label6(j),age!=null?age+" ans":"",j.referent?"Suivi par "+esc(j.referent):"",finished(j)?"Parcours terminé":""].filter(Boolean).join(" · ")+'</div>'+(k&&k!=="pole"?progress(j,true):"");
+  hero.appendChild(left);
+  const act=h("div",{class:"hero-act"});
+  if(!finished(j)){
+    if(k==="pole"){ const b=h("a",{class:"btn primary",href:"#/j/"+j.id},"Nouveau passage"); b.addEventListener("click",e=>{ e.preventDefault(); passageDialog(j); }); act.appendChild(b); }
+    else if(k){ const n=nextN(j); act.appendChild(h("a",{class:"btn primary",href:"#/j/"+j.id+"/seance/"+n},"Ouvrir la "+(typeOf(j,n)==="coaching"?"séance de coaching":"séance "+n))); }
+  }
+  const e=IO.premier(j); const pe=h("button",{type:"button",class:"btn"},e?"Premier entretien":"Faire le premier entretien"); pe.addEventListener("click",()=>{ let en=IO.premier(j); if(!en){ en={id:U.uid("e"),type:"premier",createdAt:U.now(),updatedAt:U.now(),data:IO.blankEntretien(j,App.settings)}; j.entretiens.push(en); App.save(j); } App.go("#/j/"+j.id+"/e/"+en.id); }); act.appendChild(pe);
+  hero.appendChild(act); main.appendChild(hero);
+  const T=[["parcours",k==="pole"?"Passages":"Séances"]]; if(k!=="pole") T.push(["coaching","Coaching"]); T.push(["objectifs","Objectifs et actions"],["candidatures","Candidatures"],["documents","Documents"],["profil","Profil"]);
+  const tabs=h("nav",{class:"tabs",role:"tablist"}); T.forEach(([key,t])=>tabs.appendChild(h("a",{href:"#/j/"+j.id+(key==="parcours"?"":"/"+key),class:key===tab?"on":"",role:"tab","aria-selected":String(key===tab)},t))); main.appendChild(tabs);
+  const body=h("div"); main.appendChild(body);
+  if(tab==="parcours") return k==="pole"?tabPassages(body,j):tabSeances(body,j);
+  if(tab==="coaching") return tabCoaching(body,j);
+  if(tab==="objectifs"){ return IO.Suivi.tabParcours(body,j); }
+  if(tab==="suivis") return IO.Suivi.tabSuivis(body,j);
+  if(tab==="candidatures") return IO.Suivi.tabCandidatures(body,j);
+  if(tab==="documents") return App.tabDocuments(body,j);
+  if(tab==="profil") return App.tabProfil(body,j);
+};
+
+function progControls(j,box){
+  const App=A(); const row=h("div",{class:"ctrl-row"});
+  const pd=h("div"); pd.appendChild(h("span",{class:"flab"},"Programme")); const ps=h("select",{class:"f","aria-label":"Programme"});
+  ps.innerHTML=REF.PROG_CHOIX.map(c=>'<option value="'+esc(c.v)+'"'+(c.v===(j.programme||"")||(!c.v&&!kind(j))?" selected":"")+'>'+esc(c.t)+'</option>').join("")+(j.programme&&!REF.PROG_CHOIX.some(c=>c.v===j.programme)?'<option selected>'+esc(j.programme)+'</option>':'');
+  ps.addEventListener("change",()=>{ j.programme=ps.value; delete j.parcours.nb; App.save(j); App.route(); }); pd.appendChild(ps); row.appendChild(pd);
+  const dd=h("div"); dd.appendChild(h("span",{class:"flab"},"Début")); const di=h("input",{class:"f",type:"date","aria-label":"Début de l'accompagnement"}); di.value=debutOf(j); di.addEventListener("change",()=>{ j.parcours.debut=di.value; App.save(j); App.route(); }); dd.appendChild(di); row.appendChild(dd);
+  if(kind(j)&&kind(j)!=="pole"){
+    const nd=h("div"); nd.appendChild(h("span",{class:"flab"},"Nombre de séances")); const st=h("div",{class:"stepper"}); const minus=h("button",{type:"button","aria-label":"Une séance de moins"},"−"), val=h("b",null,String(nbSeances(j))), plus=h("button",{type:"button","aria-label":"Une séance de plus"},"+");
+    const set=v=>{ v=Math.max(Math.max(1,live(j.seances).filter(isDone).reduce((m,s)=>Math.max(m,s.n),0)),Math.min(60,v)); j.parcours.nb=v; App.save(j); App.route(); };
+    minus.addEventListener("click",()=>set(nbSeances(j)-1)); plus.addEventListener("click",()=>set(nbSeances(j)+1)); st.append(minus,val,plus); nd.appendChild(st); row.appendChild(nd);
+  }
+  box.appendChild(row);
+}
+function endBlock(j,box,unit){
+  const App=A(); const w=h("div",{class:"endbox"});
+  if(finished(j)){
+    const s=(REF.SORTIE.find(x=>x.k===j.sortie)||{}).t||"—";
+    w.innerHTML='<div><b>Parcours terminé</b><div class="sub-n">'+esc(U.fmtDate(j.parcours.finReelle))+' · '+esc(s)+' · '+(unit==="passages"?live(j.passages).length+" passage(s)":doneCount(j)+" séance(s) réalisée(s) sur "+(nbSeances(j)||"—"))+'</div></div>';
+    const r=h("button",{type:"button",class:"btn"},"Rouvrir le parcours"); r.addEventListener("click",()=>{ j.statut="actif"; App.save(j); App.route(); }); w.appendChild(r);
+  } else {
+    w.innerHTML='<div class="sub-n">Le jeune a trouvé une solution, arrête ou change de voie ? On clôt le parcours, avec le motif, pour les statistiques.</div>';
+    const b=h("button",{type:"button",class:"btn"},"Terminer le parcours"); b.addEventListener("click",()=>endDialog(j)); w.appendChild(b);
+  }
+  box.appendChild(w);
+}
+function endDialog(j){
+  const App=A();
+  App.modal('<div class="sheet-h"><h2>Terminer le parcours</h2></div><div class="field"><label>Situation à la sortie</label><div id="ed_s"></div></div><div class="row2"><div><label class="flab" for="ed_d">Date</label><input class="f" type="date" id="ed_d"></div></div><div class="field"><label for="ed_n">Précision (facultatif)</label><input class="f" id="ed_n" placeholder="Ex. CDD chez …, apprentissage d\'employé de commerce"></div><div class="btn-row"><button class="btn primary" type="button" id="ed_ok">Terminer</button><button class="btn" type="button" id="ed_no">Annuler</button></div>',
+  (sh,close)=>{ let s=j.sortie||""; sh.querySelector("#ed_d").value=U.today();
+    const box=sh.querySelector("#ed_s"); const w=h("div",{class:"opts"}); REF.SORTIE.forEach(o=>{ const b=h("button",{type:"button",class:"opt",role:"radio","aria-checked":String(o.k===s)},'<span class="box"></span><span class="t">'+esc(o.t)+'</span>'); b.addEventListener("click",()=>{ s=o.k; w.querySelectorAll(".opt").forEach((x,i)=>x.setAttribute("aria-checked",String(REF.SORTIE[i].k===s))); }); w.appendChild(b); }); box.appendChild(w);
+    sh.querySelector("#ed_no").addEventListener("click",close);
+    sh.querySelector("#ed_ok").addEventListener("click",()=>{ if(!s){ U.toast("Choisis la situation à la sortie"); return; } j.sortie=s; j.statut="clos"; j.parcours.finReelle=sh.querySelector("#ed_d").value||U.today(); j.parcours.finNote=sh.querySelector("#ed_n").value; App.save(j); close(); App.route(); });
+  });
+}
+function tabSeances(body,j){
+  const App=A(); const card=h("section",{class:"dcard"}); body.appendChild(card);
+  progControls(j,card);
+  if(!kind(j)){ card.appendChild(h("p",{class:"sub-n",style:"margin-top:16px"},"Choisis le programme : les séances se planifient automatiquement (Élan : 13, Tremplin : 16, une par semaine). Pour le Pôle numérique, on note chaque passage.")); return; }
+  const N=maxN(j), nx=nextN(j); const ul=h("ul",{class:"seances",style:"margin-top:14px"}); card.appendChild(ul);
+  for(let n=1;n<=N;n++){
+    const s=getS(j,n), t=typeOf(j,n), done=isDone(s), extra=n>nbSeances(j);
+    const st=done?(s.presence==="present"?"faite":"manquee"):(n===nx&&!finished(j)?"next":"");
+    const sub=done?(s.presence==="present"?"Faite le "+U.fmtDate(s.date)+(s.accomp?" avec "+s.accomp:"")+(s.resume?" · "+s.resume.replace(/\s+/g," ").slice(0,140):""):(s.presence==="absent"?"Absent·e":"Excusé·e")+" le "+U.fmtDate(s.date)):(finished(j)?"Non réalisée":"Prévue la semaine du "+U.fmtDate(plannedDate(j,n)));
+    const li=h("li"); const a=h("a",{class:"sess "+st,href:"#/j/"+j.id+"/seance/"+n});
+    a.innerHTML='<span class="num">'+n+'</span><div><div class="t">'+esc(t==="coaching"?"Coaching "+coachIdx(j,n):"Séance "+n)+(t==="coaching"?' <span class="tag coach">'+esc(coachTheme(j,n))+'</span>':'')+(extra?' <span class="tag">en plus</span>':'')+'</div><div class="s">'+esc(sub)+'</div></div><span class="go" aria-hidden="true">›</span>';
+    li.appendChild(a); ul.appendChild(li);
+  }
+  endBlock(j,card,"seances");
+  const old=live(j.suivis); if(old.length) body.appendChild(h("p",{class:"sub-n",style:"margin-top:16px"},'Les anciens suivis détaillés restent consultables : <a href="#/j/'+j.id+'/suivis">voir les '+old.length+' suivi(s)</a>.'));
+}
+function tabCoaching(body,j){
+  const App=A(); const N=maxN(j);
+  const card=h("section",{class:"dcard"}); body.appendChild(card);
+  card.appendChild(h("h2",null,"Séances de coaching"));
+  card.appendChild(h("p",{class:"sub-n"},"Avec la coach emploi : 1. gestion du stress et sophrologie, 2. simulation d'entretien, 3. coaching. Elles se placent par défaut aux séances "+REF.COACH_POS.join(" et ")+" ; tu peux en ajouter une troisième ou les déplacer."));
+  const ul=h("ul",{class:"seances",style:"margin-top:12px"}); card.appendChild(ul); let count=0;
+  for(let n=1;n<=N;n++){ if(typeOf(j,n)!=="coaching") continue; count++; const s=getS(j,n), done=isDone(s);
+    const li=h("li"); const a=h("a",{class:"sess "+(done?(s.presence==="present"?"faite":"manquee"):""),href:"#/j/"+j.id+"/seance/"+n});
+    a.innerHTML='<span class="num">'+coachIdx(j,n)+'</span><div><div class="t">'+esc(coachTheme(j,n))+' <span class="tag">séance '+n+'</span></div><div class="s">'+esc(done?(s.presence==="present"?"Faite le "+U.fmtDate(s.date)+(s.accomp?" avec "+s.accomp:""):"Manquée le "+U.fmtDate(s.date)):"Prévue la semaine du "+U.fmtDate(plannedDate(j,n)))+'</div></div><span class="go">›</span>';
+    li.appendChild(a); ul.appendChild(li); }
+  if(!count) ul.appendChild(h("li",{class:"empty"},"Aucune séance de coaching prévue."));
+  const free=[]; for(let n=1;n<=N;n++){ if(typeOf(j,n)!=="coaching"&&!isDone(getS(j,n))) free.push(n); }
+  if(free.length&&!finished(j)){ const r=h("div",{class:"btn-row"}); const sel=h("select",{class:"f","aria-label":"Séance à transformer en coaching",style:"max-width:220px"}); sel.innerHTML=free.map(n=>'<option value="'+n+'">Séance '+n+' (sem. du '+U.fmtDate(plannedDate(j,n))+')</option>').join("");
+    const b=h("button",{type:"button",class:"btn"},"Ajouter une séance de coaching"); b.addEventListener("click",()=>{ const n=+sel.value; const s=seanceFor(j,n); s.type="coaching"; s.theme=coachTheme(j,n); IO.touch(s); App.save(j); App.route(); }); r.append(sel,b); card.appendChild(r); }
+}
+
+/* ================================================================ Pôle numérique : passages */
+function passageDialog(j,p){
+  const App=A(); const isNew=!p; p=p||{id:U.uid("p"),date:U.today(),fait:"",accomp:me(),createdAt:U.now(),updatedAt:U.now()};
+  App.modal('<div class="sheet-h"><h2>'+(isNew?"Nouveau passage":"Passage du "+esc(U.fmtDate(p.date)))+'</h2></div><div class="row2"><div><label class="flab" for="pa_d">Date</label><input class="f" type="date" id="pa_d"></div><div><label class="flab" for="pa_a">Avec</label><input class="f" id="pa_a"></div></div><div class="field"><label for="pa_f">Ce qui a été fait</label><textarea class="f" id="pa_f" placeholder="Ex. CV mis à jour, inscription job-room, aide pour un formulaire OCPM…"></textarea></div><div class="btn-row"><button class="btn primary" type="button" id="pa_ok">Enregistrer</button>'+(isNew?'':'<button class="btn danger" type="button" id="pa_del">Supprimer</button>')+'<button class="btn" type="button" id="pa_no">Annuler</button></div>',
+  (sh,close)=>{ sh.querySelector("#pa_d").value=p.date; sh.querySelector("#pa_a").value=p.accomp||""; sh.querySelector("#pa_f").value=p.fait||""; sh.querySelector("#pa_f").focus();
+    sh.querySelector("#pa_no").addEventListener("click",close);
+    const del=sh.querySelector("#pa_del"); if(del) del.addEventListener("click",()=>{ p.deleted=true; IO.touch(p); App.save(j); close(); App.route(); });
+    sh.querySelector("#pa_ok").addEventListener("click",()=>{ p.date=sh.querySelector("#pa_d").value||U.today(); p.accomp=sh.querySelector("#pa_a").value; p.fait=sh.querySelector("#pa_f").value; IO.touch(p); if(isNew) ensure(j).passages.push(p); App.save(j); close(); App.route(); }); });
+}
+function tabPassages(body,j){
+  const card=h("section",{class:"dcard"}); body.appendChild(card); progControls(j,card);
+  const list=live(j.passages).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  const head=h("div",{class:"endbox",style:"border-top:none;margin-top:8px;padding-top:0"}); head.innerHTML='<div><b>'+list.length+' passage'+(list.length>1?"s":"")+'</b><div class="sub-n">Une fiche par venue au Pôle numérique.</div></div>';
+  const b=h("button",{type:"button",class:"btn primary"},"Nouveau passage"); b.addEventListener("click",()=>passageDialog(j)); head.appendChild(b); card.appendChild(head);
+  const ul=h("ul",{class:"seances"}); card.appendChild(ul);
+  if(!list.length) ul.appendChild(h("li",{class:"empty"},"Aucun passage noté."));
+  list.forEach((p,i)=>{ const li=h("li"); const a=h("a",{class:"sess faite",href:"#"}); a.innerHTML='<span class="num">'+(list.length-i)+'</span><div><div class="t">'+esc(U.dateShort(p.date))+'</div><div class="s">'+esc((p.accomp?"Avec "+p.accomp+" · ":"")+(p.fait||"—"))+'</div></div><span class="go">›</span>'; a.addEventListener("click",e=>{ e.preventDefault(); passageDialog(j,p); }); li.appendChild(a); ul.appendChild(li); });
+  endBlock(j,card,"passages");
+}
+
+/* ================================================================ Une séance */
+IO.Fiche.seance=(j,s)=>{
+  const e=esc, row=(k,v)=>v?'<tr><th>'+e(k)+'</th><td>'+e(v).replace(/\n/g,"<br>")+'</td></tr>':"";
+  const t=s.type==="coaching"?"Coaching "+coachIdx(j,s.n)+" – "+(s.theme||coachTheme(j,s.n)):"Séance "+s.n;
+  let o='<header class="fh"><div class="logo">Inserti<span>O</span></div><div><h1>'+e(t)+'</h1><div class="meta">'+e(j.nom||"")+" · "+e(label6(j))+(nbSeances(j)?" · séance "+s.n+" sur "+nbSeances(j):"")+'<br>'+e(U.fmtDate(s.date))+(s.heure?" à "+e(U.fmtTime(s.heure)):"")+(s.accomp?" · avec "+e(s.accomp):"")+'</div></div></header><table>';
+  o+=row("Présence",((REF.PRESENCE6.find(x=>x.k===s.presence)||{}).t||"—").replace("·e","(e)"));
+  o+=row("Ce qui s'est passé",s.resume);
+  if(s.type==="coaching"){ o+=row("Exercices réalisés",s.exercices); o+=row("Ressenti du jeune",s.ressenti); o+=row("Recommandations",s.reco); }
+  o+=row("À transmettre pour la prochaine séance",s.transmis); o+='</table>';
+  const rp=(s.rappels||[]).filter(r=>!r.deleted); if(rp.length) o+='<h3>Rappels</h3><ul>'+rp.map(r=>'<li>'+e(r.t)+(r.done?" (fait)":"")+'</li>').join("")+'</ul>';
+  if(s.rdv_date) o+='<h3>Prochain rendez-vous</h3><p>'+e(IO.Msg.rdvLine(s.rdv_date,s.rdv_heure,s.rdv_lieu))+'</p>';
+  o+='<footer class="ff">Insertio Genève · document interne et confidentiel.</footer>';
+  return IO.Fiche.wrap(t+" – "+(j.nom||""),o);
+};
+function mailSeance(j,s){
+  const L=["Bonjour"+(U.firstName(j.nom)?" "+U.firstName(j.nom):"")+",",""];
+  const absent=s.presence&&s.presence!=="present";
+  if(absent) L.push("Tu n'as pas pu venir à notre rendez-vous du "+U.fmtDate(s.date)+". Ce n'est pas grave, on garde le contact.");
+  else L.push("Merci pour "+(s.type==="coaching"?"ta séance de coaching":"notre séance")+" du "+U.fmtDate(s.date)+".");
+  if(!absent&&s.pourJeune&&s.pourJeune.trim()) L.push("",s.pourJeune.trim());
+  const acts=live(j.actions).filter(a=>!a.done&&(a.qui==="Le jeune"||a.qui==="Le jeune + Insertio"));
+  if(acts.length){ L.push("","Ce que tu prépares pour la prochaine fois :"); acts.forEach(a=>L.push("- "+a.a+(a.quand?" (d'ici le "+U.fmtDate(a.quand)+")":""))); }
+  const missing=Object.entries(j.docs||{}).filter(([k,v])=>v&&v.demande&&!v.recu).map(([k,v])=>v.label||REF.docLabel(k));
+  if(missing.length){ L.push("","Documents encore à apporter :"); missing.forEach(x=>L.push("- "+x)); }
+  if(s.rdv_date) L.push("",(absent?"On te propose un nouveau rendez-vous : ":"Ton prochain rendez-vous : ")+IO.Msg.rdvLine(s.rdv_date,s.rdv_heure,s.rdv_lieu)+".");
+  L.push("","Si tu as une question ou un empêchement, réponds simplement à ce message.","","À bientôt,",(s.accomp||me()||"L'équipe")+" – Insertio");
+  const subj=absent?"Insertio – nouveau rendez-vous":(s.type==="coaching"?"Insertio – ta séance de coaching du ":"Insertio – suite de notre séance du ")+U.fmtDate(s.date);
+  return {subject:subj,body:L.join("\n")};
+}
+function syncRdv(j,s){
+  const rid="rdv-"+s.id; let r=j.rdv.find(x=>x.id===rid);
+  if(s.rdv_date){ if(!r){ r={id:rid,statut:"prevu",source:s.id}; j.rdv.push(r); } Object.assign(r,{date:s.rdv_date,heure:s.rdv_heure||"",lieu:s.rdv_lieu||"",objet:titleOf(j,s.n+1),accomp:s.accomp,deleted:false}); IO.touch(r); }
+  else if(r&&!r.deleted){ r.deleted=true; IO.touch(r); }
+  live(j.rdv).forEach(x=>{ if(x.statut==="prevu"&&x.date===s.date&&x.id!==rid&&isDone(s)){ x.statut=s.presence==="present"?"fait":s.presence; IO.touch(x); } });
+}
+
+IO.V6.seance=async(main,id,nStr)=>{
+  const App=A(); if(App.banner(main)) return;
+  const j=await App.getJ(id); if(!j){ main.appendChild(h("p",{class:"empty"},"Dossier introuvable.")); return; }
+  ensure(j); const n=Math.max(1,parseInt(nStr,10)||1); const s=seanceFor(j,n); const N=maxN(j);
+  if(!s.accomp) s.accomp=s.type==="coaching"?(IO.Team.data.membres.find(m=>/tulin|eden/i.test(m.nom))||{}).nom||me():me();
+  s.rappels=s.rappels||[];
+  const save=()=>{ IO.touch(s); syncRdv(j,s); App.save(j); };
+  main.classList.add("wrap-seance");
+  const top=h("div",{style:"display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"});
+  top.appendChild(h("a",{class:"back",href:"#/j/"+j.id},"‹ "+esc(j.nom||"Dossier")));
+  const pg=h("div",{class:"pager"}); pg.appendChild(h("a",{href:"#/j/"+j.id+"/seance/"+(n-1),"aria-label":"Séance précédente","aria-disabled":String(n<=1)},"‹")); pg.appendChild(h("a",{href:"#/j/"+j.id+"/seance/"+(n+1),"aria-label":"Séance suivante","aria-disabled":String(n>=N)},"›")); top.appendChild(pg);
+  main.appendChild(top);
+  const hd=h("div",{class:"v-head"}); const ttl=h("div"); main.appendChild(hd); hd.appendChild(ttl);
+  const renderTitle=()=>{ ttl.innerHTML='<h1>'+(s.type==="coaching"?"Coaching "+coachIdx(j,n):"Séance "+n)+'</h1><div class="meta">'+esc(j.nom||"")+' · '+esc(label6(j))+(nbSeances(j)?" · séance "+n+" sur "+nbSeances(j):"")+(s.type==="coaching"?" · "+esc(s.theme||coachTheme(j,n)):"")+'</div>'; };
+  renderTitle();
+  // Reprise de la séance précédente
+  const pv=prevDone(j,n);
+  if(pv&&(pv.transmis||(pv.rappels||[]).some(r=>!r.deleted))){
+    const rb=h("section",{class:"reprise"}); rb.appendChild(h("h3",null,"À reprendre de la "+esc(titleOf(j,pv.n).toLowerCase())+" ("+esc(U.fmtDate(pv.date))+(pv.accomp?", "+esc(pv.accomp):"")+")"));
+    if(pv.transmis) rb.appendChild(h("p",null,esc(pv.transmis)));
+    const ul=h("ul",{class:"rlist"}); (pv.rappels||[]).filter(r=>!r.deleted).forEach(r=>{ const li=h("li",{class:r.done?"done":""}); const cb=h("input",{type:"checkbox","aria-label":"Fait"}); cb.checked=!!r.done; cb.addEventListener("change",()=>{ r.done=cb.checked; r.doneAt=U.now(); IO.touch(pv); App.save(j); li.classList.toggle("done",cb.checked); }); li.append(cb,h("span",null,esc(r.t))); ul.appendChild(li); });
+    if(ul.children.length) rb.appendChild(ul); main.appendChild(rb);
+  }
+  const card=h("section",{class:"dcard"}); main.appendChild(card);
+  // Date, heure, présence, type
+  const g=h("div",{class:"ctrl-row"});
+  const dd=h("div"); dd.appendChild(h("span",{class:"flab"},"Date")); const di=inp("date",s.date||U.today(),v=>{ s.date=v; save(); },{"aria-label":"Date de la séance"}); if(!s.date) s.date=di.value; dd.appendChild(di); g.appendChild(dd);
+  const ad=h("div"); ad.appendChild(h("span",{class:"flab"},"Avec")); ad.appendChild(inp("text",s.accomp,v=>{ s.accomp=v; save(); },{"aria-label":"Accompagnant·e"})); g.appendChild(ad);
+  card.appendChild(g);
+  const pf=h("div",{class:"field"}); pf.appendChild(h("label",null,"Présence")); pf.appendChild(segc(REF.PRESENCE6,s.presence||"",v=>{ s.presence=v; save(); })); card.appendChild(pf);
+  const tf=h("div",{class:"field"}); tf.appendChild(h("label",null,"Type de séance")); const coachBox=h("div");
+  tf.appendChild(segc([{k:"suivi",t:"Accompagnement"},{k:"coaching",t:"Coaching"}],s.type||"suivi",v=>{ s.type=v; if(v==="coaching"&&!s.theme) s.theme=coachTheme(j,n); save(); renderTitle(); renderCoach(); }));
+  card.appendChild(tf); card.appendChild(coachBox);
+  function renderCoach(){ coachBox.innerHTML=""; if(s.type!=="coaching") return;
+    const th=h("select",{class:"f","aria-label":"Thème du coaching"}); th.innerHTML=REF.COACHING.map(c=>'<option'+(c.t===(s.theme||coachTheme(j,n))?" selected":"")+'>'+esc(c.t)+'</option>').join(""); th.addEventListener("change",()=>{ s.theme=th.value; save(); renderTitle(); }); field(coachBox,"Thème",th);
+    field(coachBox,"Exercices réalisés",ta(s.exercices,"Ex. respiration carrée, ancrage, visualisation ; simulation avec questions RH…",v=>{ s.exercices=v; save(); }));
+    field(coachBox,"Ressenti du jeune",ta(s.ressenti,"Comment le jeune a vécu la séance, ce qui l'aide",v=>{ s.ressenti=v; save(); }));
+    field(coachBox,"Recommandations pour la suite",ta(s.reco,"Ce que la coach conseille de travailler",v=>{ s.reco=v; save(); })); }
+  renderCoach();
+  // Résumé + dictée
+  const rs=ta(s.resume,"Ce qui a été fait, ce que le jeune a dit, les avancées…",v=>{ s.resume=v; save(); });
+  const rf=field(card,"Ce qui s'est passé",rs);
+  const micRow=h("div",{class:"btn-row",style:"margin-top:10px;align-items:center"}); const interim=h("div",{class:"interim"}); rf.append(micRow,interim);
+  // Transmissions + rappels
+  const tr=ta(s.transmis,"Pour la personne qui fera la prochaine séance : où on en est, à quoi faire attention…",v=>{ s.transmis=v; save(); });
+  field(card,"À transmettre pour la prochaine séance",tr);
+  const rf2=h("div",{class:"field"}); rf2.appendChild(h("label",null,"Rappels pour la prochaine séance")); const rl=h("ul",{class:"rlist"}); rf2.appendChild(rl);
+  const add=h("div",{class:"inline-add"}); const ri=h("input",{class:"f",placeholder:"Ex. vérifier l'envoi de la candidature Migros","aria-label":"Nouveau rappel"}); const rb2=h("button",{type:"button",class:"btn"},"Ajouter"); add.append(ri,rb2); rf2.appendChild(add); card.appendChild(rf2);
+  const renderR=()=>{ rl.innerHTML=""; s.rappels.filter(r=>!r.deleted).forEach(r=>{ const li=h("li",{class:r.done?"done":""}); const cb=h("input",{type:"checkbox","aria-label":"Fait"}); cb.checked=!!r.done; cb.addEventListener("change",()=>{ r.done=cb.checked; save(); li.classList.toggle("done",r.done); }); const x=h("button",{type:"button","aria-label":"Retirer"},"×"); x.addEventListener("click",()=>{ r.deleted=true; save(); renderR(); }); li.append(cb,h("span",null,esc(r.t)),x); rl.appendChild(li); }); };
+  const addR=t=>{ t=String(t||"").trim(); if(!t) return; s.rappels.push({id:U.uid("r"),t:t.charAt(0).toUpperCase()+t.slice(1),done:false}); save(); renderR(); };
+  rb2.addEventListener("click",()=>{ addR(ri.value); ri.value=""; ri.focus(); }); ri.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); addR(ri.value); ri.value=""; } });
+  renderR();
+  // Dictée
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    const mb=h("button",{type:"button",class:"btn mic"},"🎙 Dicter la séance"); micRow.appendChild(mb);
+    micRow.appendChild(h("span",{class:"hint",style:"margin:0"},"Parle normalement. Commence une phrase par « rappel » pour créer un rappel."));
+    let rec=null, on=false;
+    const stop=()=>{ on=false; mb.classList.remove("on"); mb.textContent="🎙 Dicter la séance"; interim.textContent=""; try{ rec&&rec.stop(); }catch(e){} };
+    mb.addEventListener("click",()=>{
+      if(on){ stop(); return; }
+      rec=new SR(); rec.lang="fr-FR"; rec.continuous=true; rec.interimResults=true;
+      rec.onresult=ev=>{ let tmp=""; for(let i=ev.resultIndex;i<ev.results.length;i++){ const r=ev.results[i], t=r[0].transcript.trim(); if(!t) continue;
+          if(r.isFinal){ if(RAPPEL_RE.test(t)){ addR(t.replace(RAPPEL_RE,"")); } else { const sent=t.charAt(0).toUpperCase()+t.slice(1)+(/[.!?]$/.test(t)?"":"."); s.resume=(s.resume?s.resume.replace(/\s*$/,"")+" ":"")+sent; rs.value=s.resume; save(); } }
+          else tmp+=t+" "; }
+        interim.textContent=tmp; };
+      rec.onerror=ev=>{ if(ev.error==="not-allowed"||ev.error==="service-not-allowed") U.toast("Micro refusé : autorise le micro pour InsertiO dans Chrome (icône à gauche de l'adresse)",6000); else if(ev.error!=="no-speech") U.toast("Dictée interrompue ("+ev.error+")"); stop(); };
+      rec.onend=()=>{ if(on){ try{ rec.start(); }catch(e){ stop(); } } };
+      try{ rec.start(); on=true; mb.classList.add("on"); mb.textContent="Arrêter la dictée"; }catch(e){ U.toast("Dictée impossible : "+(e.message||e)); }
+    });
+    App.view={destroy(){ stop(); }};
+  } else micRow.appendChild(h("span",{class:"hint",style:"margin:0"},"Dictée : utilise Chrome, ou la touche Windows + H dans le champ."));
+  // Message libre pour le jeune
+  field(card,"Message pour le jeune (facultatif)",ta(s.pourJeune,"Une ou deux phrases reprises dans le mail : ce que vous avez fait ensemble, un encouragement…",v=>{ s.pourJeune=v; save(); }),"Les notes internes ci-dessus ne sont jamais envoyées au jeune.");
+  // Prochain rendez-vous
+  const rd=h("div",{class:"field"}); rd.appendChild(h("label",null,"Prochain rendez-vous")); const rg=h("div",{class:"ctrl-row"});
+  const r1=inp("date",s.rdv_date,v=>{ s.rdv_date=v; save(); },{"aria-label":"Date du prochain rendez-vous"}); const r2=inp("time",s.rdv_heure,v=>{ s.rdv_heure=v; save(); },{"aria-label":"Heure"}); if(!s.rdv_lieu) s.rdv_lieu=App.settings.lieu||""; const r3=inp("text",s.rdv_lieu,v=>{ s.rdv_lieu=v; save(); },{"aria-label":"Lieu"});
+  if(!s.rdv_date&&n<N){ r1.placeholder=""; r1.title="Proposé : "+U.fmtDate(plannedDate(j,n+1)); }
+  rg.append(r1,r2,r3); rd.appendChild(rg);
+  if(!s.rdv_date&&n<N){ const sg=h("button",{type:"button",class:"btn",style:"margin-top:10px"},"Même jour dans une semaine ("+U.fmtDate(addDays(s.date||U.today(),7))+")"); sg.addEventListener("click",()=>{ s.rdv_date=addDays(s.date||U.today(),7); s.rdv_heure=s.rdv_heure||s.heure||""; r1.value=s.rdv_date; save(); sg.remove(); }); rd.appendChild(sg); }
+  card.appendChild(rd);
+  // Barre d'actions : 3 boutons
+  const bar=h("div",{class:"actionbar"}); const bi=h("div",{class:"in"}); bar.appendChild(bi); main.appendChild(bar);
+  const bSave=h("button",{type:"button",class:"btn primary"},"Enregistrer"); bi.appendChild(bSave);
+  bSave.addEventListener("click",async()=>{ if(!s.presence){ s.presence="present"; } save(); await App.flushAll();
+    try{ const blob=await IO.pdfBlob(IO.Fiche.seance(j,s)); const name=(s.type==="coaching"?"Coaching_"+coachIdx(j,n):"Seance_"+String(n).padStart(2,"0"))+"_"+(s.date||U.today())+".pdf"; await IO.Store.addFile(j.id,"Fiches",blob,name,true); U.toast("Séance enregistrée · fiche PDF rangée dans le dossier",4500); }
+    catch(e){ U.toast("Séance enregistrée, mais la fiche PDF n'a pas pu être créée : "+(e.message||e),6000); }
+    App.go("#/j/"+j.id); });
+  const bMail=IO.Team.richMail(h("a",{class:"btn",href:"#"},"Mail au jeune"),j.mail,()=>mailSeance(j,s));
+  bMail.addEventListener("click",()=>{ if(!j.mail) U.toast("Pas d'e-mail dans le profil du jeune : ajoute-le dans « Profil »",5000); },true);
+  bi.appendChild(bMail);
+  bi.appendChild(IO.Team.outlookBtn(j,()=>s.rdv_date?{date:s.rdv_date,heure:s.rdv_heure,lieu:s.rdv_lieu,objet:titleOf(j,n+1)}:null,"Calendrier Outlook"));
+  return App.view;
+};
+
+/* ================================================================ Onglet Coaching (vue d'ensemble) */
+IO.V6.coaching=main=>{
+  const App=A(); if(App.banner(main)) return;
+  main.appendChild(h("div",{class:"v-head"},'<div><h1>Coaching</h1><div class="meta">Les séances avec la coach emploi, pour tous les jeunes.</div></div>'));
+  const js=App.sorted().map(ensure).filter(j=>["elan","tremplin"].includes(kind(j)));
+  const up=[], done=[];
+  js.forEach(j=>{ const N=maxN(j); for(let n=1;n<=N;n++){ if(typeOf(j,n)!=="coaching") continue; const s=getS(j,n); if(isDone(s)) done.push({j,n,s,d:s.date}); else if(j.statut!=="clos") up.push({j,n,d:plannedDate(j,n)}); } });
+  const grid=h("div",{class:"coach-grid"}); main.appendChild(grid);
+  const box=(t,items,sub)=>{ const c=h("section",{class:"dcard"}); c.appendChild(h("h2",null,esc(t)+(items.length?' <span class="count">'+items.length+'</span>':''))); const ul=h("ul",{class:"seances"}); c.appendChild(ul);
+    if(!items.length) ul.appendChild(h("li",{class:"empty"},t==="À venir"?"Aucune séance de coaching prévue.":"Aucune séance réalisée pour l'instant."));
+    items.forEach(x=>{ const li=h("li"); const a=h("a",{class:"sess"+(x.s?" faite":""),href:"#/j/"+x.j.id+"/seance/"+x.n}); a.innerHTML='<span class="num">'+coachIdx(x.j,x.n)+'</span><div><div class="t">'+esc(x.j.nom||"")+'</div><div class="s">'+esc(coachTheme(x.j,x.n))+' · '+esc(sub(x))+'</div></div><span class="go">›</span>'; li.appendChild(a); ul.appendChild(li); });
+    grid.appendChild(c); };
+  box("À venir",up.sort((a,b)=>a.d.localeCompare(b.d)),x=>"semaine du "+U.fmtDate(x.d));
+  box("Réalisées",done.sort((a,b)=>String(b.d).localeCompare(String(a.d))).slice(0,30),x=>"le "+U.fmtDate(x.d)+(x.s.accomp?" avec "+x.s.accomp:""));
+};
+
+/* ================================================================ Statistiques */
+const SORTIE_POS=["emploi","apprent","stage","formation"];
+const baseCsv=IO.statsCsv;
+IO.statsCsv=jeunes=>{
+  const lines=baseCsv(jeunes).replace(/^﻿/,"").split("\r\n"); const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  lines[0]+=";"+["programme_type","seances_prevues","seances_realisees","seances_manquees","coaching_realises","passages_pole_numerique","parcours_termine","date_fin","sortie_positive"].map(q).join(";");
+  jeunes.forEach((j,i)=>{ ensure(j); const ss=live(j.seances); lines[i+1]+=";"+[kind(j)||"",nbSeances(j)||"",ss.filter(s=>s.presence==="present"&&s.date).length,ss.filter(s=>s.presence==="absent"||s.presence==="excuse").length,ss.filter(s=>s.type==="coaching"&&s.presence==="present").length,live(j.passages).length,finished(j)?"oui":"",j.parcours.finReelle||"",finished(j)?(SORTIE_POS.includes(j.sortie)?"oui":"non"):""].map(q).join(";"); });
+  return "﻿"+lines.join("\r\n");
+};
+const basePanel=IO.Suivi.statsPanel;
+IO.Suivi.statsPanel=(box,jeunes)=>{
+  const js=jeunes.map(ensure); const fin=js.filter(finished), pos=fin.filter(j=>SORTIE_POS.includes(j.sortie));
+  const seances=js.reduce((a,j)=>a+doneCount(j),0), coach=js.reduce((a,j)=>a+live(j.seances).filter(s=>s.type==="coaching"&&s.presence==="present").length,0), pass=js.reduce((a,j)=>a+live(j.passages).length,0);
+  const moy=fin.filter(j=>kind(j)!=="pole").length?Math.round(fin.filter(j=>kind(j)!=="pole").reduce((a,j)=>a+doneCount(j),0)/fin.filter(j=>kind(j)!=="pole").length*10)/10:"—";
+  const k=(n,l)=>'<div class="kpi"><b>'+n+'</b><span>'+esc(l)+'</span></div>';
+  box.appendChild(h("div",{class:"kpis",style:"margin-bottom:16px"},k(seances,"séances réalisées")+k(coach,"séances de coaching")+k(pass,"passages Pôle numérique")+k(fin.length,"parcours terminés")+k(pos.length+" / "+fin.length,"sorties en emploi, stage, apprentissage ou formation")+k(moy,"séances en moyenne par parcours terminé")));
+  basePanel(box,jeunes);
 };
 })();
 
