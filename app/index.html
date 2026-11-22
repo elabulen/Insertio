@@ -48,6 +48,9 @@ a{color:var(--blue)}
 .nav a:hover{background:var(--surface-2);color:var(--text)}
 .nav a.on{background:var(--blue-dim);color:var(--blue)}
 .save-state{font-size:12px;color:var(--text-faint);white-space:nowrap}
+.sync-chip{font-size:12px;font-weight:600;white-space:nowrap;text-decoration:none;padding:4px 10px;border-radius:999px;background:#fdecec;color:#b3261e}
+.sync-chip[data-ok="1"]{background:#e8f6ee;color:#1e7a46}
+.sync-chip:empty{display:none}
 .save-state[data-state="err"]{color:var(--crit);font-weight:600}
 .save-state[data-state="saving"]{color:var(--text-dim)}
 
@@ -461,6 +464,7 @@ textarea.f{min-height:96px;line-height:1.5}
     <a href="#/">Accueil</a><a href="#/jeunes">Jeunes</a><a href="#/coaching">Coaching</a><a href="#/guide">Guide</a><a href="#/reglages">Réglages</a>
   </nav>
   <button type="button" class="tbtn" id="whoBtn" hidden title="Changer de profil"></button><button type="button" class="tbtn" id="installBtn" hidden>Installer</button>
+  <a class="sync-chip" id="syncChip" href="#/reglages" data-ok="0"></a>
   <span class="save-state" id="saveState" aria-live="polite"></span>
 </div></header>
 <main id="main" class="wrap"><p class="empty">Chargement…</p></main>
@@ -473,7 +477,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "6.0"; IO.ARTIFACT = false;
+IO.VERSION = "6.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1108,13 +1112,17 @@ const Store = IO.Store = {
   async init(){
     try{ if(navigator.storage && navigator.storage.persist) await navigator.storage.persist(); }catch(e){}
     const mode=await IO.KV.get("mode"); const h=await IO.KV.get("rootHandle");
-    if(mode==="folder" && h){ root=h; this.a=Folder; }
+    if(mode==="folder" && h){ root=h; this.a=Folder; return this.status(); }
+    if(mode!=="local") return "none"; // nouvel ordinateur : on n'enregistre rien tant que le dossier partagé n'est pas choisi
     return this.status();
   },
   status(){ return this.a.status(); },
   async pickFolder(){
     const h=await window.showDirectoryPicker({id:"insertio-jeunes",mode:"readwrite"});
+    if(/les jeunes$/i.test(h.name.trim())) throw new Error("choisis le dossier du dessus (« Documents Officiels InsertiO »), pas « "+h.name+" »");
     if((await perm(h,true))!=="granted") throw new Error("permission");
+    let ok=false; for await (const [n,x] of h.entries()){ if(x.kind==="directory" && (n==="Reglages" || /^\d*\s*les jeunes$/i.test(n.trim()))){ ok=true; break; } }
+    if(!ok && !confirm("Le dossier « "+h.name+" » ne contient ni « 06 Les Jeunes » ni « Reglages ».\n\nEst-ce bien le dossier partagé de l'équipe ?")) throw new Error("dossier non confirmé");
     root=h; jdName=null; dirMap.clear(); this.a=Folder; await IO.KV.set("rootHandle",h); await IO.KV.set("mode","folder"); return h.name;
   },
   async useHandle(h){ root=h; dirMap.clear(); this.a=Folder; await IO.KV.set("mode","folder"); try{ await IO.KV.set("rootHandle",h); }catch(e){} }, // tests
@@ -1808,7 +1816,7 @@ document.addEventListener("click",e=>{ const a=e.target.closest&&e.target.closes
 async function route(){
   if(App.view&&App.view.destroy) App.view.destroy(); App.view=null;
   await flushAll();
-  const hsh=IO.navHash||"#/"; const main=$("main"); main.innerHTML=""; main.className="wrap";
+  const hsh=IO.navHash||"#/"; const main=$("main"); main.innerHTML=""; main.className="wrap"; syncChip();
   document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("on", hsh===a.getAttribute("href") || (a.getAttribute("href")==="#/jeunes" && hsh.startsWith("#/j/"))));
   if(App.status==="ok" && IO.Team.needsLogin() && !hsh.startsWith("#/reglages")){ IO.Team.loginView(main); return; }
   for(const [re,fn] of routes){ const m=hsh.match(re); if(m){ App.view=(await fn(main,...m.slice(1)))||null; window.scrollTo(0,0); return; } }
@@ -1816,9 +1824,26 @@ async function route(){
 }
 
 
+async function connectFolder(){
+  try{
+    const n=await Store.pickFolder(); App.status="ok";
+    let rep=null; try{ const loc=await Store.localAdapter.list(); if(loc.length){ U.toast("Transfert des "+loc.length+" dossier(s) de cet ordinateur vers le dossier partagé…",4000); rep=await Store.copyLocalToFolder(); } }catch(e){ U.toast("Transfert impossible : "+(e.message||e),6000); }
+    await IO.Team.load(); await loadAll();
+    U.toast(rep?("Dossier partagé « "+n+" » connecté · "+rep.jeunes+" dossier(s) et "+rep.fichiers+" fichier(s) transférés"):("Dossier partagé « "+n+" » connecté"),6000);
+    route();
+  }catch(e){ if(e.name!=="AbortError") U.toast("Dossier non choisi : "+(e.message||e),7000); }
+}
+App.connectFolder=connectFolder;
+function syncChip(){ const el=$("syncChip"); if(!el) return; const f=Store.mode==="folder"&&App.status==="ok"; el.dataset.ok=f?"1":"0"; el.textContent=f?"● Dossier partagé":"● Pas synchronisé"; el.title=f?Store.label:"Les dossiers ne sont pas enregistrés dans le dossier OneDrive partagé"; }
 function banner(main){
+  syncChip();
   if(App.status==="permission"){ const b=h("div",{class:"alert crit banner"},'<b>Dossier partagé à reconnecter.</b> Pour des raisons de sécurité, le navigateur demande ton accord à chaque ouverture. '); const btn=h("button",{type:"button",class:"btn primary"},"Reconnecter"); btn.addEventListener("click",async()=>{ App.status=await Store.reconnect(); if(App.status==="ok"){ await IO.Team.load(); await loadAll(); route(); } }); b.appendChild(btn); main.appendChild(b); return true; }
-  if(App.status==="none"){ main.appendChild(h("div",{class:"alert banner"},'<b>Aucun dossier choisi.</b> Va dans <a href="#/reglages">Réglages</a> pour choisir le dossier partagé ou utiliser cet appareil.')); return true; }
+  if(App.status==="none"){
+    const b=h("div",{class:"alert crit banner"},'<b>Connecte le dossier partagé pour commencer.</b> Sur cet ordinateur, choisis le dossier OneDrive <b>« Documents Officiels InsertiO »</b> (celui qui contient « 06 Les Jeunes »). Les dossiers déjà créés sur cet ordinateur y seront transférés. ');
+    if(Store.supportsFolder){ const btn=h("button",{type:"button",class:"btn primary"},"Choisir le dossier partagé"); btn.addEventListener("click",connectFolder); b.appendChild(btn); }
+    else b.appendChild(h("span",null,"Ouvre l'application dans Google Chrome sur ordinateur."));
+    main.appendChild(b); return true; }
+  if(Store.mode==="local"){ const b=h("div",{class:"alert banner"},'<b>Attention : les dossiers sont enregistrés seulement sur cet ordinateur.</b> Tes collègues ne les voient pas et rien ne va dans OneDrive. '); if(Store.supportsFolder){ const btn=h("button",{type:"button",class:"btn primary"},"Connecter le dossier partagé"); btn.addEventListener("click",connectFolder); b.appendChild(btn); } main.appendChild(b); }
   return false;
 }
 
@@ -2077,13 +2102,13 @@ function viewSettings(main){
   const r=h("div",{class:"btn-row"});
   if(Store.supportsFolder){
     const pf=h("button",{type:"button",class:"btn primary",id:"pickFolder"},Store.mode==="folder"?"Changer de dossier partagé":"Choisir le dossier partagé");
-    pf.addEventListener("click",async()=>{ try{ const n=await Store.pickFolder(); App.status="ok"; await IO.Team.load(); await loadAll(); U.toast("Dossier partagé : "+n); route(); }catch(e){ if(e.name!=="AbortError") U.toast("Dossier non choisi : "+(e.message||e),5000); } });
+    pf.addEventListener("click",connectFolder);
     r.appendChild(pf);
     if(Store.mode==="folder"){ const cp=h("button",{type:"button",class:"btn"},"Copier ici les dossiers enregistrés sur cet appareil"); cp.addEventListener("click",async()=>{ try{ const rep=await Store.copyLocalToFolder(); await loadAll(); U.toast(rep.jeunes+" dossier(s) copié(s), "+rep.fichiers+" fichier(s)"); }catch(e){ U.toast("Copie impossible : "+(e.message||e),5000); } }); r.appendChild(cp); }
   }
   if(Store.mode==="folder"){ const lo=h("button",{type:"button",class:"btn"},"Utiliser plutôt cet appareil"); lo.addEventListener("click",async()=>{ await Store.useLocal(); App.status="ok"; await IO.Team.load(); await loadAll(); route(); }); r.appendChild(lo); }
   st.appendChild(r);
-  st.appendChild(h("p",{class:"sub-n"},Store.supportsFolder?"Choisis le dossier OneDrive commun de l'équipe, par exemple « Insertio – Dossiers jeunes ». L'application y crée un sous-dossier par jeune avec sa fiche, ses comptes rendus et ses documents.":"Ce navigateur ne sait pas utiliser un dossier partagé : ouvre l'application dans Microsoft Edge ou Google Chrome, sur ordinateur."));
+  st.appendChild(h("p",{class:"sub-n"},Store.supportsFolder?"Choisis le dossier OneDrive commun de l'équipe : « Documents Officiels InsertiO » (celui qui contient « 06 Les Jeunes »). L'application y crée un sous-dossier par jeune avec sa fiche, ses comptes rendus et ses documents.":"Ce navigateur ne sait pas utiliser un dossier partagé : ouvre l'application dans Microsoft Edge ou Google Chrome, sur ordinateur."));
   main.appendChild(st);
 
   const ex=h("section",{class:"dcard"}); ex.appendChild(h("h2",null,"Échanger avec un autre appareil"));
@@ -2117,15 +2142,19 @@ async function boot(){
   if("serviceWorker" in navigator && location.protocol==="https:"){ try{ navigator.serviceWorker.register("sw.js"); }catch(e){} }
   const ib=$("installBtn"); if(ib) ib.addEventListener("click",()=>{ if(App.installEvt){ App.installEvt.prompt(); App.installEvt=null; ib.hidden=true; } });
   setSaveState("ok"," ");
-  route();
+  route(); syncChip();
+  setInterval(refreshList,45000);
 }
 IO.boot=boot;
 let lastRefresh=0;
-window.addEventListener("focus",async()=>{
-  if(App.status!=="ok"||Store.mode!=="folder"||Date.now()-lastRefresh<15000) return;
+async function refreshList(){
+  if(document.hidden||App.status!=="ok"||Store.mode!=="folder"||Date.now()-lastRefresh<15000) return;
   const hsh=IO.navHash||"#/"; if(!/^#?\/?$|^#\/jeunes$/.test(hsh)) return;
+  if(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
   lastRefresh=Date.now(); try{ await IO.Team.load(); await loadAll(); route(); }catch(e){}
-});
+}
+window.addEventListener("focus",refreshList);
+document.addEventListener("visibilitychange",refreshList);
 document.addEventListener("DOMContentLoaded",boot);
 })();
 
