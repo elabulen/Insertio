@@ -477,7 +477,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "6.1"; IO.ARTIFACT = false;
+IO.VERSION = "6.1.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1066,7 +1066,14 @@ const Folder = {
   async status(){ if(!root) return "none"; try{ return (await perm(root,false))==="granted"?"ok":"permission"; }catch(e){ return "permission"; } },
   async list(){
     const jd=await jeunesDir(), out=[];
-    for await (const [n,h] of jd.entries()){ if(h.kind!=="directory") continue; const j=await readJson(h); if(j&&j.id){ j._dir=n; j._base=j.updatedAt; j._snap=JSON.stringify(j); dirMap.set(j.id,n); out.push(j); } }
+    for await (const [n,h] of jd.entries()){ if(h.kind!=="directory") continue; let j=await readJson(h);
+      if(!j && !/^(jeunes|archives?|fiches)$/i.test(n.trim()) && !n.startsWith(".")){
+        // dossier créé à la main dans l'Explorateur : on en fait un dossier de l'application (identifiant stable, pour éviter les doublons entre ordinateurs)
+        let x=0; for(const c of n.normalize("NFC")) x=(x*31+c.codePointAt(0))>>>0;
+        j=IO.blankJeune({}); j.id="jdir"+x.toString(36); j.nom=n.trim();
+        try{ await writeFile(h,"jeune.json",JSON.stringify(clean(j),null,2)); }catch(e){}
+      }
+      if(j&&j.id){ j._dir=n; j._base=j.updatedAt; j._snap=JSON.stringify(j); dirMap.set(j.id,n); out.push(j); } }
     return out;
   },
   async get(id){ const d=await dirOf({id},false); if(!d) return null; const j=await readJson(d); if(j){ j._dir=dirMap.get(id); j._base=j.updatedAt; j._snap=JSON.stringify(j); } return j; },
