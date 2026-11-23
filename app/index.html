@@ -48,6 +48,7 @@ a{color:var(--blue)}
 .nav a:hover{background:var(--surface-2);color:var(--text)}
 .nav a.on{background:var(--blue-dim);color:var(--blue)}
 .save-state{font-size:12px;color:var(--text-faint);white-space:nowrap}
+.obs-perso textarea{background:#fff8e6;border-color:#f0d58a}
 .sync-chip{font-size:12px;font-weight:600;white-space:nowrap;text-decoration:none;padding:4px 10px;border-radius:999px;background:#fdecec;color:#b3261e}
 .sync-chip[data-ok="1"]{background:#e8f6ee;color:#1e7a46}
 .sync-chip:empty{display:none}
@@ -477,7 +478,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.0.1"; IO.ARTIFACT = false;
+IO.VERSION = "7.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1217,8 +1218,8 @@ const Store = IO.Store = {
   async migrateFolderToGoogle(){
     const src=root; if(!src || src instanceof GD.GDir) throw new Error("ouvre d'abord l'application avec le dossier OneDrive connecté");
     await GD.signIn(); const g=await GD.rootDir(); const rep={fichiers:0,dossiers:0,ignores:0};
-    for await (const [n,h] of src.entries()){ if(h.kind!=="directory") continue;
-      if(/^\d*\s*les jeunes$/i.test(n.trim()) || n==="Reglages") await GD.copyTree(h, await g.getDirectoryHandle(/les jeunes$/i.test(n)?"06 Les Jeunes":n,{create:true}), rep, (nm,hh)=>n==="Reglages"&&nm==="postes"); }
+    // Copie TOUT le dossier (01 Gouvernance … 06 Les Jeunes … 99 Archives, Reglages, fichiers à la racine) : même structure que OneDrive
+    await GD.copyTree(src, g, rep, (nm,hh)=>hh.kind==="directory" && nm==="Jeunes");
     root=g; jdName=null; dirMap.clear(); this.a=Folder; await IO.KV.set("mode","gdrive"); await IO.KV.set("gdriveRoot",{id:g.id,name:g.name});
     return rep;
   },
@@ -3066,7 +3067,7 @@ IO.Fiche.seance=(j,s)=>{
   let o='<header class="fh"><div class="logo">Inserti<span>O</span></div><div><h1>'+e(t)+'</h1><div class="meta">'+e(j.nom||"")+" · "+e(label6(j))+(nbSeances(j)?" · séance "+s.n+" sur "+nbSeances(j):"")+'<br>'+e(U.fmtDate(s.date))+(s.heure?" à "+e(U.fmtTime(s.heure)):"")+(s.accomp?" · avec "+e(s.accomp):"")+'</div></div></header><table>';
   o+=row("Présence",((REF.PRESENCE6.find(x=>x.k===s.presence)||{}).t||"—").replace("·e","(e)"));
   o+=row("Ce qui s'est passé",s.resume);
-  if(s.type==="coaching"){ o+=row("Exercices réalisés",s.exercices); o+=row("Ressenti du jeune",s.ressenti); o+=row("Recommandations",s.reco); }
+  if(s.type==="coaching"){ o+=row("Histoire et parcours",j.coachHistoire); o+=row("Exercices réalisés",s.exercices); o+=row("Ressenti du jeune",s.ressenti); o+=row("Recommandations",s.reco); }
   o+=row("À transmettre pour la prochaine séance",s.transmis); o+='</table>';
   const rp=(s.rappels||[]).filter(r=>!r.deleted); if(rp.length) o+='<h3>Rappels</h3><ul>'+rp.map(r=>'<li>'+e(r.t)+(r.done?" (fait)":"")+'</li>').join("")+'</ul>';
   if(s.rdv_date) o+='<h3>Prochain rendez-vous</h3><p>'+e(IO.Msg.rdvLine(s.rdv_date,s.rdv_heure,s.rdv_lieu))+'</p>';
@@ -3129,10 +3130,14 @@ IO.V6.seance=async(main,id,nStr)=>{
   tf.appendChild(segc([{k:"suivi",t:"Accompagnement"},{k:"coaching",t:"Coaching"}],s.type||"suivi",v=>{ s.type=v; if(v==="coaching"&&!s.theme) s.theme=coachTheme(j,n); save(); renderTitle(); renderCoach(); }));
   card.appendChild(tf); card.appendChild(coachBox);
   function renderCoach(){ coachBox.innerHTML=""; if(s.type!=="coaching") return;
+    field(coachBox,"Histoire et parcours du jeune",ta(j.coachHistoire,"En quelques mots : son parcours, sa situation, ce qui l'a amené·e ici…",v=>{ j.coachHistoire=v; save(); }),"Commun à toutes les séances de coaching de ce jeune.");
     const th=h("select",{class:"f","aria-label":"Thème du coaching"}); th.innerHTML=REF.COACHING.map(c=>'<option'+(c.t===(s.theme||coachTheme(j,n))?" selected":"")+'>'+esc(c.t)+'</option>').join(""); th.addEventListener("change",()=>{ s.theme=th.value; save(); renderTitle(); }); field(coachBox,"Thème",th);
     field(coachBox,"Exercices réalisés",ta(s.exercices,"Ex. respiration carrée, ancrage, visualisation ; simulation avec questions RH…",v=>{ s.exercices=v; save(); }));
     field(coachBox,"Ressenti du jeune",ta(s.ressenti,"Comment le jeune a vécu la séance, ce qui l'aide",v=>{ s.ressenti=v; save(); }));
-    field(coachBox,"Recommandations pour la suite",ta(s.reco,"Ce que la coach conseille de travailler",v=>{ s.reco=v; save(); })); }
+    field(coachBox,"Recommandations pour la suite",ta(s.reco,"Ce que la coach conseille de travailler",v=>{ s.reco=v; save(); }));
+    const moi=(IO.Team.me&&IO.Team.me.nom)||"", estEden=/eden|tulin/i.test(moi) || !(IO.Team.data&&IO.Team.data.membres&&IO.Team.data.membres.length);
+    if(estEden){ const op=field(coachBox,"🔒 Observation personnelle (réservée à Eden)",ta(s.obsPerso,"Tes impressions personnelles, hypothèses, points de vigilance… Visible uniquement dans ton profil, jamais dans la fiche PDF ni dans les mails.",v=>{ s.obsPerso=v; save(); })); op.classList.add("obs-perso"); }
+    else if(s.obsPerso) coachBox.appendChild(h("p",{class:"hint"},"🔒 Eden a noté une observation personnelle (visible seulement dans son profil).")); }
   renderCoach();
   // Résumé + dictée
   const rs=ta(s.resume,"Ce qui a été fait, ce que le jeune a dit, les avancées…",v=>{ s.resume=v; save(); });
