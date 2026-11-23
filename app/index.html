@@ -479,7 +479,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.3"; IO.ARTIFACT = false;
+IO.VERSION = "7.3.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1541,6 +1541,7 @@ const T = IO.Team = {
     let id=null; try{ id=sessionStorage.getItem("insertio_me"); }catch(e){}
     this.me=this.data.membres.find(m=>m.id===id)||null;
     try{ const f=await IO.Store.getShared("envoi.json"); this.envoi=f?JSON.parse(await f.text()):{}; }catch(e){ this.envoi={}; }
+    if(!this.envoi.url) this.envoi.url="https://script.google.com/macros/s/AKfycbxWbXR_rZBudeAw_VF_hp4r9DNUva_gWRwcOsJ_p9T1UR7pHAepnTXdnW5G4GyimkFH/exec";
     await this.loadLogo(); this.apply();
   },
   envoi:{},
@@ -1790,7 +1791,7 @@ const T = IO.Team = {
 
     // Envoi direct
     const ev=h("section",{class:"dcard"}); ev.appendChild(h("h2",null,"Envoi direct des mails"));
-    ev.appendChild(h("p",{class:"sub-n"},this.canSend()?"Activé : les boutons « Mail au jeune », « Mail de retard », « Mail d'absence »… envoient directement le mail, sans ouvrir Outlook.":"Pas encore activé : les mails s'ouvrent dans Outlook. Colle ici l'adresse du service d'envoi et la clé (une seule fois, pour toute l'équipe)."));
+    ev.appendChild(h("p",{class:"sub-n"},this.canSend()?"Activé : les boutons « Mail au jeune », « Mail de retard », « Mail d'absence »… envoient directement le mail, sans ouvrir Outlook.":"Pas encore activé : les mails s'ouvrent dans Outlook. Colle ici la clé d'envoi (une seule fois, pour toute l'équipe) puis clique sur « Enregistrer et tester »."));
     const eg=h("div",{class:"row2"}); const eu=h("input",{class:"f",type:"url",value:(this.envoi&&this.envoi.url)||"",placeholder:"https://script.google.com/macros/s/…/exec","aria-label":"Adresse du service d'envoi"}); const ek=h("input",{class:"f",type:"password",value:(this.envoi&&this.envoi.cle)||"",placeholder:"Clé d'envoi","aria-label":"Clé d'envoi",autocomplete:"off"});
     [["Adresse du service d'envoi",eu],["Clé d'envoi",ek]].forEach(([l,el])=>{ const d=h("div"); d.appendChild(h("label",{class:"flab"},l)); d.appendChild(el); eg.appendChild(d); }); ev.appendChild(eg);
     const er=h("div",{class:"btn-row"}); const es=h("button",{type:"button",class:"btn primary"},"Enregistrer et tester"); er.appendChild(es); ev.appendChild(er);
