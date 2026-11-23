@@ -477,7 +477,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "6.2"; IO.ARTIFACT = false;
+IO.VERSION = "6.2.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -2183,7 +2183,7 @@ async function boot(){
   const ib=$("installBtn"); if(ib) ib.addEventListener("click",()=>{ if(App.installEvt){ App.installEvt.prompt(); App.installEvt=null; ib.hidden=true; } });
   setSaveState("ok"," ");
   route(); syncChip(); postePing();
-  setInterval(refreshList,45000);
+  setInterval(refreshList,20000);
 }
 IO.boot=boot;
 let lastRefresh=0;
