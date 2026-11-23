@@ -49,6 +49,9 @@ a{color:var(--blue)}
 .nav a.on{background:var(--blue-dim);color:var(--blue)}
 .save-state{font-size:12px;color:var(--text-faint);white-space:nowrap}
 .obs-perso textarea{background:#fff8e6;border-color:#f0d58a}
+.quick-mails{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 20px;clear:both;position:relative;z-index:0}
+.kv{display:grid;grid-template-columns:minmax(140px,220px) 1fr;gap:8px 16px;margin:0} .kv dt{color:var(--text-dim);font-weight:600} .kv dd{margin:0;overflow-wrap:anywhere}
+@media(max-width:600px){ .kv{grid-template-columns:1fr} .kv dd{margin-bottom:8px} }
 .compose .field{margin-bottom:10px} .compose textarea{min-height:220px}
 .sync-chip{font-size:12px;font-weight:600;white-space:nowrap;text-decoration:none;padding:4px 10px;border-radius:999px;background:#fdecec;color:#b3261e}
 .sync-chip[data-ok="1"]{background:#e8f6ee;color:#1e7a46}
@@ -479,7 +482,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.3.1"; IO.ARTIFACT = false;
+IO.VERSION = "7.4"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1541,6 +1544,7 @@ const T = IO.Team = {
     let id=null; try{ id=sessionStorage.getItem("insertio_me"); }catch(e){}
     this.me=this.data.membres.find(m=>m.id===id)||null;
     try{ const f=await IO.Store.getShared("envoi.json"); this.envoi=f?JSON.parse(await f.text()):{}; }catch(e){ this.envoi={}; }
+    if(/207\s*60\s*60/.test(this.data.tel||"")) this.data.tel="+41 78 251 48 98";
     if(!this.envoi.url) this.envoi.url="https://script.google.com/macros/s/AKfycbxWbXR_rZBudeAw_VF_hp4r9DNUva_gWRwcOsJ_p9T1UR7pHAepnTXdnW5G4GyimkFH/exec";
     await this.loadLogo(); this.apply();
   },
@@ -1869,7 +1873,7 @@ function sorted(){ return [...App.jeunes.values()].sort((a,b)=>(a.nom||"").local
 /* ================================================================ Navigation */
 const routes=[
   [/^#?\/?$/, m=>IO.V6.home(m)], [/^#\/jeunes$/, viewJeunes], [/^#\/coaching$/, m=>IO.V6.coaching(m)],
-  [/^#\/j\/([^/]+)(?:\/(parcours|suivi|suivis|coaching|objectifs|candidatures|documents|profil))?$/, (m,id,t)=>IO.V6.jeune(m,id,t)],
+  [/^#\/j\/([^/]+)(?:\/(parcours|suivi|suivis|coaching|objectifs|candidatures|documents|profil|infos))?$/, (m,id,t)=>IO.V6.jeune(m,id,t)],
   [/^#\/j\/([^/]+)\/seance\/(\d+)$/, (m,id,n)=>IO.V6.seance(m,id,n)],
   [/^#\/j\/([^/]+)\/e\/([^/]+)$/, viewEntretien], [/^#\/j\/([^/]+)\/s\/([^/]+)$/, (m,id,sid)=>IO.Suivi.view(m,id,sid)], [/^#\/guide$/, viewGuide], [/^#\/reglages$/, viewSettings],
 ];
@@ -2236,6 +2240,8 @@ async function boot(){
   const ib=$("installBtn"); if(ib) ib.addEventListener("click",()=>{ if(App.installEvt){ App.installEvt.prompt(); App.installEvt=null; ib.hidden=true; } });
   setSaveState("ok"," ");
   route(); syncChip(); postePing();
+  const calSync=()=>IO.Cal&&IO.Cal.sync().then(r=>{ const hs=IO.navHash||"#/"; if(r&&(r.n||r.nouveaux)&&/^#?\/?$|^#\/jeunes$|\/infos$/.test(hs)&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) route(); });
+  setTimeout(calSync,1500); setInterval(calSync,10*60000);
   setInterval(refreshList,20000);
 }
 IO.boot=boot;
@@ -2842,6 +2848,12 @@ IO.V6.home=main=>{
   wk.forEach(x=>{ const n=nextN(x.j); const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(x.j.nom||"Sans nom")+'</b><span class="faint">'+esc(App.rdvWhen(x.r))+' · '+esc(kind(x.j)==="pole"?"Pôle numérique":titleOf(x.j,n))+'</span></div>';
     const a=h("div",{class:"racts"}); a.appendChild(h("a",{class:"btn"+(x.r.date===today?" primary":""),href:kind(x.j)==="pole"?"#/j/"+x.j.id:"#/j/"+x.j.id+"/seance/"+n},x.r.date===today?"Commencer":"Préparer")); li.appendChild(a); u1.appendChild(li); });
   if(late.length){ const p=h("p",{class:"sub-n",style:"margin-top:12px"}); p.innerHTML=late.length+' rendez-vous passé'+(late.length>1?"s":"")+' sans séance renseignée : '+late.slice(0,4).map(x=>'<a href="#/j/'+x.j.id+'/seance/'+nextN(x.j)+'">'+esc(x.j.nom)+'</a>').join(", ")+(late.length>4?"…":""); c1.appendChild(p); }
+  // Nouvelles inscriptions Calendly sans dossier
+  if(IO.Cal.nouveaux.length){ const c=card(L,"Inscriptions Calendly sans dossier",IO.Cal.nouveaux.length); const ul=h("ul",{class:"rows"}); c.appendChild(ul);
+    IO.Cal.nouveaux.slice(0,8).forEach(x=>{ const f=x.list[0]; const next=x.list.map(y=>y.debut).sort().reverse()[0]; const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(f.nom||f.email)+'</b><span class="faint">'+esc(f.email||"")+(f.tel?" · "+esc(f.tel):"")+" · RDV "+esc(fmtDT(next))+'</span></div>';
+      const a=h("div",{class:"racts"}); const cb=h("button",{type:"button",class:"btn primary"},"Créer le dossier"); cb.addEventListener("click",async()=>{ cb.disabled=true; const j=await IO.Cal.creer(x); App.go("#/j/"+j.id+"/infos"); });
+      const ib=h("button",{type:"button",class:"btn"},"Ignorer"); ib.addEventListener("click",()=>{ IO.Cal.ignorer(x); App.route(); }); a.append(cb,ib); li.appendChild(a); ul.appendChild(li); });
+    c.appendChild(h("p",{class:"sub-n"},"Personnes qui ont réservé sur Calendly mais n'ont pas encore de dossier (même e-mail ou même nom introuvable).")); }
   // Rappels de la veille (Outlook)
   IO.Team.homeCards(js,(t,cnt,body)=>{ const c=card(L,t,cnt); c.appendChild(body); },(items,render,empty)=>{ const ul=h("ul",{class:"rows"}); if(!items.length) ul.appendChild(h("li",{class:"empty"},esc(empty))); items.forEach(x=>ul.appendChild(render(x))); return ul; });
   // Jeunes en cours
@@ -2880,7 +2892,7 @@ IO.V6.jeune=async(main,id,tab)=>{
   }
   const e=IO.premier(j); const pe=h("button",{type:"button",class:"btn"},e?"Premier entretien":"Faire le premier entretien"); pe.addEventListener("click",()=>{ let en=IO.premier(j); if(!en){ en={id:U.uid("e"),type:"premier",createdAt:U.now(),updatedAt:U.now(),data:IO.blankEntretien(j,App.settings)}; j.entretiens.push(en); App.save(j); } App.go("#/j/"+j.id+"/e/"+en.id); }); act.appendChild(pe);
   hero.appendChild(act); main.appendChild(hero);
-  const T=[["parcours",k==="pole"?"Passages":"Séances"]]; if(k!=="pole") T.push(["coaching","Coaching"]); T.push(["objectifs","Objectifs et actions"],["candidatures","Candidatures"],["documents","Documents"],["profil","Profil"]);
+  const T=[["parcours",k==="pole"?"Passages":"Séances"]]; if(k!=="pole") T.push(["coaching","Coaching"]); T.push(["objectifs","Objectifs et actions"],["candidatures","Candidatures"],["documents","Documents"],["infos","Infos et inscription"],["profil","Profil"]);
   const tabs=h("nav",{class:"tabs",role:"tablist"}); T.forEach(([key,t])=>tabs.appendChild(h("a",{href:"#/j/"+j.id+(key==="parcours"?"":"/"+key),class:key===tab?"on":"",role:"tab","aria-selected":String(key===tab)},t))); main.appendChild(tabs);
   const body=h("div"); main.appendChild(body);
   if(tab==="parcours") return k==="pole"?tabPassages(body,j):tabSeances(body,j);
@@ -2890,7 +2902,70 @@ IO.V6.jeune=async(main,id,tab)=>{
   if(tab==="candidatures") return IO.Suivi.tabCandidatures(body,j);
   if(tab==="documents") return App.tabDocuments(body,j);
   if(tab==="profil") return App.tabProfil(body,j);
+  if(tab==="infos") return tabInfos(body,j);
 };
+
+/* ================================================================ Calendly → dossiers des jeunes */
+const normNom=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z]+/g," ").trim();
+const sameNom=(a,b)=>{ a=normNom(a); b=normNom(b); if(!a||!b) return false; if(a===b) return true; const A1=a.split(" ").sort().join(" "), B1=b.split(" ").sort().join(" "); return A1===B1; };
+IO.Cal={ inscrits:[], nouveaux:[], last:0, busy:false };
+IO.Cal.matchJeune=(js,x)=>{ const em=String(x.email||"").toLowerCase(); return js.find(j=>em&&String(j.mail||"").toLowerCase()===em)||js.find(j=>j.calendly&&String(j.calendly.email||"").toLowerCase()===em&&em)||js.find(j=>sameNom(j.nom,x.nom)); };
+IO.Cal.apply=(j,list)=>{
+  const mine=list.filter(x=>x.statut!=="annulé"||true).sort((a,b)=>String(b.debut).localeCompare(String(a.debut)));
+  const withQ=mine.find(x=>x.reponses&&x.reponses.length)||mine[0]; const tel=(mine.find(x=>x.tel)||{}).tel||"";
+  const c={email:(mine.find(x=>x.email)||{}).email||"", tel, reponses:(withQ&&withQ.reponses)||[], rdv:mine.map(x=>({debut:x.debut,type:x.type,statut:x.statut,id:x.id})).slice(0,30)};
+  const before=JSON.stringify({m:j.mail,t:j.tel,c:j.calendly&&{e:j.calendly.email,t:j.calendly.tel,r:j.calendly.reponses,d:j.calendly.rdv}});
+  if(!j.mail&&c.email) j.mail=c.email; if(!j.tel&&c.tel) j.tel=c.tel;
+  j.calendly=Object.assign({},j.calendly||{},c);
+  const after=JSON.stringify({m:j.mail,t:j.tel,c:{e:c.email,t:c.tel,r:c.reponses,d:c.rdv}});
+  if(before!==after){ j.calendly.maj=U.now(); return true; } return false;
+};
+IO.Cal.sync=async(force)=>{
+  const App=A(); if(!IO.Team.canSend()||App.status!=="ok"||IO.Cal.busy) return; if(!force&&Date.now()-IO.Cal.last<10*60000) return;
+  IO.Cal.busy=true;
+  try{
+    const r=await fetch(IO.Team.envoi.url,{method:"POST",body:JSON.stringify({cle:IO.Team.envoi.cle,action:"calendly",jours:180})}); const o=await r.json(); if(!o.ok) throw new Error(o.erreur||"refusé");
+    IO.Cal.inscrits=o.inscrits||[]; IO.Cal.last=Date.now();
+    const js=[...App.jeunes.values()]; const groups=new Map();
+    IO.Cal.inscrits.forEach(x=>{ const k=String(x.email||"").toLowerCase()||normNom(x.nom); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(x); });
+    let n=0; const nouveaux=[];
+    let ign=[]; try{ ign=JSON.parse(localStorage.getItem("io-cal-ignore")||"[]"); }catch(e){}
+    for(const [k,list] of groups){ const j=IO.Cal.matchJeune(js,list[0]);
+      if(j){ if(IO.Cal.apply(j,list)){ App.save(j); n++; } }
+      else if(!ign.includes(k)) nouveaux.push({k,list}); }
+    IO.Cal.nouveaux=nouveaux;
+    if(force) U.toast("Calendly : "+IO.Cal.inscrits.length+" inscription(s) lue(s), "+n+" dossier(s) complété(s)"+(nouveaux.length?", "+nouveaux.length+" sans dossier":""),6000);
+    return {n,nouveaux:nouveaux.length};
+  }catch(e){ if(force) U.toast("Calendly indisponible : "+(e.message||e),6000); }
+  finally{ IO.Cal.busy=false; }
+};
+IO.Cal.creer=async(x)=>{ const App=A(); const f=x.list[0]; const j=IO.blankJeune(App.settings); j.nom=f.nom||f.email; j.mail=f.email||""; j.tel=f.tel||""; if(IO.Team.me) j.referent=IO.Team.me.nom;
+  IO.Cal.apply(j,x.list); App.jeunes.set(j.id,j); await App.save(j,true); IO.Cal.nouveaux=IO.Cal.nouveaux.filter(y=>y!==x); return j; };
+IO.Cal.ignorer=x=>{ let ign=[]; try{ ign=JSON.parse(localStorage.getItem("io-cal-ignore")||"[]"); }catch(e){} ign.push(x.k); try{ localStorage.setItem("io-cal-ignore",JSON.stringify(ign)); }catch(e){} IO.Cal.nouveaux=IO.Cal.nouveaux.filter(y=>y!==x); };
+const fmtDT=iso=>{ if(!iso) return ""; const d=new Date(iso); return d.toLocaleDateString("fr-CH",{weekday:"short",day:"numeric",month:"short",year:"numeric"})+" à "+d.toLocaleTimeString("fr-CH",{hour:"2-digit",minute:"2-digit"}); };
+function tabInfos(body,j){
+  const App=A(); const c=j.calendly||null;
+  const s1=h("section",{class:"dcard"}); s1.appendChild(h("h2",null,"Coordonnées"));
+  const dl=h("dl",{class:"kv"}); const row=(k,v)=>{ dl.appendChild(h("dt",null,esc(k))); dl.appendChild(h("dd",null,v)); };
+  row("E-mail", j.mail?'<a href="mailto:'+esc(j.mail)+'">'+esc(j.mail)+'</a>':'<span class="faint">—</span>');
+  row("Téléphone", j.tel?'<a href="tel:'+esc(String(j.tel).replace(/\s/g,""))+'">'+esc(j.tel)+'</a> · <a href="https://wa.me/'+esc(String(j.tel).replace(/[^0-9]/g,"").replace(/^0/,"41"))+'" target="_blank" rel="noopener">WhatsApp</a>':'<span class="faint">—</span>');
+  if(j.naissance) row("Date de naissance",esc(U.fmtDate(j.naissance)));
+  if(j.commune) row("Commune",esc(j.commune));
+  s1.appendChild(dl); s1.appendChild(h("p",{class:"sub-n"},'Pour modifier : onglet <a href="#/j/'+j.id+'/profil">Profil</a>.'));
+  body.appendChild(s1);
+  const s2=h("section",{class:"dcard"}); s2.appendChild(h("h2",null,"Inscription Calendly"));
+  if(!c){ s2.appendChild(h("p",{class:"sub-n"},IO.Team.canSend()?"Aucune réservation Calendly trouvée avec cet e-mail ou ce nom (180 derniers jours).":"Active l'envoi direct des mails (Réglages) pour relier Calendly.")); }
+  else {
+    const d2=h("dl",{class:"kv"}); const r2=(k,v)=>{ d2.appendChild(h("dt",null,esc(k))); d2.appendChild(h("dd",null,v)); };
+    if(c.email) r2("E-mail d'inscription",esc(c.email)); if(c.tel) r2("Téléphone d'inscription",esc(c.tel));
+    (c.reponses||[]).forEach(x=>r2(x.q,esc(x.r||"—").replace(/\n/g,"<br>")));
+    s2.appendChild(d2);
+    if(c.rdv&&c.rdv.length){ s2.appendChild(h("div",{class:"sub-h"},"Rendez-vous réservés")); const ul=h("ul",{class:"rows"}); c.rdv.forEach(x=>ul.appendChild(h("li",{class:"row"},'<div class="rmain"><b>'+esc(fmtDT(x.debut))+'</b><span class="faint">'+esc(x.type||"")+(x.statut==="annulé"?" · annulé":"")+'</span></div>'))); s2.appendChild(ul); }
+    if(c.maj) s2.appendChild(h("p",{class:"sub-n"},"Mis à jour depuis Calendly le "+esc(U.fmtDate(String(c.maj).slice(0,10)))+"."));
+  }
+  if(IO.Team.canSend()){ const b=h("button",{type:"button",class:"btn"},"Actualiser depuis Calendly"); b.addEventListener("click",async()=>{ b.disabled=true; await IO.Cal.sync(true); App.route(); }); s2.appendChild(h("div",{class:"btn-row"})).appendChild(b); }
+  body.appendChild(s2);
+}
 
 function progControls(j,box){
   const App=A(); const row=h("div",{class:"ctrl-row"});
@@ -3044,7 +3119,7 @@ IO.V6.seance=async(main,id,nStr)=>{
   const ad=h("div"); ad.appendChild(h("span",{class:"flab"},"Avec")); ad.appendChild(inp("text",s.accomp,v=>{ s.accomp=v; save(); },{"aria-label":"Accompagnant·e"})); g.appendChild(ad);
   card.appendChild(g);
   const pf=h("div",{class:"field"}); pf.appendChild(h("label",null,"Présence")); pf.appendChild(segc(REF.PRESENCE6,s.presence||"",v=>{ s.presence=v; save(); })); card.appendChild(pf);
-  { const qr=h("div",{class:"btn-row",style:"margin-top:-6px;margin-bottom:14px"}); const rdv=()=>({date:s.date||U.today(),heure:s.heure});
+  { const qr=h("div",{class:"btn-row quick-mails"}); const rdv=()=>({date:s.date||U.today(),heure:s.heure});
     const b1=IO.Team.richMail(h("a",{class:"btn",href:"#"},"✉ Mail de retard"),()=>j.mail,()=>IO.Team.retardMsg(j,rdv()));
     const b2=IO.Team.richMail(h("a",{class:"btn",href:"#"},"✉ Mail d'absence"),()=>j.mail,()=>IO.Team.absenceMsg(j,rdv()));
     qr.append(b1,b2); card.appendChild(qr); }
