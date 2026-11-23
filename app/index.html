@@ -70,6 +70,22 @@ a{color:var(--blue)}
 
 /* Tableau de bord, cartes, lignes */
 .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;align-items:start}
+.plan{margin-bottom:18px}
+.plan-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.plan-h h2{margin:0}
+.plan-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.btn.sm{padding:4px 10px;font-size:13px;min-height:0}
+.plan-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:12px 0 10px;border-bottom:1px solid var(--border)}
+.plan-tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:7px 10px;font:inherit;font-size:13.5px;color:var(--text-dim);cursor:pointer}
+.plan-tabs button.on{color:var(--text);border-bottom-color:var(--blue);font-weight:600}
+.plan-week{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.plan-day{background:var(--surface-2);border-radius:10px;padding:8px;min-height:90px;display:flex;flex-direction:column;gap:5px}
+.plan-day.today{outline:2px solid var(--blue)}.plan-dh{font-size:12px;font-weight:700;color:var(--text-dim);text-transform:capitalize}
+.plan-empty{color:var(--text-faint);font-size:12px}
+.plan-ev{display:block;font-size:12.5px;line-height:1.35;padding:5px 7px;border-radius:7px;background:var(--surface);border-left:3px solid var(--border);color:var(--text);text-decoration:none;overflow:hidden}
+.plan-ev span{display:block;color:var(--text-faint);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+a.plan-ev:hover{background:var(--blue-dim)}
+.src-cal{border-left-color:var(--pink)!important}.src-contact{border-left-color:var(--blue)!important}.src-m{border-left-color:var(--good)!important}.src-dos{border-left-color:var(--warn)!important}
+.plan-f{margin-top:10px;font-size:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}.plan-f .lg{border-left:3px solid;padding-left:5px;color:var(--text-dim)}
+@media(max-width:600px){.plan-week{grid-template-columns:1fr}.plan-day{min-height:0}}
 .dcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;min-width:0}
 .dcard h2{font-size:15px;font-weight:650;margin:0 0 8px;display:flex;align-items:center;gap:8px}
 .count{font-size:12px;font-weight:700;background:var(--surface-2);color:var(--text-dim);border-radius:999px;padding:1px 8px}
@@ -482,7 +498,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.5"; IO.ARTIFACT = false;
+IO.VERSION = "7.6"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1804,6 +1820,7 @@ const T = IO.Team = {
         await IO.Store.putShared("envoi.json",new Blob([JSON.stringify(this.envoi)],{type:"application/json"})); U.toast("Envoi direct activé pour toute l'équipe ✓",5000); IO.App.route(); }
       catch(e){ U.toast("Test raté : "+(e.message||e)+". Vérifie l'adresse et la clé.",8000); } es.disabled=false; });
     main.appendChild(ev);
+    if(IO.Plan) IO.Plan.settings(main);
 
     // Logo
     const lg=h("section",{class:"dcard"}); lg.appendChild(h("h2",null,"Logo"));
@@ -2241,7 +2258,8 @@ async function boot(){
   setSaveState("ok"," ");
   route(); syncChip(); postePing();
   const calSync=()=>IO.Cal&&IO.Cal.sync().then(r=>{ const hs=IO.navHash||"#/"; if(r&&(r.n||r.nouveaux)&&/^#?\/?$|^#\/jeunes$|\/infos$/.test(hs)&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) route(); });
-  setTimeout(calSync,1500); setInterval(calSync,10*60000);
+  const planSync=()=>IO.Plan&&IO.Plan.fetch();
+  setTimeout(()=>{ calSync(); }, 1500); setTimeout(()=>{ IO.Plan&&IO.Plan.paint(); }, 6000); setTimeout(planSync,2500); setInterval(()=>{ calSync(); planSync(); IO.Plan&&IO.Plan.paint(); },10*60000);
   setInterval(refreshList,20000);
 }
 IO.boot=boot;
@@ -2837,6 +2855,7 @@ IO.V6.home=main=>{
   if(blocked) return;
   if(IO.Store.mode!=="folder") main.appendChild(h("div",{class:"alert info",style:"margin-bottom:20px"},'Les dossiers sont enregistrés sur cet ordinateur seulement. Pour les partager avec l\'équipe : <a href="#/reglages">Réglages → dossier partagé</a>.'));
   const js=App.sorted().map(ensure), today=U.today(), active=js.filter(j=>j.statut!=="clos");
+  main.appendChild(IO.Plan.banner());
   const grid=h("div",{class:"home-grid"}); const L=h("div",{class:"stack"}), R=h("div",{class:"stack"}); grid.append(L,R); main.appendChild(grid);
   const card=(parent,title,count)=>{ const c=h("section",{class:"dcard"}); c.appendChild(h("h2",null,esc(title)+(count?' <span class="count">'+count+'</span>':''))); parent.appendChild(c); return c; };
   // Cette semaine
@@ -2947,6 +2966,82 @@ IO.Cal.sync=async(force)=>{
 IO.Cal.creer=async(x)=>{ const App=A(); const f=x.list[0]; const j=IO.blankJeune(App.settings); j.nom=f.nom||f.email; j.mail=f.email||""; j.tel=f.tel||""; if(IO.Team.me) j.referent=IO.Team.me.nom;
   IO.Cal.apply(j,x.list); App.jeunes.set(j.id,j); await App.save(j,true); IO.Cal.nouveaux=IO.Cal.nouveaux.filter(y=>y!==x); return j; };
 IO.Cal.ignorer=x=>{ let ign=[]; try{ ign=JSON.parse(localStorage.getItem("io-cal-ignore")||"[]"); }catch(e){} ign.push(x.k); try{ localStorage.setItem("io-cal-ignore",JSON.stringify(ign)); }catch(e){} IO.Cal.nouveaux=IO.Cal.nouveaux.filter(y=>y!==x); };
+
+/* ================================================================ Planning (accueil) : Calendly + calendriers Outlook + rendez-vous des dossiers */
+IO.Plan={ cfg:{contact:"",membres:{}}, events:[], erreurs:[], last:0, busy:false, tab:null, week:0, el:null };
+try{ IO.Plan.tab=localStorage.getItem("io-plan-tab"); }catch(e){}
+IO.Plan.load=async()=>{ try{ const f=await IO.Store.getShared("planning.json"); if(f) IO.Plan.cfg=Object.assign({contact:"",membres:{}},JSON.parse(await f.text())); }catch(e){} };
+IO.Plan.cals=()=>{ const c=IO.Plan.cfg, L=[]; if(c.contact) L.push({k:"contact",url:c.contact}); Object.entries(c.membres||{}).forEach(([id,url])=>{ if(url) L.push({k:"m:"+id,url}); }); return L; };
+IO.Plan.fetch=async(force)=>{
+  const P=IO.Plan; if(P.busy||!IO.Team.canSend()) return; if(!force&&Date.now()-P.last<10*60000) return;
+  await P.load(); const cals=P.cals(); if(!cals.length){ P.events=[]; P.last=Date.now(); return; }
+  P.busy=true;
+  try{ const r=await fetch(IO.Team.envoi.url,{method:"POST",body:JSON.stringify({cle:IO.Team.envoi.cle,action:"agenda",cals,jours:60})}); const o=await r.json(); if(!o.ok) throw new Error(o.erreur||"refusé"); P.events=o.events||[]; P.erreurs=o.erreurs||[]; P.last=Date.now(); }
+  catch(e){ P.erreurs=["Planning Outlook : "+(e.message||e)]; }
+  finally{ P.busy=false; } P.paint();
+};
+IO.Plan.membres=()=>(IO.Team.data.membres||[]).filter(m=>m&&m.nom);
+IO.Plan.memberOf=(j)=>IO.Plan.membres().find(m=>{ const f=U.slug(U.firstName(m.nom)).toLowerCase(); return f&&U.slug(j.referent||"").toLowerCase().split("_").includes(f); });
+IO.Plan.pad=n=>String(n).padStart(2,"0");
+IO.Plan.loc=d=>d.getFullYear()+"-"+IO.Plan.pad(d.getMonth()+1)+"-"+IO.Plan.pad(d.getDate())+"T"+IO.Plan.pad(d.getHours())+":"+IO.Plan.pad(d.getMinutes());
+/* Toutes les entrées, avec leur source : cal (Calendly), contact (Outlook contact@), m:<id> (Outlook d'une collaboratrice), dos (dossier) */
+IO.Plan.items=()=>{
+  const App=A(), P=IO.Plan, L=[];
+  const calStarts=new Set();
+  (IO.Cal.inscrits||[]).forEach(x=>{ if(!x.debut||x.statut==="annulé") return; const d=new Date(x.debut); if(isNaN(d)) return; const deb=P.loc(d);
+    const j=IO.Cal.matchJeune([...App.jeunes.values()],x); calStarts.add(deb);
+    L.push({src:"cal",debut:deb,titre:(x.nom||x.email||"Inscription"),sous:x.type||"Rendez-vous Calendly",j,href:j?"#/j/"+j.id+"/infos":null}); });
+  (P.events||[]).forEach(e=>{ if(e.k==="contact"&&calStarts.has(e.debut)) return; L.push({src:e.k,debut:e.debut,fin:e.fin,journee:e.journee,titre:e.titre,sous:e.lieu||""}); });
+  [...App.jeunes.values()].forEach(j=>{ if(j.statut==="clos") return; (j.rdv||[]).forEach(r=>{ if(r.deleted||r.statut!=="prevu"||!r.date) return; const m=P.memberOf(j);
+    L.push({src:"dos",m:m&&m.id,debut:r.date+(r.heure?"T"+r.heure:""),journee:!r.heure,titre:j.nom||"Sans nom",sous:r.objet||"Rendez-vous",j,href:"#/j/"+j.id}); }); });
+  return L.sort((a,b)=>String(a.debut).localeCompare(String(b.debut)));
+};
+IO.Plan.tabs=()=>{ const T=[["tout","Vue d'ensemble"],["cal","Prises de rendez-vous"],["contact","Planning Insertio"]]; IO.Plan.membres().forEach(m=>T.push(["m:"+m.id,U.firstName(m.nom)])); return T; };
+IO.Plan.filter=(it,tab)=>tab==="tout"?true:tab==="cal"?it.src==="cal":tab==="contact"?(it.src==="contact"||it.src==="cal"):(it.src===tab||(it.src==="dos"&&"m:"+it.m===tab));
+IO.Plan.banner=()=>{ const P=IO.Plan; P.el=h("section",{class:"dcard plan",id:"planning"}); P.paint(); return P.el; };
+IO.Plan.paint=()=>{
+  const P=IO.Plan, el=P.el; if(!el) return;
+  const T=P.tabs(); if(!T.some(t=>t[0]===P.tab)) P.tab=IO.Team.me?("m:"+IO.Team.me.id):"tout"; if(!T.some(t=>t[0]===P.tab)) P.tab="tout";
+  const today=new Date(); today.setHours(0,0,0,0); const mon=new Date(today); mon.setDate(today.getDate()-((today.getDay()+6)%7)+7*P.week);
+  const days=[...Array(7)].map((_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  const key=d=>d.getFullYear()+"-"+P.pad(d.getMonth()+1)+"-"+P.pad(d.getDate());
+  const items=P.items().filter(it=>P.filter(it,P.tab));
+  const nb=k=>P.items().filter(it=>P.filter(it,k)&&String(it.debut).slice(0,10)>=key(today)&&String(it.debut).slice(0,10)<=key(days[6])).length;
+  const fmt=d=>d.toLocaleDateString("fr-CH",{day:"numeric",month:"long"});
+  let o='<div class="plan-h"><h2>Planning</h2><div class="plan-nav"><button type="button" class="btn sm" data-w="-1" aria-label="Semaine précédente">‹</button><button type="button" class="btn sm" data-w="0">Cette semaine</button><button type="button" class="btn sm" data-w="1" aria-label="Semaine suivante">›</button><span class="faint">'+esc(fmt(days[0]))+' – '+esc(fmt(days[6]))+'</span></div></div>';
+  o+='<nav class="plan-tabs" role="tablist">'+T.map(([k,t])=>{ const n=P.week===0?nb(k):0; return '<button type="button" role="tab" data-t="'+esc(k)+'" aria-selected="'+(k===P.tab)+'" class="'+(k===P.tab?"on":"")+'">'+esc(t)+(n?' <span class="count">'+n+'</span>':'')+'</button>'; }).join("")+'</nav>';
+  o+='<div class="plan-week">';
+  days.forEach((d,i)=>{ const k=key(d), its=items.filter(it=>String(it.debut).slice(0,10)===k); if(i>=5&&!its.length) return;
+    o+='<div class="plan-day'+(k===key(new Date())?" today":"")+'"><div class="plan-dh">'+esc(d.toLocaleDateString("fr-CH",{weekday:"short",day:"numeric"}))+'</div>';
+    if(!its.length) o+='<div class="plan-empty">—</div>';
+    its.forEach(it=>{ const t=it.journee?"Journée":String(it.debut).slice(11,16); const tag=it.href?"a":"div";
+      o+='<'+tag+' class="plan-ev src-'+esc(String(it.src).replace(/:.*/,""))+'"'+(it.href?' href="'+esc(it.href)+'"':'')+' title="'+esc(it.titre+(it.sous?" · "+it.sous:""))+'"><b>'+esc(t)+'</b> '+esc(it.titre)+(it.sous?'<span>'+esc(it.sous)+'</span>':'')+'</'+tag+'>'; });
+    o+='</div>'; });
+  o+='</div>';
+  const legend='<span class="lg src-cal">Calendly</span><span class="lg src-contact">Outlook Insertio</span><span class="lg src-m">Outlook personnel</span><span class="lg src-dos">Dossiers</span>';
+  const miss=[]; if(!P.cfg.contact) miss.push("contact@"); if(P.tab.startsWith("m:")&&!(P.cfg.membres||{})[P.tab.slice(2)]) miss.push("ce calendrier personnel");
+  o+='<div class="plan-f">'+legend+(IO.Team.canSend()&&miss.length?' <span class="faint">· Outlook de '+esc(miss.join(" et "))+' pas encore relié : <a href="#/reglages">Réglages → Planning</a></span>':'')+(P.erreurs.length?' <span class="warn-t">'+esc(P.erreurs.join(" · "))+'</span>':'')+'</div>';
+  el.innerHTML=o;
+  el.querySelectorAll("[data-t]").forEach(b=>b.addEventListener("click",()=>{ P.tab=b.dataset.t; try{ localStorage.setItem("io-plan-tab",P.tab); }catch(e){} P.paint(); }));
+  el.querySelectorAll("[data-w]").forEach(b=>b.addEventListener("click",()=>{ const w=+b.dataset.w; P.week=w?P.week+w:0; P.paint(); }));
+};
+IO.Plan.settings=(main)=>{
+  const P=IO.Plan; const s=h("section",{class:"dcard",id:"planning-reglages"}); s.appendChild(h("h2",null,"Planning : calendriers Outlook"));
+  s.appendChild(h("p",{class:"sub-n"},"Pour afficher un calendrier Outlook sur l'accueil : dans Outlook sur le web, <b>Paramètres → Calendrier → Calendriers partagés → Publier un calendrier</b>, choisir le calendrier, « Peut afficher tous les détails », <b>Publier</b>, puis copier le <b>lien ICS</b> et le coller ici. Le lien reste privé (il est enregistré dans le dossier partagé de l'équipe)."));
+  const g=h("div",{class:"stack"}); const fields=[];
+  const add=(label,val,set)=>{ const d=h("div"); d.appendChild(h("label",{class:"flab"},esc(label))); const i=h("input",{class:"f",type:"url",value:val||"",placeholder:"https://outlook.live.com/owa/calendar/…/calendar.ics"}); d.appendChild(i); g.appendChild(d); fields.push([i,set]); };
+  add("Calendrier de contact@insertio.ch (là où Calendly enregistre les rendez-vous)",P.cfg.contact,v=>P.cfg.contact=v);
+  P.membres().forEach(m=>add("Calendrier de "+m.nom+(m.mail?" ("+m.mail+")":""),(P.cfg.membres||{})[m.id],v=>{ P.cfg.membres=P.cfg.membres||{}; P.cfg.membres[m.id]=v; }));
+  s.appendChild(g);
+  const r=h("div",{class:"btn-row"}); const b=h("button",{type:"button",class:"btn primary"},"Enregistrer et tester"); r.appendChild(b); s.appendChild(r);
+  b.addEventListener("click",async()=>{ fields.forEach(([i,set])=>set(i.value.trim())); b.disabled=true;
+    try{ await IO.Store.putShared("planning.json",new Blob([JSON.stringify(P.cfg,null,2)],{type:"application/json"})); await P.fetch(true);
+      U.toast(P.erreurs.length?"Enregistré, mais : "+P.erreurs.join(" · "):"Planning relié ✓ ("+P.events.length+" événements à venir)",7000); }
+    catch(e){ U.toast("Non enregistré : "+(e.message||e),6000); } b.disabled=false; });
+  if(!IO.Team.canSend()) s.appendChild(h("p",{class:"sub-n"},"À activer d'abord : « Envoi direct des mails » ci-dessus (le même service lit les calendriers)."));
+  main.appendChild(s);
+};
+
 const fmtDT=iso=>{ if(!iso) return ""; const d=new Date(iso); return d.toLocaleDateString("fr-CH",{weekday:"short",day:"numeric",month:"short",year:"numeric"})+" à "+d.toLocaleTimeString("fr-CH",{hour:"2-digit",minute:"2-digit"}); };
 function tabInfos(body,j){
   const App=A(); const c=j.calendly||null;
