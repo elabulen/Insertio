@@ -545,7 +545,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "8.0"; IO.ARTIFACT = false;
+IO.VERSION = "8.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -3208,10 +3208,13 @@ IO.Plan.open=it=>{
       const ol=h("a",{class:"btn",href:P.outlookLink(it.app),target:"_blank",rel:"noopener"},"Ajouter dans Outlook"); r.appendChild(ol); }
     const confirmDel=b=>{ if(b.dataset.sure) return true; b.dataset.sure=1; b.textContent="Confirmer ?"; setTimeout(()=>{ delete b.dataset.sure; },4000); return false; };
     const hz=h("button",{type:"button",class:"btn"},"Changer l'horaire"); hz.addEventListener("click",()=>{ close(); P.editTime(it); }); r.appendChild(hz);
-    if(it.app){ const del=h("button",{type:"button",class:"btn danger"},"Supprimer"); del.addEventListener("click",async()=>{ if(!confirmDel(del)) return; await P.delEvent(it.app); close(); }); r.appendChild(del); }
-    if(it.calEv){ const an=h("button",{type:"button",class:"btn danger"},"Annuler le rendez-vous"); an.addEventListener("click",()=>{ close(); P.cancelCal(it); }); r.appendChild(an); }
+    if(it.app&&!(it.srcs.has("contact")||[...it.srcs].some(x=>x.startsWith("m:")&&x!==it.app.qui))){ const del=h("button",{type:"button",class:"btn danger"},"Supprimer"); del.addEventListener("click",async()=>{ if(!confirmDel(del)) return; await P.delEvent(it.app); close(); }); r.appendChild(del); }
     if(it.r&&it.j&&!it.calEv){ const sr=h("button",{type:"button",class:"btn"},"Retirer du dossier"); sr.addEventListener("click",()=>{ if(!confirmDel(sr)) return; it.r.statut="annule"; IO.touch(it.r); App.save(it.j); close(); P.paint(); U.toast("Rendez-vous retiré du dossier"); }); r.appendChild(sr); }
-    if(!it.app&&!it.calEv&&!it.r){ const d=String(it.debut).slice(0,10).split("-"); r.appendChild(h("a",{class:"btn",href:"https://outlook.live.com/calendar/0/view/day/"+d[0]+"/"+(+d[1])+"/"+(+d[2]),target:"_blank",rel:"noopener"},"Ouvrir dans Outlook")); }
+    const outlook=[...it.srcs].some(x=>x==="contact"||x.startsWith("m:"));
+    if(outlook&&!it.calEv&&!it.r){ const d=String(it.debut).slice(0,10).split("-"); const url=(it.srcs.has("contact")||(IO.Team.data.outlook||"live")==="live"?"https://outlook.live.com":"https://outlook.office.com")+"/calendar/0/view/day/"+d[0]+"/"+(+d[1])+"/"+(+d[2]);
+      const so=h("button",{type:"button",class:"btn danger"},"Supprimer l'événement"); so.addEventListener("click",async()=>{ if(!confirmDel(so)) return;
+        window.open(url,"_blank","noopener"); P.cfg.masques=P.cfg.masques||[]; P.cfg.masques.push(P.sig(it)); if(it.app){ await P.delEvent(it.app); } else { await P.saveCfg(); } close(); P.paint();
+        U.toast("Retiré du planning. Outlook s'est ouvert sur ce jour : clique sur l'événement puis « Supprimer » pour l'enlever aussi d'Outlook.",9000); }); r.appendChild(so); }
     const m=h("button",{type:"button",class:"btn"},"Masquer du planning"); m.title="Le rendez-vous reste dans Calendly / Outlook ; il n'apparaît simplement plus ici.";
     m.addEventListener("click",async()=>{ P.cfg.masques=P.cfg.masques||[]; P.cfg.masques.push(P.sig(it)); await P.saveCfg(); close(); P.paint(); U.toast("Masqué du planning (pour toute l'équipe)"); });
     r.appendChild(m); const c=h("button",{type:"button",class:"btn"},"Fermer"); c.addEventListener("click",close); r.appendChild(c);
@@ -3299,14 +3302,6 @@ IO.Plan.editTime=(it)=>{ const P=IO.Plan, App=A(); const cur=String(it.debut);
       else if(it.r&&it.j&&!it.calEv){ it.r.date=d; it.r.heure=t; IO.touch(it.r); App.save(it.j); }
       else { await P.load(); P.cfg.horaires[it.hk]=t?d+"T"+t:d; }
       await P.saveCfg(); close(); P.ref=new Date(d+"T12:00"); P.paint(); U.toast("Horaire mis à jour pour toute l'équipe"); });
-  }); };
-IO.Plan.cancelCal=(it)=>{ const P=IO.Plan, App=A();
-  App.modal('<h2>Annuler le rendez-vous Calendly</h2><p>'+esc(it.titre)+' · '+esc(String(it.debut).replace("T"," à "))+'</p><p class="sub-n">Le rendez-vous est annulé dans Calendly et retiré automatiquement du calendrier Outlook de contact@. <b>La personne reçoit le mail d\'annulation de Calendly</b> avec le motif ci-dessous, et le créneau redevient libre.</p><label class="flab">Motif (envoyé à la personne)</label><textarea class="f" name="motif" rows="2">Nous devons annuler ce rendez-vous. Nous te recontactons rapidement pour en fixer un autre.</textarea><div class="btn-row" style="margin-top:14px"><button type="button" class="btn danger" data-ok>Annuler le rendez-vous</button><button type="button" class="btn" data-x>Garder</button></div>',(sh,close)=>{
-    sh.querySelector("[data-x]").addEventListener("click",close);
-    const ok=sh.querySelector("[data-ok]"); ok.addEventListener("click",async()=>{ ok.disabled=true; ok.textContent="Annulation…";
-      try{ const r=await fetch(IO.Team.envoi.url,{method:"POST",body:JSON.stringify({cle:IO.Team.envoi.cle,action:"annuler",ev:it.calEv,motif:sh.querySelector("[name=motif]").value})}); const o=await r.json(); if(!o.ok) throw new Error(o.erreur||"refusé");
-        close(); U.toast("Rendez-vous annulé dans Calendly ✓",5000); await IO.Cal.sync(true); P.paint(); }
-      catch(e){ ok.disabled=false; ok.textContent="Annuler le rendez-vous"; U.toast("Annulation impossible : "+(e.message||e),7000); } });
   }); };
 IO.Plan.settings=(main)=>{
   const P=IO.Plan; const s=h("section",{class:"dcard",id:"planning-reglages"}); s.appendChild(h("h2",null,"Planning : calendriers Outlook"));
