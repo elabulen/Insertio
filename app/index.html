@@ -131,6 +131,16 @@ a{color:var(--blue)}
 .jrow .jm{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.jrow .jm a{color:var(--text);text-decoration:none;font-weight:600}.jrow .jm small{color:var(--text-faint);font-size:12.5px}
 .jcell{display:flex;align-items:center;gap:10px}
 .hero-av{display:flex;align-items:center;gap:16px}
+.gs-btn{border:0;background:var(--surface-2);color:var(--text-dim);font:inherit;font-size:13px;border-radius:999px;padding:6px 12px;cursor:pointer;margin-right:8px}.gs-btn:hover{color:var(--text)}
+@media(max-width:900px){.gs-btn span{display:none}}
+.gs-sheet{max-width:640px!important;width:92vw}.gs-in{font-size:17px!important;padding:14px 16px!important}.gs-res{list-style:none;margin:10px 0 0;padding:0;max-height:55vh;overflow:auto}
+.gs-res li{display:flex;gap:12px;align-items:center;padding:9px 10px;border-radius:10px;cursor:pointer}.gs-res li.on,.gs-res li:hover{background:var(--surface-2)}.gs-res li>div{display:flex;flex-direction:column;min-width:0}.gs-res small{color:var(--text-faint);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-ic{width:28px;height:28px;border-radius:8px;background:var(--surface-2);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}.gs-none{color:var(--text-faint);cursor:default!important}.gs-h{margin-top:10px}
+.ctf{display:flex;flex-direction:column;gap:12px}.ct-h{margin:14px 0 0;font-size:14px;color:var(--navy);text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--border);padding-bottom:6px}
+.ct-opts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:4px}.ct-g .chk{margin:0}.ct-c{padding:10px 12px;background:var(--surface-2);border-radius:10px}
+.ct-txt{background:var(--surface-2);border-radius:10px;padding:10px 14px;font-size:13.5px;line-height:1.5}.ct-txt summary{cursor:pointer;font-weight:600}
+.ct-pads{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.ct-pad{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.ct-pad canvas{width:100%;aspect-ratio:3/1;border:1.5px dashed var(--border);border-radius:12px;background:#fff;touch-action:none;cursor:crosshair}
 .hero-info{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:13.5px;color:var(--text-dim)}.hero-info b{color:var(--text)}
 .kb{display:grid;grid-template-columns:repeat(6,minmax(170px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
 .kb-col{background:var(--surface-2);border-radius:16px;padding:10px;min-height:220px;display:flex;flex-direction:column;gap:8px;transition:background .15s}.kb-col.over{background:var(--blue-dim)}
@@ -549,6 +559,7 @@ textarea.f{min-height:96px;line-height:1.5}
     <a href="#/">Accueil</a><a href="#/jeunes">Jeunes</a><a href="#/coaching">Coaching</a><a href="#/mails">Mails</a><a href="#/stats">Statistiques</a><a href="#/guide">Guide</a><a href="#/reglages">Réglages</a>
   </nav>
   <button type="button" class="tbtn" id="whoBtn" hidden title="Changer de profil"></button><button type="button" class="tbtn" id="installBtn" hidden>Installer</button>
+  <button type="button" class="gs-btn" onclick="IO.Search&&IO.Search.open()" title="Recherche (Ctrl + K)">🔍<span> Rechercher</span></button>
   <a class="sync-chip" id="syncChip" href="#/reglages" data-ok="0"></a>
   <span class="save-state" id="saveState" aria-live="polite"></span>
 </div></header>
@@ -563,7 +574,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "8.2"; IO.ARTIFACT = false;
+IO.VERSION = "8.3"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1955,7 +1966,7 @@ function sorted(){ return [...App.jeunes.values()].sort((a,b)=>(a.nom||"").local
 /* ================================================================ Navigation */
 const routes=[
   [/^#?\/?$/, m=>IO.V6.home(m)], [/^#\/jeunes$/, viewJeunes], [/^#\/coaching$/, m=>IO.V6.coaching(m)],
-  [/^#\/j\/([^/]+)(?:\/(parcours|suivi|suivis|coaching|objectifs|candidatures|documents|profil|infos|historique|entreprises))?$/, (m,id,t)=>IO.V6.jeune(m,id,t)],
+  [/^#\/j\/([^/]+)(?:\/(parcours|suivi|suivis|coaching|objectifs|candidatures|documents|profil|infos|historique|entreprises|contrat))?$/, (m,id,t)=>IO.V6.jeune(m,id,t)],
   [/^#\/j\/([^/]+)\/seance\/(\d+)$/, (m,id,n)=>IO.V6.seance(m,id,n)],
   [/^#\/j\/([^/]+)\/e\/([^/]+)$/, viewEntretien], [/^#\/j\/([^/]+)\/s\/([^/]+)$/, (m,id,sid)=>IO.Suivi.view(m,id,sid)], [/^#\/guide$/, viewGuide], [/^#\/reglages$/, viewSettings], [/^#\/mails$/, m=>IO.Mails.view(m)], [/^#\/stats$/, m=>IO.CRM.stats(m)],
 ];
@@ -2205,6 +2216,8 @@ function tabProfil(body,j){
   const ds=h("div"); ds.appendChild(h("label",{class:"flab",for:"p_statut"},"Statut du dossier")); const s=h("select",{class:"f",id:"p_statut"}); s.innerHTML=REF.STATUTS.map(x=>'<option value="'+x.k+'"'+(x.k===j.statut?' selected':'')+'>'+x.t+'</option>').join(""); s.addEventListener("change",()=>{ j.statut=s.value; save(j); }); ds.appendChild(s); g.appendChild(ds);
   const dp=h("div"); dp.appendChild(h("label",{class:"flab",for:"p_prog"},"Programme")); const p=h("select",{class:"f",id:"p_prog"}); p.innerHTML='<option value="">—</option>'+REF.DECISIONS.map(x=>'<option'+(x===j.programme?' selected':'')+'>'+x+'</option>').join(""); p.addEventListener("change",()=>{ j.programme=p.value; save(j); }); dp.appendChild(p); g.appendChild(dp);
   body.appendChild(g);
+  if(IO.SOURCES){ const ds2=h("div",{style:"max-width:420px;margin-top:12px"}); ds2.appendChild(h("label",{class:"flab",for:"p_src"},"Comment a-t-il/elle connu Insertio ?")); const sv=h("select",{class:"f",id:"p_src"}); const cur=IO.sourceOf(j);
+    sv.innerHTML='<option value="">—</option>'+IO.SOURCES.map(x=>'<option'+(x===cur?' selected':'')+'>'+esc(x)+'</option>').join("")+(cur&&!IO.SOURCES.includes(cur)?'<option selected>'+esc(cur)+'</option>':''); sv.addEventListener("change",()=>{ j.source=sv.value; save(j); }); ds2.appendChild(sv); body.appendChild(ds2); }
   body.appendChild(h("div",{class:"sub-h"},"Notes générales"));
   const n=h("textarea",{class:"f",id:"p_notes",placeholder:"Informations utiles à toute l'équipe"}); n.value=j.notes||""; n.addEventListener("input",()=>{ j.notes=n.value; save(j); }); body.appendChild(n);
   body.appendChild(h("div",{class:"sub-h"},"Échange et suppression"));
@@ -3027,6 +3040,123 @@ IO.Ent.tab=async(body,j)=>{ const E=IO.Ent; const s=h("section",{class:"dcard"})
     b.addEventListener("click",()=>{ if(deja.has(k)) return; j.propositions=j.propositions||[]; j.propositions.push({id:U.uid("pr"),date:U.today(),entreprise:r["Entreprise"],contact:r["Contact (nom)"]||"",mail:r["E-mail"]||"",secteur:r._s,offre:r["Offre ou stage proposé"]||"",par:IO.Team.me?IO.Team.me.nom:""}); IO.touch(j); A().save(j); deja.add(k); b.textContent="Proposé ✓"; b.classList.remove("primary");
       U.toast("Noté dans l'historique de "+(U.firstName(j.nom)||"ce jeune")+". Pense à l'indiquer aussi dans la colonne « Jeunes proposés » du fichier Excel.",6000); });
     li.appendChild(b); ul.appendChild(li); }); s.appendChild(ul); };
+
+/* ================================================================ Contrat de prise en charge numérique (signature à l'écran) */
+IO.Contrat={
+  PREST:["Aide à la rédaction de CV et lettres de motivation","Préparation aux entretiens d'embauche","Orientation et bilan de compétences","Mise en relation avec des employeurs / réseau partenaire","Accompagnement administratif et social","Suivi individualisé régulier (entretiens périodiques)"],
+  SEJOUR:["Suisse","Permis C","Permis B","Permis F","Autres / sans statut"],
+  NIVEAU:["Scolarité obligatoire","Certificat / CFC","Bachelor","Master ou plus","Maturité / diplôme ES","Autre"],
+  SITU:["Sans emploi","En formation","En emploi précaire","En recherche d'apprentissage"],
+  PROGS:["Tremplin","Élan","Passerelles","Numérique"],
+  init(j){ const c=j.contrat=j.contrat||{}; const d=c.data=c.data||{};
+    const dflt={debut:(j.parcours&&j.parcours.debut)||U.today(),referent:j.referent||(IO.Team.me&&IO.Team.me.nom)||"",nom:j.nom||"",naissance:j.naissance||"",tel:j.tel||"",mail:j.mail||"",commune:j.commune||"",nationalite:"",adresse:"",npa:"",sejour:"",rl_nom:j.rl_nom||"",rl_tel:j.rl_tel||"",rl_mail:"",niveau:"",situ:[],oce:"",hospice:"",autres:"",prest:[],prestAutre:"",consentData:false,consentImage:false,certif:false,progs:[],objectifs:"",finPrev:"",frequence:""};
+    Object.keys(dflt).forEach(k=>{ if(d[k]===undefined||(d[k]===""&&dflt[k])) d[k]=dflt[k]; });
+    const pk=IO.progKind&&IO.progKind(j); if(!d.progs.length&&pk) d.progs=[pk==="elan"?"Élan":pk==="tremplin"?"Tremplin":"Numérique"]; return c; },
+  tab(body,j){ const C=this, c=C.init(j), d=c.data, App=A(); const locked=!!c.signeLe;
+    const s=h("section",{class:"dcard contrat"}); body.appendChild(s);
+    s.innerHTML='<h2>Contrat de prise en charge '+(locked?'<span class="pill elan">Signé le '+esc(U.fmtDate(c.signeLe))+'</span>':'<span class="pill num">À signer</span>')+'</h2><p class="sub-n">Prérempli avec le dossier. On complète ensemble sur l\'ordinateur ou l\'iPad, le/la jeune relit, coche les accords et signe au doigt ou à la souris. Le PDF signé est rangé dans le dossier (Fiches).</p>';
+    if(locked){ const r=h("div",{class:"btn-row"}); if(c.pdf){ const o=h("button",{type:"button",class:"btn primary"},"Ouvrir le contrat signé"); o.addEventListener("click",async()=>{ try{ const f=await IO.Store.readFile(j.id,"Fiches",c.pdf); const u=URL.createObjectURL(f); window.open(u,"_blank"); }catch(e){ U.toast("Ouvre le dossier Fiches du jeune : "+c.pdf,6000); } }); r.appendChild(o); }
+      const re=h("button",{type:"button",class:"btn"},"Refaire un contrat (avenant)"); re.addEventListener("click",()=>{ c.ancien=(c.ancien||[]).concat([{signeLe:c.signeLe,pdf:c.pdf}]); delete c.signeLe; delete c.pdf; delete c.sigJeune; delete c.sigInsertio; IO.touch(j); App.save(j); App.route({keep:true}); }); r.appendChild(re); s.appendChild(r); return; }
+    const f=h("form",{class:"ctf"}); s.appendChild(f);
+    const set=(k,v)=>{ d[k]=v; IO.touch(j); App.save(j); };
+    const inp=(k,l,t)=>{ const w=h("div"); w.appendChild(h("label",{class:"flab"},esc(l))); const i=h("input",{class:"f",type:t||"text"}); i.value=d[k]||""; i.addEventListener("input",()=>set(k,i.value)); w.appendChild(i); return w; };
+    const radio=(k,l,opts)=>{ const w=h("div",{class:"ct-g"}); w.appendChild(h("span",{class:"flab"},esc(l))); const g=h("div",{class:"ct-opts"}); opts.forEach(o=>{ const b=h("label",{class:"chk"},'<input type="radio" name="'+k+'"'+(d[k]===o?" checked":"")+'><span>'+esc(o)+'</span>'); b.querySelector("input").addEventListener("change",()=>set(k,o)); g.appendChild(b); }); w.appendChild(g); return w; };
+    const multi=(k,l,opts)=>{ const w=h("div",{class:"ct-g"}); w.appendChild(h("span",{class:"flab"},esc(l))); const g=h("div",{class:"ct-opts"}); opts.forEach(o=>{ const b=h("label",{class:"chk"},'<input type="checkbox"'+(d[k].includes(o)?" checked":"")+'><span>'+esc(o)+'</span>'); b.querySelector("input").addEventListener("change",e=>set(k,e.target.checked?[...d[k],o]:d[k].filter(x=>x!==o))); g.appendChild(b); }); w.appendChild(g); return w; };
+    const sec=t=>f.appendChild(h("h3",{class:"ct-h"},esc(t)));
+    const row=(...els)=>{ const r=h("div",{class:"row2"}); els.forEach(e=>r.appendChild(e)); f.appendChild(r); };
+    row(inp("debut","Date de début de l'accompagnement","date"),inp("referent","Référent·e Insertio en charge du suivi"));
+    sec("Informations du/de la jeune"); row(inp("nom","Prénom et nom"),inp("naissance","Date de naissance","date")); row(inp("tel","Téléphone","tel"),inp("nationalite","Nationalité")); row(inp("mail","E-mail","email"),inp("adresse","Adresse")); row(inp("npa","Code postal et ville"),h("div"));
+    f.appendChild(radio("sejour","Statut de séjour",C.SEJOUR));
+    sec("Représentant·e légal·e (si mineur·e)"); row(inp("rl_nom","Prénom et nom"),inp("rl_mail","E-mail","email")); row(inp("rl_tel","Téléphone","tel"),h("div"));
+    sec("Situation avant la signature du contrat"); f.appendChild(radio("niveau","Niveau de formation",C.NIVEAU)); f.appendChild(multi("situ","Situation actuelle",C.SITU));
+    f.appendChild(radio("oce","Inscrit·e à l'Office cantonal de l'emploi (OCE)",["Oui","Non"])); f.appendChild(radio("hospice","Bénéficiaire de l'aide sociale / Hospice général",["Oui","Non"]));
+    { const w=h("div"); w.appendChild(h("label",{class:"flab"},"Autres informations utiles au suivi (facultatif)")); const t=h("textarea",{class:"f",rows:2}); t.value=d.autres; t.addEventListener("input",()=>set("autres",t.value)); w.appendChild(t); f.appendChild(w); }
+    sec("Prestations proposées par Insertio"); f.appendChild(multi("prest","",C.PREST)); f.appendChild(inp("prestAutre","Autre(s) prestation(s) spécifique(s)"));
+    sec("Annexe : choix du programme"); f.appendChild(multi("progs","Programme(s) retenu(s)",C.PROGS));
+    { const w=h("div"); w.appendChild(h("label",{class:"flab"},"Objectif(s) prioritaire(s) identifié(s) avec le/la jeune")); const t=h("textarea",{class:"f",rows:2}); t.value=d.objectifs; t.addEventListener("input",()=>set("objectifs",t.value)); w.appendChild(t); f.appendChild(w); }
+    row(inp("finPrev","Fin prévisionnelle","date"),inp("frequence","Fréquence des rencontres / précisions"));
+    sec("Engagements, durée, protection des données");
+    f.appendChild(h("details",{class:"ct-txt"},'<summary>Lire le texte du contrat (à faire lire au/à la jeune)</summary>'+C.texteHTML()));
+    const cons=(k,t,req)=>{ const b=h("label",{class:"chk ct-c"},'<input type="checkbox"'+(d[k]?" checked":"")+'><span>'+esc(t)+(req?' <b class="warn-t">*</b>':' <small class="faint">(facultatif, révocable à tout moment)</small>')+'</span>'); b.querySelector("input").addEventListener("change",e=>set(k,e.target.checked)); f.appendChild(b); };
+    cons("consentData","J'autorise Insertio à traiter mes données personnelles dans le cadre décrit ci-dessus.",true);
+    cons("consentImage","J'autorise Insertio à utiliser mon témoignage / mon image à des fins de communication.",false);
+    cons("certif","Je certifie sur l'honneur que les informations et documents transmis à Insertio dans le cadre de mon accompagnement sont exacts et complets.",true);
+    sec("Signatures");
+    const pads=h("div",{class:"ct-pads"}); f.appendChild(pads);
+    const pJ=C.pad(pads,"Signature du/de la jeune"), pI=C.pad(pads,"Signature d'Insertio ("+(d.referent||"référent·e")+")");
+    const r=h("div",{class:"btn-row",style:"margin-top:14px"}); const ok=h("button",{type:"button",class:"btn primary"},"Valider et enregistrer le contrat signé"); r.appendChild(ok); f.appendChild(r);
+    ok.addEventListener("click",async()=>{ const miss=[]; if(!d.nom) miss.push("nom"); if(!d.consentData) miss.push("accord protection des données"); if(!d.certif) miss.push("certification"); if(pJ.empty()) miss.push("signature du/de la jeune"); if(pI.empty()) miss.push("signature d'Insertio");
+      if(miss.length){ U.toast("À compléter : "+miss.join(", "),6000); return; }
+      ok.disabled=true; ok.textContent="Création du PDF…";
+      try{ c.sigJeune=pJ.data(); c.sigInsertio=pI.data(); c.signeLe=U.today();
+        const blob=C.pdf(j,c); const name="Contrat_prise_en_charge_"+U.slug(d.nom)+"_"+c.signeLe+".pdf";
+        await IO.Store.addFile(j.id,"Fiches",blob,name,true); c.pdf=name;
+        if(d.naissance&&!j.naissance) j.naissance=d.naissance; if(d.tel&&!j.tel) j.tel=d.tel; if(d.mail&&!j.mail) j.mail=d.mail; if(d.npa&&!j.commune) j.commune=d.npa.replace(/^\d{4}\s*/,"");
+        j.consentImage=!!d.consentImage; IO.touch(j); await App.save(j,true); U.toast("Contrat signé et rangé dans le dossier ✓",5000); App.route({keep:true}); }
+      catch(e){ ok.disabled=false; ok.textContent="Valider et enregistrer le contrat signé"; delete c.signeLe; U.toast("PDF non créé : "+(e.message||e),7000); } });
+  },
+  pad(parent,label){ const w=h("div",{class:"ct-pad"}); w.innerHTML='<span class="flab">'+esc(label)+'</span>'; const cv=h("canvas",{width:600,height:200}); w.appendChild(cv); const clr=h("button",{type:"button",class:"btn sm"},"Effacer"); w.appendChild(clr); parent.appendChild(w);
+    const x=cv.getContext("2d"); x.lineWidth=2.6; x.lineCap="round"; x.lineJoin="round"; x.strokeStyle="#111"; let dn=false, used=false;
+    const pt=e=>{ const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]; };
+    cv.addEventListener("pointerdown",e=>{ dn=true; used=true; cv.setPointerCapture(e.pointerId); const [a,b]=pt(e); x.beginPath(); x.moveTo(a,b); e.preventDefault(); });
+    cv.addEventListener("pointermove",e=>{ if(!dn) return; const [a,b]=pt(e); x.lineTo(a,b); x.stroke(); e.preventDefault(); });
+    ["pointerup","pointercancel","pointerleave"].forEach(t=>cv.addEventListener(t,()=>{ dn=false; }));
+    clr.addEventListener("click",()=>{ x.clearRect(0,0,cv.width,cv.height); used=false; });
+    return { empty:()=>!used, data:()=>cv.toDataURL("image/png") }; },
+  texteHTML(){ return '<p><b>But de l\'accompagnement.</b> Ce contrat a pour but de concrétiser la prise en charge du/de la jeune par Insertio dans le cadre de son parcours d\'insertion socioprofessionnelle. Il définit les engagements des deux parties ainsi que les modalités de l\'accompagnement proposé.</p>'+
+    '<p><b>Insertio s\'engage à :</b> mettre en œuvre les actions d\'accompagnement prévues dans le présent contrat, en fonction des besoins et de la disponibilité de l\'association ; désigner un·e référent·e chargé·e du suivi individualisé du/de la jeune ; informer le/la jeune de ses droits et de la nature confidentielle des échanges ; traiter les données personnelles du/de la jeune conformément à la législation suisse sur la protection des données (LPD).</p>'+
+    '<p><b>Le/la jeune s\'engage à :</b> participer activement et assidûment aux actions d\'accompagnement proposées ; informer l\'association de tout changement de situation personnelle, administrative ou professionnelle pouvant affecter le suivi ; prévenir son/sa référent·e en cas d\'empêchement à un rendez-vous fixé, dans un délai raisonnable ; faire preuve de courtoisie et de respect envers les membres de l\'association et les autres jeunes.</p>'+
+    '<p><b>Durée et fin de l\'accompagnement.</b> Le présent contrat prend effet à la date de début de l\'accompagnement mentionnée ci-dessus, pour une durée déterminée en fonction du projet du/de la jeune. Il peut être renouvelé d\'un commun accord entre les parties. Il peut être résilié à tout moment, par l\'une ou l\'autre des parties, notamment en cas de non-respect des engagements ci-dessus, moyennant une information préalable dans un délai raisonnable.</p>'+
+    '<p><b>Protection des données et consentement.</b> Les données personnelles recueillies dans le cadre du présent contrat sont utilisées exclusivement aux fins de l\'accompagnement proposé par Insertio et de son suivi statistique interne. Elles ne sont transmises à des tiers qu\'avec l\'accord préalable du/de la jeune, sauf obligation légale. Conformément à la loi fédérale sur la protection des données (LPD), le/la jeune dispose d\'un droit d\'accès, de rectification et de suppression des données le/la concernant, qu\'il/elle peut exercer en s\'adressant à Insertio.</p>'; },
+  pdf(j,c){ const C=this, d=c.data, J=window.jspdf&&window.jspdf.jsPDF; if(!J) throw new Error("module PDF absent");
+    const doc=new J({unit:"mm",format:"a4"}); const W=210,H=297,M=18,CW=W-2*M; let y=M; const NAVY=[38,48,107],PINK=[191,63,108],INK=[28,33,53],DIM=[100,106,130],LINE=[217,221,236];
+    const need=n=>{ if(y+n>H-M){ doc.addPage(); y=M; } };
+    const T=(t,{size=10,bold=false,color=INK,x=M,w=CW,after=1.5}={})=>{ if(!t) return; doc.setFont("helvetica",bold?"bold":"normal"); doc.setFontSize(size); doc.setTextColor(...color); doc.splitTextToSize(String(t),w).forEach(l=>{ need(size*0.45); doc.text(l,x,y+size*0.35); y+=size*0.45; }); y+=after; };
+    const H2=t=>{ y+=2; need(12); T(t.toUpperCase(),{size:10.5,bold:true,color:NAVY,after:0.5}); doc.setDrawColor(...LINE); doc.line(M,y,W-M,y); y+=3; };
+    const KV=(k,v)=>{ need(6); doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(...DIM); doc.text(k,M,y+3); doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(...INK); const ls=doc.splitTextToSize(String(v||"—"),CW-62); ls.forEach((l,i)=>{ doc.text(l,M+62,y+3+i*4.4); }); y+=Math.max(1,ls.length)*4.4+1.6; };
+    const box=(on,t)=>{ need(6); doc.setDrawColor(...INK); doc.rect(M,y,3.6,3.6); if(on){ doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.text("X",M+0.7,y+3); } T(t,{size:9.5,x:M+6,w:CW-6,after:1.2}); };
+    const fd=v=>v?U.fmtDate(v):"—";
+    doc.setFont("times","bold"); doc.setFontSize(22); doc.setTextColor(...NAVY); doc.text("Inserti",M,y+7); doc.setTextColor(...PINK); doc.text("O",M+doc.getTextWidth("Inserti"),y+7);
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...DIM); ["INSERTIO GENÈVE","Rue Le-Royer 24, 1227 Les Acacias","contact@insertio.ch"].forEach((l,i)=>doc.text(l,W-M,y+2+i*4,{align:"right"})); y+=16;
+    T("Contrat de prise en charge",{size:16,bold:true,after:3});
+    KV("Début de l'accompagnement",fd(d.debut)); KV("Référent·e Insertio",d.referent);
+    H2("Informations du/de la jeune"); KV("Prénom et nom",d.nom); KV("Date de naissance",fd(d.naissance)); KV("Téléphone",d.tel); KV("Nationalité",d.nationalite); KV("E-mail",d.mail); KV("Adresse",d.adresse); KV("Code postal et ville",d.npa); KV("Statut de séjour",d.sejour);
+    if(d.rl_nom||d.rl_tel||d.rl_mail){ H2("Représentant·e légal·e"); KV("Prénom et nom",d.rl_nom); KV("Téléphone",d.rl_tel); KV("E-mail",d.rl_mail); }
+    H2("Situation avant la signature du contrat"); KV("Niveau de formation",d.niveau); KV("Situation actuelle",(d.situ||[]).join(", ")); KV("Inscrit·e à l'OCE",d.oce); KV("Aide sociale / Hospice général",d.hospice); if(d.autres) KV("Autres informations",d.autres);
+    H2("Prestations proposées par Insertio"); C.PREST.forEach(p=>box((d.prest||[]).includes(p),p)); if(d.prestAutre) box(true,"Autre : "+d.prestAutre);
+    const tmp=document.createElement("div"); tmp.innerHTML=C.texteHTML(); [...tmp.querySelectorAll("p")].forEach(p=>{ const b=p.querySelector("b"); const t=b?b.textContent.replace(/[.:]\s*$/,""):""; H2(t); T(p.textContent.replace(b?b.textContent:"","").trim(),{size:9.8}); });
+    H2("Accords"); box(!!d.consentData,"J'autorise Insertio à traiter mes données personnelles dans le cadre décrit ci-dessus."); box(!!d.consentImage,"J'autorise Insertio à utiliser mon témoignage / mon image à des fins de communication (facultatif, révocable à tout moment)."); box(!!d.certif,"Je certifie sur l'honneur que les informations et documents transmis à Insertio dans le cadre de mon accompagnement sont exacts et complets.");
+    H2("Annexe : choix du programme d'accompagnement"); KV("Programme(s) retenu(s)",(d.progs||[]).join(", ")); KV("Objectif(s) prioritaire(s)",d.objectifs); KV("Début du programme",fd(d.debut)); KV("Fin prévisionnelle",fd(d.finPrev)); KV("Fréquence / précisions",d.frequence);
+    need(62); y+=4; const half=CW/2-4;
+    [["Signature d'Insertio",c.sigInsertio,d.referent,M],["Signature du/de la jeune",c.sigJeune,d.nom,M+half+8]].forEach(([t,img,nom,x])=>{ doc.setFont("helvetica","bold"); doc.setFontSize(9.5); doc.setTextColor(...NAVY); doc.text(t.toUpperCase(),x,y+3);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(...INK); doc.text("Lu et approuvé le : "+fd(c.signeLe),x,y+8); doc.text(String(nom||""),x,y+13); doc.setDrawColor(...LINE); doc.rect(x,y+16,half,30); if(img) doc.addImage(img,"PNG",x+2,y+17,half-4,(half-4)/3); });
+    y+=50; T("Document signé électroniquement dans l'application Insertio le "+fd(c.signeLe)+". Les signatures ont été apposées à l'écran par les deux parties, en présence l'une de l'autre.",{size:8,color:DIM});
+    const n=doc.getNumberOfPages(); for(let i=1;i<=n;i++){ doc.setPage(i); doc.setFontSize(8); doc.setTextColor(...DIM); doc.text(i+" / "+n,W/2,H-8,{align:"center"}); }
+    return doc.output("blob"); }
+};
+/* ================================================================ Recherche globale (Ctrl + K) */
+IO.Search={ open(){ const App=A(); if(document.querySelector(".gsearch")) return;
+  App.modal('<div class="gsearch"><input class="f gs-in" type="search" placeholder="Rechercher un jeune, un e-mail, un téléphone, une entreprise, un rendez-vous…" autocomplete="off"><ul class="gs-res"></ul><p class="sub-n gs-h">Astuce : Ctrl + K depuis n\'importe quelle page · ↑ ↓ pour choisir · Entrée pour ouvrir</p></div>',(sh,close)=>{
+    sh.classList.add("gs-sheet"); const i=sh.querySelector(".gs-in"), ul=sh.querySelector(".gs-res"); let res=[], sel=0; i.focus();
+    const N=s=>IO.Plan.norm(s);
+    const run=async()=>{ const q=N(i.value); res=[]; if(q.length<2){ ul.innerHTML=""; return; } const has=t=>N(t).includes(q);
+      [...App.jeunes.values()].filter(j=>!j.deleted&&(has(j.nom)||has(j.mail)||String(j.tel||"").replace(/\D/g,"").includes(q.replace(/\D/g,"")||"§")||has(j.commune)||has(j.programme))).slice(0,8)
+        .forEach(j=>res.push({ic:IO.avatar(j,28),t:j.nom,s:[label6?label6(j):"",j.mail,j.statut!=="actif"?j.statut:""].filter(Boolean).join(" · "),go:"#/j/"+j.id}));
+      try{ IO.Plan.items().filter(it=>has(it.titre)||has(it.sous)).slice(0,5).forEach(it=>res.push({ic:'<span class="gs-ic">📅</span>',t:it.titre,s:String(it.debut).replace("T"," à ")+(it.sous?" · "+it.sous:""),fn:()=>IO.Plan.open(it)})); }catch(e){}
+      const E=IO.Ent&&IO.Ent.data; if(E) Object.entries(E).forEach(([sct,rows])=>rows.filter(r=>has(r["Entreprise"])||has(r["Contact (nom)"])||has(r["Offre ou stage proposé"])).slice(0,5).forEach(r=>res.push({ic:'<span class="gs-ic">🏢</span>',t:r["Entreprise"],s:[sct,r["Contact (nom)"],r["E-mail"]||r["Téléphone"]].filter(Boolean).join(" · "),href:r["E-mail"]?"mailto:"+r["E-mail"]:null})));
+      [["Planning","#/"],["Jeunes","#/jeunes"],["Statistiques","#/stats"],["Mails","#/mails"],["Réglages","#/reglages"]].filter(([t])=>has(t)).forEach(([t,g])=>res.push({ic:'<span class="gs-ic">➜</span>',t,s:"Page",go:g}));
+      sel=0; paint(); };
+    const paint=()=>{ ul.innerHTML=res.length?res.map((r,k)=>'<li class="'+(k===sel?"on":"")+'" data-k="'+k+'">'+r.ic+'<div><b>'+esc(r.t||"")+'</b><small>'+esc(r.s||"")+'</small></div></li>').join(""):'<li class="gs-none">Aucun résultat</li>';
+      ul.querySelectorAll("[data-k]").forEach(li=>li.addEventListener("click",()=>pick(+li.dataset.k))); };
+    const pick=k=>{ const r=res[k]; if(!r) return; close(); if(r.go) App.go(r.go); else if(r.fn) r.fn(); else if(r.href) window.location.href=r.href; };
+    i.addEventListener("input",()=>{ clearTimeout(IO.Search._t); IO.Search._t=setTimeout(run,120); });
+    i.addEventListener("keydown",e=>{ if(e.key==="ArrowDown"){ sel=Math.min(res.length-1,sel+1); paint(); e.preventDefault(); } else if(e.key==="ArrowUp"){ sel=Math.max(0,sel-1); paint(); e.preventDefault(); } else if(e.key==="Enter"){ pick(sel); } });
+    if(IO.Ent&&!IO.Ent.data) IO.Ent.load().catch(()=>{});
+  }); } };
+document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&(e.key==="k"||e.key==="K")){ e.preventDefault(); IO.Search.open(); } });
+/* ---- Comment le jeune a connu Insertio */
+IO.SOURCES=["Connaissance / bouche-à-oreille","TikTok","Instagram","Autres réseaux sociaux","École","Organisme (Hospice, OCE, OFPC…)","Site internet / Google","Autre"];
+IO.sourceOf=j=>{ if(j.source) return j.source; const x=(j.calendly&&j.calendly.reponses||[]).find(r=>/connu/i.test(r.q||"")); return x?String(x.r||"").split("\n")[0]:""; };
 /* ---- Statistiques pour les financeurs */
 IO.CRM.stats=(main)=>{ const App=A(); main.appendChild(h("div",{class:"v-head"},'<div><h1>Statistiques</h1><div class="meta">Pour les rapports aux financeurs</div></div>'));
   const now=new Date(); let y=now.getFullYear(); const sel=h("select",{class:"f",style:"max-width:200px"}); [y,y-1].forEach(v=>sel.appendChild(h("option",{value:String(v)},"Année "+v))); sel.appendChild(h("option",{value:"tout"},"Depuis le début"));
@@ -3049,7 +3179,7 @@ IO.CRM.stats=(main)=>{ const App=A(); main.appendChild(h("div",{class:"v-head"},
       k(sorties.length?pos.length+" / "+sorties.length:"—","sorties positives (emploi, apprentissage, stage, formation)")+k(suivis.reduce((a,j)=>a+(j.propositions||[]).filter(p=>inP(p.date)).length,0),"contacts employeurs proposés")+'</div>'+
       '<div class="st-grid">'+tbl("Par programme",by(prog))+'<section class="dcard"><h2>Heures par programme</h2><table class="st"><tbody>'+Object.entries(hp).sort((a,b)=>b[1]-a[1]).map(([a,b])=>'<tr><td>'+esc(a)+'</td><td>'+esc(IO.CRM.fmtH(b))+'</td><td><i style="width:'+Math.round(b/Math.max(1,tot)*100)+'%"></i></td></tr>').join("")+'</tbody></table></section>'+
       tbl("Par étape",by(j=>(IO.CRM.ETAPES.find(e=>e.k===IO.CRM.etape(j))||{}).t))+tbl("Par âge",by(age))+tbl("Par commune",by(j=>j.commune).slice(0,10))+
-      tbl("Situation à l'arrivée",by(j=>rep(j,/situation/i)))+tbl("Comment ils ont connu Insertio",by(j=>rep(j,/connu/i)))+tbl("Situation à la sortie",by(j=>j.sortie?(REF.SORTIE.find(x=>x.k===j.sortie)||{}).t:"Encore en accompagnement"))+'</div>'+
+      tbl("Situation à l'arrivée",by(j=>rep(j,/situation/i)))+tbl("Comment ils ont connu Insertio",by(j=>IO.sourceOf(j)))+tbl("Situation à la sortie",by(j=>j.sortie?(REF.SORTIE.find(x=>x.k===j.sortie)||{}).t:"Encore en accompagnement"))+'</div>'+
       '<section class="dcard"><h2>Détail par jeune</h2><table class="tbl"><thead><tr><th>Jeune</th><th>Programme</th><th>Étape</th><th>Heures</th><th>Séances</th><th>Sortie</th></tr></thead><tbody>'+
       suivis.sort((a,b)=>mins(b)-mins(a)).map(j=>'<tr><td><a href="#/j/'+j.id+'">'+esc(j.nom||"")+'</a></td><td>'+esc(prog(j))+'</td><td>'+esc((IO.CRM.ETAPES.find(e=>e.k===IO.CRM.etape(j))||{}).t)+'</td><td>'+esc(IO.CRM.fmtH(mins(j)))+'</td><td>'+IO.live(j.seances||[]).filter(s=>inP(s.date)).length+'</td><td>'+esc(j.sortie?(REF.SORTIE.find(x=>x.k===j.sortie)||{}).t:"")+'</td></tr>').join("")+'</tbody></table></section>';
     csv.onclick=()=>{ const head=["Jeune","Programme","Étape","Âge","Commune","Heures de suivi","Séances","Candidatures","Situation de sortie","Dossier créé le"];
@@ -3165,7 +3295,7 @@ IO.V6.jeune=async(main,id,tab)=>{
   { const rl=h("button",{type:"button",class:"btn"},"Relancer"); rl.addEventListener("click",()=>IO.CRM.relancer(j)); act.appendChild(rl);
     const nx=IO.nextRdvAny(j), hm=IO.CRM.minutes(j); const inf=h("div",{class:"hero-info"}); inf.innerHTML='<span>📅 '+(nx?'Prochain rendez-vous : <b>'+esc(IO.CRM.when(nx))+'</b> <small class="faint">'+esc(nx.src)+'</small>':'<span class="faint">Aucun rendez-vous prévu</span>')+'</span><span>⏱ <b>'+esc(IO.CRM.fmtH(hm))+'</b> de suivi</span><span>➡️ '+esc((IO.CRM.ETAPES.find(e=>e.k===IO.CRM.etape(j))||{}).t)+'</span>'; left.appendChild(inf); }
   hero.appendChild(act); main.appendChild(hero);
-  const T=[["parcours",k==="pole"?"Passages":"Séances"]]; if(k!=="pole") T.push(["coaching","Coaching"]); T.push(["historique","Historique"],["objectifs","Objectifs et actions"],["candidatures","Candidatures"],["entreprises","Contacts employeurs"],["documents","Documents"],["infos","Infos et inscription"],["profil","Profil"]);
+  const T=[["parcours",k==="pole"?"Passages":"Séances"]]; if(k!=="pole") T.push(["coaching","Coaching"]); T.push(["historique","Historique"],["contrat","Contrat"],["objectifs","Objectifs et actions"],["candidatures","Candidatures"],["entreprises","Contacts employeurs"],["documents","Documents"],["infos","Infos et inscription"],["profil","Profil"]);
   const tabs=h("nav",{class:"tabs",role:"tablist"}); T.forEach(([key,t])=>tabs.appendChild(h("a",{href:"#/j/"+j.id+(key==="parcours"?"":"/"+key),class:key===tab?"on":"",role:"tab","aria-selected":String(key===tab)},t))); main.appendChild(tabs);
   const body=h("div"); main.appendChild(body);
   if(tab==="parcours") return k==="pole"?tabPassages(body,j):tabSeances(body,j);
@@ -3178,6 +3308,7 @@ IO.V6.jeune=async(main,id,tab)=>{
   if(tab==="infos") return tabInfos(body,j);
   if(tab==="historique"){ IO.CRM.timeCard(body,j); return IO.CRM.histo(body,j); }
   if(tab==="entreprises") return IO.Ent.tab(body,j);
+  if(tab==="contrat") return IO.Contrat.tab(body,j);
 };
 
 /* ================================================================ Calendly → dossiers des jeunes */
@@ -3186,7 +3317,9 @@ const sameNom=(a,b)=>{ a=normNom(a); b=normNom(b); if(!a||!b) return false; if(a
 IO.Cal={ inscrits:[], nouveaux:[], last:0, busy:false };
 IO.ageJ=j=>{ const a=U.ageOf(j.naissance); if(a!=null) return a; const d=parseInt(String(j.ageDecl||"").replace(/\D+/g," ").trim(),10); return (d>=10&&d<=99)?d:null; };
 IO.Cal.rep=(c,re)=>{ const x=(c.reponses||[]).find(y=>re.test(String(y.q||""))); return x?String(x.r||"").trim():""; };
-IO.Cal.matchJeune=(js,x)=>{ const em=String(x.email||"").toLowerCase(); return js.find(j=>em&&String(j.mail||"").toLowerCase()===em)||js.find(j=>j.calendly&&String(j.calendly.email||"").toLowerCase()===em&&em)||js.find(j=>sameNom(j.nom,x.nom)); };
+IO.phon=s=>normNom(s).split(" ").filter(Boolean).map(w=>w.replace(/ph/g,"f").replace(/ch|sh|sch/g,"s").replace(/c(?=[eiy])/g,"s").replace(/[ck]/g,"k").replace(/y/g,"i").replace(/h/g,"").replace(/(.)\1+/g,"$1").replace(/e$/,"")).sort().join(" ");
+IO.Cal.matchJeune=(js,x)=>{ const em=String(x.email||"").toLowerCase(); const p=IO.phon(x.nom);
+  return js.find(j=>em&&String(j.mail||"").toLowerCase()===em)||js.find(j=>j.calendly&&String(j.calendly.email||"").toLowerCase()===em&&em)||js.find(j=>sameNom(j.nom,x.nom))||(p.includes(" ")?js.find(j=>IO.phon(j.nom)===p):null); };
 IO.Cal.apply=(j,list)=>{
   const mine=list.filter(x=>x.statut!=="annulé"||true).sort((a,b)=>String(b.debut).localeCompare(String(a.debut)));
   const withQ=mine.find(x=>x.reponses&&x.reponses.length)||mine[0]; const tel=(mine.find(x=>x.tel)||{}).tel||"";
@@ -3268,7 +3401,8 @@ IO.Plan.items=()=>{
     const twin=out.find(o=>day(o)===day(it)&&(
       (it.j&&o.j&&(it.j.id===o.j.id||P.norm(it.j.nom)===P.norm(o.j.nom))) ||                       // même jeune le même jour (ou dossier en double)
       (o.person&&P.samePerson(o.person,it.titre)) || (it.person&&P.samePerson(it.person,o.titre)) ||   // nom du jeune dans le titre Outlook
-      (P.norm(o.titre)===P.norm(it.titre)&&o.debut===it.debut)));                                       // même événement dans deux calendriers
+      (P.norm(o.titre)===P.norm(it.titre)&&o.debut===it.debut) ||
+      (((it.src==="cal"&&!it.j&&o.j)||(o.src==="cal"&&!o.j&&it.j))&&(f1=>f1.length>=4&&f1===P.norm(it.person||it.titre).split(" ")[0])(P.norm(o.person||o.titre).split(" ")[0]))));                                       // même événement dans deux calendriers
     if(!twin){ it.srcs=new Set([it.src]); it.ms=new Set(it.m?[it.m]:[]); it.tsrc=it.src; out.push(it); return; }
     twin.srcs.add(it.src); if(it.m) twin.ms.add(it.m);
     if(P.rank(it.src)<P.rank(twin.tsrc)){ twin.debut=it.debut; twin.journee=it.journee; twin.tsrc=it.src; }   // l'horaire le plus fiable l'emporte (ex. RDV déplacé)
@@ -3571,7 +3705,7 @@ function tabCoaching(body,j){
   for(let n=1;n<=N;n++){ if(typeOf(j,n)!=="coaching") continue; count++; const s=getS(j,n), done=isDone(s);
     const li=h("li"); const a=h("a",{class:"sess "+(done?(s.presence==="present"?"faite":"manquee"):""),href:"#/j/"+j.id+"/seance/"+n});
     a.innerHTML='<span class="num">'+coachIdx(j,n)+'</span><div><div class="t">'+esc(coachTheme(j,n))+' <span class="tag">séance '+n+'</span></div><div class="s">'+esc(done?(s.presence==="present"?"Faite le "+U.fmtDate(s.date)+(s.accomp?" avec "+s.accomp:""):"Manquée le "+U.fmtDate(s.date)):"Prévue la semaine du "+U.fmtDate(plannedDate(j,n)))+'</div></div><span class="go">›</span>';
-    li.appendChild(a); ul.appendChild(li); }
+    li.appendChild(a); if(!done){ const rm=h("button",{type:"button",class:"btn sm",style:"margin:4px 0 8px 44px"},"Retirer ce coaching"); rm.addEventListener("click",()=>{ const s2=seanceFor(j,n); s2.type="suivi"; delete s2.theme; IO.touch(s2); App.save(j); App.route({keep:true}); }); li.appendChild(rm); } ul.appendChild(li); }
   if(!count) ul.appendChild(h("li",{class:"empty"},"Aucune séance de coaching prévue."));
   const free=[]; for(let n=1;n<=N;n++){ if(typeOf(j,n)!=="coaching"&&!isDone(getS(j,n))) free.push(n); }
   if(free.length&&!finished(j)){ const r=h("div",{class:"btn-row"}); const sel=h("select",{class:"f","aria-label":"Séance à transformer en coaching",style:"max-width:220px"}); sel.innerHTML=free.map(n=>'<option value="'+n+'">Séance '+n+' (sem. du '+U.fmtDate(plannedDate(j,n))+')</option>').join("");
