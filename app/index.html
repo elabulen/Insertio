@@ -70,22 +70,27 @@ a{color:var(--blue)}
 
 /* Tableau de bord, cartes, lignes */
 .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;align-items:start}
-.plan{margin-bottom:18px}
-.plan-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.plan-h h2{margin:0}
-.plan-nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.btn.sm{padding:4px 10px;font-size:13px;min-height:0}
-.plan-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:12px 0 10px;border-bottom:1px solid var(--border)}
-.plan-tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:7px 10px;font:inherit;font-size:13.5px;color:var(--text-dim);cursor:pointer}
-.plan-tabs button.on{color:var(--text);border-bottom-color:var(--blue);font-weight:600}
-.plan-week{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
-.plan-day{background:var(--surface-2);border-radius:10px;padding:8px;min-height:90px;display:flex;flex-direction:column;gap:5px}
-.plan-day.today{outline:2px solid var(--blue)}.plan-dh{font-size:12px;font-weight:700;color:var(--text-dim);text-transform:capitalize}
-.plan-empty{color:var(--text-faint);font-size:12px}
-.plan-ev{display:block;font-size:12.5px;line-height:1.35;padding:5px 7px;border-radius:7px;background:var(--surface);border-left:3px solid var(--border);color:var(--text);text-decoration:none;overflow:hidden}
-.plan-ev span{display:block;color:var(--text-faint);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-a.plan-ev:hover{background:var(--blue-dim)}
-.src-cal{border-left-color:var(--pink)!important}.src-contact{border-left-color:var(--blue)!important}.src-m{border-left-color:var(--good)!important}.src-dos{border-left-color:var(--warn)!important}
-.plan-f{margin-top:10px;font-size:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}.plan-f .lg{border-left:3px solid;padding-left:5px;color:var(--text-dim)}
-@media(max-width:600px){.plan-week{grid-template-columns:1fr}.plan-day{min-height:0}}
+.pl{background:var(--surface);border-radius:20px;padding:20px 22px 14px;margin:4px 0 22px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 28px rgba(0,0,0,.06)}
+.pl-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.pl-top h2{margin:0;font-family:var(--f-body);font-size:22px;font-weight:700;letter-spacing:-.02em}.pl-top p{margin:2px 0 0;color:var(--text-faint);font-size:13.5px}
+.pl-nav{display:flex;gap:6px}.pl .pl-nav button{border:0!important;box-shadow:none;background:var(--surface-2);color:var(--text);font:inherit;font-size:13.5px;font-weight:500;height:32px;min-width:32px;padding:0 12px;border-radius:999px;cursor:pointer}
+.pl-nav button:disabled{opacity:.45;cursor:default}.pl-nav button:not(:disabled):hover{background:var(--border)}
+.seg{display:flex;gap:2px;background:var(--surface-2);border-radius:11px;padding:3px;margin:16px 0 6px;overflow-x:auto;scrollbar-width:none}
+.pl .seg button{flex:1 0 auto;border:0!important;background:transparent!important;box-shadow:none;min-height:0;font:inherit;font-size:13.5px;font-weight:500;color:var(--text-dim);padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.pl .seg button[aria-selected=true]{background:var(--surface)!important;color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.pl-day h3{margin:18px 0 4px;font-size:13px;font-weight:600;color:var(--text-faint);letter-spacing:.01em}.pl-day h3::first-letter{text-transform:uppercase}.pl-day h3.now{color:var(--blue)}
+.pl-day ul{list-style:none;margin:0;padding:0}.pl-day li{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)}.pl-day li:first-child{border-top:0}
+.pl-row{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:10px 4px;color:var(--text);text-decoration:none;border-radius:10px}
+a.pl-row:hover{background:var(--surface-2)}
+.pl-t{flex:0 0 52px;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px}
+.pl-dot{flex:0 0 8px;height:8px;border-radius:50%;background:var(--text-faint)}.d-cal{background:#FF2D55}.d-contact{background:#007AFF}.d-m{background:#34C759}.d-dos{background:#FF9500}
+.pl-m{flex:1;min-width:0;display:flex;flex-direction:column}.pl-m b{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-m small{color:var(--text-faint);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-chev{color:var(--text-faint);font-size:20px;line-height:1}
+.pl-go{flex:0 0 auto;border:0;background:var(--blue);color:#fff;font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:999px;text-decoration:none;cursor:pointer}
+.pl-go.done{background:var(--good-dim);color:var(--good)}button.pl-go,.pl-go.soft{background:var(--blue-dim);color:var(--blue)}
+.pl-empty{color:var(--text-faint);margin:18px 0 8px;font-size:14px}.pl-note{margin:14px 0 2px;font-size:12.5px;color:var(--text-faint)}.pl-note a{color:var(--blue)}
+@media(max-width:600px){.pl{padding:16px 14px 10px;border-radius:16px}.pl-t{flex-basis:44px}}
 .dcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;min-width:0}
 .dcard h2{font-size:15px;font-weight:650;margin:0 0 8px;display:flex;align-items:center;gap:8px}
 .count{font-size:12px;font-weight:700;background:var(--surface-2);color:var(--text-dim);border-radius:999px;padding:1px 8px}
@@ -498,7 +503,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.6"; IO.ARTIFACT = false;
+IO.VERSION = "7.7"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -2858,15 +2863,15 @@ IO.V6.home=main=>{
   main.appendChild(IO.Plan.banner());
   const grid=h("div",{class:"home-grid"}); const L=h("div",{class:"stack"}), R=h("div",{class:"stack"}); grid.append(L,R); main.appendChild(grid);
   const card=(parent,title,count)=>{ const c=h("section",{class:"dcard"}); c.appendChild(h("h2",null,esc(title)+(count?' <span class="count">'+count+'</span>':''))); parent.appendChild(c); return c; };
-  // Cette semaine
-  const wk=[]; js.forEach(j=>live(j.rdv).forEach(r=>{ if(r.statut==="prevu"&&r.date&&r.date>=today&&U.daysFrom(r.date)<=7) wk.push({j,r}); }));
-  wk.sort((a,b)=>(a.r.date+(a.r.heure||"")).localeCompare(b.r.date+(b.r.heure||"")));
-  const late=[]; js.forEach(j=>live(j.rdv).forEach(r=>{ if(r.statut==="prevu"&&r.date&&r.date<today&&!live(j.seances).some(s=>s.date===r.date&&isDone(s))) late.push({j,r}); }));
-  const c1=card(L,"Cette semaine",wk.length); const u1=h("ul",{class:"rows"}); c1.appendChild(u1);
-  if(!wk.length) u1.appendChild(h("li",{class:"empty"},"Aucun rendez-vous dans les 7 prochains jours."));
-  wk.forEach(x=>{ const n=nextN(x.j); const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(x.j.nom||"Sans nom")+'</b><span class="faint">'+esc(App.rdvWhen(x.r))+' · '+esc(kind(x.j)==="pole"?"Pôle numérique":titleOf(x.j,n))+'</span></div>';
-    const a=h("div",{class:"racts"}); a.appendChild(h("a",{class:"btn"+(x.r.date===today?" primary":""),href:kind(x.j)==="pole"?"#/j/"+x.j.id:"#/j/"+x.j.id+"/seance/"+n},x.r.date===today?"Commencer":"Préparer")); li.appendChild(a); u1.appendChild(li); });
-  if(late.length){ const p=h("p",{class:"sub-n",style:"margin-top:12px"}); p.innerHTML=late.length+' rendez-vous passé'+(late.length>1?"s":"")+' sans séance renseignée : '+late.slice(0,4).map(x=>'<a href="#/j/'+x.j.id+'/seance/'+nextN(x.j)+'">'+esc(x.j.nom)+'</a>').join(", ")+(late.length>4?"…":""); c1.appendChild(p); }
+  // Rendez-vous passés sans séance renseignée (affichés sous le planning)
+  IO.Plan.late=[]; js.forEach(j=>live(j.rdv).forEach(r=>{ if(r.statut==="prevu"&&r.date&&r.date<today&&!live(j.seances).some(s=>s.date===r.date&&isDone(s))) IO.Plan.late.push({nom:j.nom,href:kind(j)==="pole"?"#/j/"+j.id:"#/j/"+j.id+"/seance/"+nextN(j)}); }));
+  IO.Plan.startHref=j=>kind(j)==="pole"?"#/j/"+j.id:"#/j/"+j.id+"/seance/"+nextN(j); IO.Plan.paint();
+  // Dossiers en double (même nom)
+  { const g=new Map(); active.forEach(j=>{ const k=IO.Plan.norm(j.nom); if(!k) return; if(!g.has(k)) g.set(k,[]); g.get(k).push(j); });
+    const dup=[...g.values()].filter(x=>x.length>1);
+    if(dup.length){ const c=card(L,"Dossiers en double",dup.length); const ul=h("ul",{class:"rows"}); c.appendChild(ul);
+      dup.forEach(x=>{ const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(x[0].nom)+'</b><span class="faint">'+x.length+' dossiers : '+x.map((j,i)=>'<a href="#/j/'+j.id+'">dossier '+(i+1)+'</a>'+(j.updatedAt?' (modifié le '+esc(U.fmtDate(String(j.updatedAt).slice(0,10)))+')':'')).join(" · ")+'</span></div>'; ul.appendChild(li); });
+      c.appendChild(h("p",{class:"sub-n"},"Ouvre les deux dossiers, garde le plus complet et passe l'autre en « clos » (onglet Profil) : il disparaîtra du planning et de cette liste.")); } }
   // Nouvelles inscriptions Calendly sans dossier
   if(IO.Cal.nouveaux.length){ const c=card(L,"Inscriptions Calendly sans dossier",IO.Cal.nouveaux.length); const ul=h("ul",{class:"rows"}); c.appendChild(ul);
     IO.Cal.nouveaux.slice(0,8).forEach(x=>{ const f=x.list[0]; const next=x.list.map(y=>y.debut).sort().reverse()[0]; const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(f.nom||f.email)+'</b><span class="faint">'+esc(f.email||"")+(f.tel?" · "+esc(f.tel):"")+" · RDV "+esc(fmtDT(next))+'</span></div>';
@@ -2874,7 +2879,7 @@ IO.V6.home=main=>{
       const ib=h("button",{type:"button",class:"btn"},"Ignorer"); ib.addEventListener("click",()=>{ IO.Cal.ignorer(x); App.route(); }); a.append(cb,ib); li.appendChild(a); ul.appendChild(li); });
     c.appendChild(h("p",{class:"sub-n"},"Personnes qui ont réservé sur Calendly mais n'ont pas encore de dossier (même e-mail ou même nom introuvable).")); }
   // Rappels de la veille (Outlook)
-  IO.Team.homeCards(js,(t,cnt,body)=>{ const c=card(L,t,cnt); c.appendChild(body); },(items,render,empty)=>{ const ul=h("ul",{class:"rows"}); if(!items.length) ul.appendChild(h("li",{class:"empty"},esc(empty))); items.forEach(x=>ul.appendChild(render(x))); return ul; });
+  // (les rappels de la veille sont dans le planning : bouton « Rappel »)
   // Jeunes en cours
   const c2=card(L,"Jeunes en cours",active.length); const u2=h("ul",{class:"rows"}); c2.appendChild(u2);
   if(!active.length) u2.appendChild(h("li",{class:"empty"},"Aucun jeune en cours. Commence par « Nouveau jeune »."));
@@ -2967,7 +2972,7 @@ IO.Cal.creer=async(x)=>{ const App=A(); const f=x.list[0]; const j=IO.blankJeune
   IO.Cal.apply(j,x.list); App.jeunes.set(j.id,j); await App.save(j,true); IO.Cal.nouveaux=IO.Cal.nouveaux.filter(y=>y!==x); return j; };
 IO.Cal.ignorer=x=>{ let ign=[]; try{ ign=JSON.parse(localStorage.getItem("io-cal-ignore")||"[]"); }catch(e){} ign.push(x.k); try{ localStorage.setItem("io-cal-ignore",JSON.stringify(ign)); }catch(e){} IO.Cal.nouveaux=IO.Cal.nouveaux.filter(y=>y!==x); };
 
-/* ================================================================ Planning (accueil) : Calendly + calendriers Outlook + rendez-vous des dossiers */
+/* ================================================================ Planning (accueil) : Calendly + calendriers Outlook + rendez-vous des dossiers, sans doublons */
 IO.Plan={ cfg:{contact:"",membres:{}}, events:[], erreurs:[], last:0, busy:false, tab:null, week:0, el:null };
 try{ IO.Plan.tab=localStorage.getItem("io-plan-tab"); }catch(e){}
 IO.Plan.load=async()=>{ try{ const f=await IO.Store.getShared("planning.json"); if(f) IO.Plan.cfg=Object.assign({contact:"",membres:{}},JSON.parse(await f.text())); }catch(e){} };
@@ -2977,53 +2982,85 @@ IO.Plan.fetch=async(force)=>{
   await P.load(); const cals=P.cals(); if(!cals.length){ P.events=[]; P.last=Date.now(); return; }
   P.busy=true;
   try{ const r=await fetch(IO.Team.envoi.url,{method:"POST",body:JSON.stringify({cle:IO.Team.envoi.cle,action:"agenda",cals,jours:60})}); const o=await r.json(); if(!o.ok) throw new Error(o.erreur||"refusé"); P.events=o.events||[]; P.erreurs=o.erreurs||[]; P.last=Date.now(); }
-  catch(e){ P.erreurs=["Planning Outlook : "+(e.message||e)]; }
+  catch(e){ P.erreurs=["Outlook : "+(e.message||e)]; }
   finally{ P.busy=false; } P.paint();
 };
 IO.Plan.membres=()=>(IO.Team.data.membres||[]).filter(m=>m&&m.nom);
 IO.Plan.memberOf=(j)=>IO.Plan.membres().find(m=>{ const f=U.slug(U.firstName(m.nom)).toLowerCase(); return f&&U.slug(j.referent||"").toLowerCase().split("_").includes(f); });
 IO.Plan.pad=n=>String(n).padStart(2,"0");
 IO.Plan.loc=d=>d.getFullYear()+"-"+IO.Plan.pad(d.getMonth()+1)+"-"+IO.Plan.pad(d.getDate())+"T"+IO.Plan.pad(d.getHours())+":"+IO.Plan.pad(d.getMinutes());
-/* Toutes les entrées, avec leur source : cal (Calendly), contact (Outlook contact@), m:<id> (Outlook d'une collaboratrice), dos (dossier) */
+IO.Plan.norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+IO.Plan.mins=s=>{ const m=String(s||"").match(/T(\d\d):(\d\d)/); return m?(+m[1])*60+(+m[2]):null; };
+/* même personne ? (tous les mots du nom le plus court se retrouvent dans l'autre texte) */
+IO.Plan.samePerson=(nom,txt)=>{ const a=IO.Plan.norm(nom).split(" ").filter(w=>w.length>1), b=" "+IO.Plan.norm(txt)+" "; return a.length>0&&a.every(w=>b.includes(" "+w+" ")); };
+/* Une entrée = un rendez-vous, avec toutes ses sources (cal, contact, m:<id>, dos) */
 IO.Plan.items=()=>{
-  const App=A(), P=IO.Plan, L=[];
-  const calStarts=new Set();
+  const App=A(), P=IO.Plan, out=[], js=[...App.jeunes.values()].filter(j=>j.statut!=="clos"&&!j.deleted);
+  const day=x=>String(x.debut).slice(0,10);
+  const near=(a,b)=>{ if(day(a)!==day(b)) return false; const ma=P.mins(a.debut), mb=P.mins(b.debut); return ma==null||mb==null||Math.abs(ma-mb)<=45; };
+  const add=(it)=>{
+    const twin=out.find(o=>near(o,it)&&(
+      (it.j&&o.j&&(it.j.id===o.j.id||P.norm(it.j.nom)===P.norm(o.j.nom))) ||                       // même jeune (ou dossier en double)
+      (o.person&&P.samePerson(o.person,it.titre)) || (it.person&&P.samePerson(it.person,o.titre)) ||   // le nom du jeune dans le titre Outlook
+      (P.norm(o.titre)===P.norm(it.titre)&&o.debut===it.debut)));                                       // même événement dans deux calendriers
+    if(!twin){ it.srcs=new Set([it.src]); it.ms=new Set(it.m?[it.m]:[]); out.push(it); return; }
+    twin.srcs.add(it.src); if(it.m) twin.ms.add(it.m);
+    if(it.j&&!twin.j){ twin.j=it.j; twin.href=it.href; twin.person=it.person; }
+    if(it.src==="dos"){ twin.href=it.href; twin.r=it.r; twin.titre=it.titre; if(it.sous) twin.sous=it.sous; if(!twin.journee&&it.journee){} }
+    if(!twin.sous&&it.sous) twin.sous=it.sous;
+  };
+  // 1. dossiers (source de référence)
+  js.forEach(j=>(IO.live?IO.live(j.rdv):(j.rdv||[])).forEach(r=>{ if(r.deleted||r.statut!=="prevu"||!r.date) return; const m=P.memberOf(j);
+    add({src:"dos",m:m&&m.id,debut:r.date+(r.heure?"T"+r.heure:""),journee:!r.heure,titre:j.nom||"Sans nom",person:j.nom,sous:r.objet||"Rendez-vous",j,r,href:"#/j/"+j.id}); }));
+  // 2. Calendly (une ligne par personne et par horaire, annulations exclues)
+  const seen=new Set();
   (IO.Cal.inscrits||[]).forEach(x=>{ if(!x.debut||x.statut==="annulé") return; const d=new Date(x.debut); if(isNaN(d)) return; const deb=P.loc(d);
-    const j=IO.Cal.matchJeune([...App.jeunes.values()],x); calStarts.add(deb);
-    L.push({src:"cal",debut:deb,titre:(x.nom||x.email||"Inscription"),sous:x.type||"Rendez-vous Calendly",j,href:j?"#/j/"+j.id+"/infos":null}); });
-  (P.events||[]).forEach(e=>{ if(e.k==="contact"&&calStarts.has(e.debut)) return; L.push({src:e.k,debut:e.debut,fin:e.fin,journee:e.journee,titre:e.titre,sous:e.lieu||""}); });
-  [...App.jeunes.values()].forEach(j=>{ if(j.statut==="clos") return; (j.rdv||[]).forEach(r=>{ if(r.deleted||r.statut!=="prevu"||!r.date) return; const m=P.memberOf(j);
-    L.push({src:"dos",m:m&&m.id,debut:r.date+(r.heure?"T"+r.heure:""),journee:!r.heure,titre:j.nom||"Sans nom",sous:r.objet||"Rendez-vous",j,href:"#/j/"+j.id}); }); });
-  return L.sort((a,b)=>String(a.debut).localeCompare(String(b.debut)));
+    const k=(String(x.email||"").toLowerCase()||P.norm(x.nom))+"|"+deb; if(seen.has(k)) return; seen.add(k);
+    const j=IO.Cal.matchJeune(js,x); const m=j&&P.memberOf(j);
+    add({src:"cal",m:m&&m.id,debut:deb,titre:(j&&j.nom)||x.nom||x.email||"Inscription",person:(j&&j.nom)||x.nom,sous:x.type||"Rendez-vous Calendly",j,href:j?"#/j/"+j.id+"/infos":null}); });
+  // 3. Outlook (contact@ puis calendriers personnels)
+  (P.events||[]).slice().sort((a,b)=>(a.k==="contact"?0:1)-(b.k==="contact"?0:1)).forEach(e=>add({src:e.k,debut:e.debut,journee:e.journee,titre:e.titre,sous:e.lieu||""}));
+  return out.sort((a,b)=>String(a.debut).localeCompare(String(b.debut)));
 };
-IO.Plan.tabs=()=>{ const T=[["tout","Vue d'ensemble"],["cal","Prises de rendez-vous"],["contact","Planning Insertio"]]; IO.Plan.membres().forEach(m=>T.push(["m:"+m.id,U.firstName(m.nom)])); return T; };
-IO.Plan.filter=(it,tab)=>tab==="tout"?true:tab==="cal"?it.src==="cal":tab==="contact"?(it.src==="contact"||it.src==="cal"):(it.src===tab||(it.src==="dos"&&"m:"+it.m===tab));
-IO.Plan.banner=()=>{ const P=IO.Plan; P.el=h("section",{class:"dcard plan",id:"planning"}); P.paint(); return P.el; };
+IO.Plan.remindable=r=>{ const n=U.daysFrom(r.date), dow=new Date().getDay(), span=dow===5?3:dow===6?2:1; return n>=1&&n<=span; };
+IO.Plan.tabs=()=>{ const T=[["tout","Tout"],["cal","Réservations"],["contact","Insertio"]]; IO.Plan.membres().forEach(m=>T.push(["m:"+m.id,U.firstName(m.nom)])); return T; };
+IO.Plan.filter=(it,tab)=>tab==="tout"?true:tab==="cal"?it.srcs.has("cal"):tab==="contact"?(it.srcs.has("contact")||it.srcs.has("cal")):(it.srcs.has(tab)||it.ms.has(tab.slice(2)));
+IO.Plan.banner=()=>{ const P=IO.Plan; P.el=h("section",{class:"pl",id:"planning"}); P.paint(); return P.el; };
 IO.Plan.paint=()=>{
   const P=IO.Plan, el=P.el; if(!el) return;
-  const T=P.tabs(); if(!T.some(t=>t[0]===P.tab)) P.tab=IO.Team.me?("m:"+IO.Team.me.id):"tout"; if(!T.some(t=>t[0]===P.tab)) P.tab="tout";
-  const today=new Date(); today.setHours(0,0,0,0); const mon=new Date(today); mon.setDate(today.getDate()-((today.getDay()+6)%7)+7*P.week);
-  const days=[...Array(7)].map((_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  const T=P.tabs(); if(!T.some(t=>t[0]===P.tab)) P.tab="tout";
   const key=d=>d.getFullYear()+"-"+P.pad(d.getMonth()+1)+"-"+P.pad(d.getDate());
-  const items=P.items().filter(it=>P.filter(it,P.tab));
-  const nb=k=>P.items().filter(it=>P.filter(it,k)&&String(it.debut).slice(0,10)>=key(today)&&String(it.debut).slice(0,10)<=key(days[6])).length;
-  const fmt=d=>d.toLocaleDateString("fr-CH",{day:"numeric",month:"long"});
-  let o='<div class="plan-h"><h2>Planning</h2><div class="plan-nav"><button type="button" class="btn sm" data-w="-1" aria-label="Semaine précédente">‹</button><button type="button" class="btn sm" data-w="0">Cette semaine</button><button type="button" class="btn sm" data-w="1" aria-label="Semaine suivante">›</button><span class="faint">'+esc(fmt(days[0]))+' – '+esc(fmt(days[6]))+'</span></div></div>';
-  o+='<nav class="plan-tabs" role="tablist">'+T.map(([k,t])=>{ const n=P.week===0?nb(k):0; return '<button type="button" role="tab" data-t="'+esc(k)+'" aria-selected="'+(k===P.tab)+'" class="'+(k===P.tab?"on":"")+'">'+esc(t)+(n?' <span class="count">'+n+'</span>':'')+'</button>'; }).join("")+'</nav>';
-  o+='<div class="plan-week">';
-  days.forEach((d,i)=>{ const k=key(d), its=items.filter(it=>String(it.debut).slice(0,10)===k); if(i>=5&&!its.length) return;
-    o+='<div class="plan-day'+(k===key(new Date())?" today":"")+'"><div class="plan-dh">'+esc(d.toLocaleDateString("fr-CH",{weekday:"short",day:"numeric"}))+'</div>';
-    if(!its.length) o+='<div class="plan-empty">—</div>';
-    its.forEach(it=>{ const t=it.journee?"Journée":String(it.debut).slice(11,16); const tag=it.href?"a":"div";
-      o+='<'+tag+' class="plan-ev src-'+esc(String(it.src).replace(/:.*/,""))+'"'+(it.href?' href="'+esc(it.href)+'"':'')+' title="'+esc(it.titre+(it.sous?" · "+it.sous:""))+'"><b>'+esc(t)+'</b> '+esc(it.titre)+(it.sous?'<span>'+esc(it.sous)+'</span>':'')+'</'+tag+'>'; });
-    o+='</div>'; });
-  o+='</div>';
-  const legend='<span class="lg src-cal">Calendly</span><span class="lg src-contact">Outlook Insertio</span><span class="lg src-m">Outlook personnel</span><span class="lg src-dos">Dossiers</span>';
-  const miss=[]; if(!P.cfg.contact) miss.push("contact@"); if(P.tab.startsWith("m:")&&!(P.cfg.membres||{})[P.tab.slice(2)]) miss.push("ce calendrier personnel");
-  o+='<div class="plan-f">'+legend+(IO.Team.canSend()&&miss.length?' <span class="faint">· Outlook de '+esc(miss.join(" et "))+' pas encore relié : <a href="#/reglages">Réglages → Planning</a></span>':'')+(P.erreurs.length?' <span class="warn-t">'+esc(P.erreurs.join(" · "))+'</span>':'')+'</div>';
+  const now=new Date(), today=new Date(now); today.setHours(0,0,0,0); const tk=key(today);
+  const mon=new Date(today); mon.setDate(today.getDate()-((today.getDay()+6)%7)+7*P.week);
+  const days=[...Array(7)].map((_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  const all=P.items(), items=all.filter(it=>P.filter(it,P.tab));
+  const range=it=>{ const d=String(it.debut).slice(0,10); return d>=key(days[0])&&d<=key(days[6]); };
+  const shown=items.filter(range).filter(it=>P.week!==0||String(it.debut).slice(0,10)>=tk);
+  const fmtR=d=>d.toLocaleDateString("fr-CH",{day:"numeric",month:"short"});
+  const label=d=>{ const k=key(d), t=new Date(today); t.setDate(t.getDate()+1); return k===tk?"Aujourd'hui":k===key(t)?"Demain":d.toLocaleDateString("fr-CH",{weekday:"long",day:"numeric",month:"long"}); };
+    let o='<div class="pl-top"><div><h2>Planning</h2><p>'+(P.week===0?"Cette semaine":esc(fmtR(days[0])+" – "+fmtR(days[6])))+' · '+shown.length+' rendez-vous</p></div>'+
+    '<div class="pl-nav"><button type="button" data-w="-1" aria-label="Semaine précédente">‹</button><button type="button" data-w="0"'+(P.week===0?' disabled':'')+'>Aujourd\'hui</button><button type="button" data-w="1" aria-label="Semaine suivante">›</button></div></div>';
+  o+='<div class="seg" role="tablist">'+T.map(([k,t])=>'<button type="button" role="tab" data-t="'+esc(k)+'" aria-selected="'+(k===P.tab)+'">'+esc(t)+'</button>').join("")+'</div>';
+  if(!shown.length) o+='<p class="pl-empty">Aucun rendez-vous '+(P.week===0?"d'ici la fin de la semaine":"cette semaine")+'.</p>';
+  days.forEach(d=>{ const k=key(d), its=shown.filter(it=>String(it.debut).slice(0,10)===k); if(!its.length) return;
+    o+='<div class="pl-day"><h3'+(k===tk?' class="now"':'')+'>'+esc(label(d))+'</h3><ul>';
+    its.forEach((it,i)=>{ const t=it.journee?"Journée":String(it.debut).slice(11,16); const rk=x=>{ const i=["dos","cal","contact"].indexOf(x); return i<0?9:i; }; const main=[...it.srcs].sort((a,b)=>rk(a)-rk(b))[0];
+      const dot=main.startsWith("m:")?"m":main; const sub=it.sous||(main==="contact"?"Calendrier Insertio":main.startsWith("m:")?"Calendrier personnel":"");
+      const tag2=it.href?"a":"div";
+      o+='<li><'+tag2+' class="pl-row"'+(it.href?' href="'+esc(it.href)+'"':'')+'><span class="pl-t">'+esc(t)+'</span><span class="pl-dot d-'+dot+'"></span><span class="pl-m"><b>'+esc(String(it.titre).replace(/\s+/g," ").trim())+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</span>'+(it.href?'<span class="pl-chev">›</span>':'')+'</'+tag2+'>'+
+        (it.r&&it.j&&!it.srcs.has("cal")&&!it.r.rappel&&P.remindable(it.r)?'<button type="button" class="pl-go" data-rap="'+i+'|'+esc(k)+'">Rappel</button>':'')+(it.r&&k===tk&&it.j?'<a class="pl-go" href="#/j/'+esc(it.j.id)+'" data-start="'+esc(it.j.id)+'">Commencer</a>':'')+'</li>'; });
+    o+='</ul></div>'; });
+  const late=P.late||[]; if(late.length&&P.week===0) o+='<p class="pl-note">'+late.length+' rendez-vous passé'+(late.length>1?"s":"")+' sans séance renseignée : '+late.slice(0,4).map(x=>'<a href="'+esc(x.href)+'">'+esc(x.nom)+'</a>').join(", ")+(late.length>4?"…":"")+'</p>';
+  const miss=!P.cfg.contact&&IO.Team.canSend();
+  if(miss||P.erreurs.length) o+='<p class="pl-note">'+(miss?'Le calendrier Outlook de contact@ n\'est pas encore relié : <a href="#/reglages">Réglages → Planning</a>.':'')+(P.erreurs.length?' <span class="warn-t">'+esc(P.erreurs.join(" · "))+'</span>':'')+'</p>';
   el.innerHTML=o;
   el.querySelectorAll("[data-t]").forEach(b=>b.addEventListener("click",()=>{ P.tab=b.dataset.t; try{ localStorage.setItem("io-plan-tab",P.tab); }catch(e){} P.paint(); }));
   el.querySelectorAll("[data-w]").forEach(b=>b.addEventListener("click",()=>{ const w=+b.dataset.w; P.week=w?P.week+w:0; P.paint(); }));
+  el.querySelectorAll("[data-rap]").forEach(b=>{ const [i,k]=b.dataset.rap.split("|"); const it=shown.filter(x=>String(x.debut).slice(0,10)===k)[+i]; if(!it) return; const T=IO.Team;
+    const a=T.richMail(h("a",{class:"pl-go soft",href:T.mailLink(it.j.mail,T.reminder(it.j,it.r))},"Rappel"),it.j.mail,()=>T.reminder(it.j,it.r));
+    a.title=it.j.mail?"Envoyer le rappel à "+it.j.mail:"Pas d'e-mail dans le dossier";
+    a.addEventListener("click",()=>{ it.r.rappel=U.now(); IO.touch(it.r); A().save(it.j); setTimeout(()=>{ a.textContent="Rappel envoyé ✓"; a.classList.add("done"); },300); }); b.replaceWith(a); });
+  el.querySelectorAll("[data-start]").forEach(a=>{ const j=A().jeunes.get(a.dataset.start); if(j&&P.startHref) a.href=P.startHref(j); });
 };
 IO.Plan.settings=(main)=>{
   const P=IO.Plan; const s=h("section",{class:"dcard",id:"planning-reglages"}); s.appendChild(h("h2",null,"Planning : calendriers Outlook"));
