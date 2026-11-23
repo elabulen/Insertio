@@ -477,7 +477,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.0"; IO.ARTIFACT = false;
+IO.VERSION = "7.0.1"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1108,7 +1108,7 @@ const Folder = {
 const GD = IO.GDrive = (function(){
   const CLIENT_ID="979933303362-286rqr784f2dqcm9c35uqd8u3hbalk84.apps.googleusercontent.com";
   const SCOPE="https://www.googleapis.com/auth/drive";
-  const ROOT_NAME="InsertiO – Dossiers jeunes";
+  const ROOT_NAME="Documents Officiels InsertiO", OLD_ROOT="InsertiO – Dossiers jeunes";
   const FOLDER="application/vnd.google-apps.folder";
   const API="https://www.googleapis.com/drive/v3/files", UP="https://www.googleapis.com/upload/drive/v3/files";
   let token=null, exp=0, client=null, pending=null, email=null;
@@ -1171,6 +1171,9 @@ const GD = IO.GDrive = (function(){
   async function rootDir(){
     const d=await req(API+"?q="+encodeURIComponent("name='"+q(ROOT_NAME)+"' and mimeType='"+FOLDER+"' and 'root' in parents and trashed=false")+"&fields=files(id,name)&orderBy=createdTime");
     let f=d.files&&d.files[0];
+    if(!f){ // ancien nom (version 7.0) : on le renomme pour garder la même structure que OneDrive
+      const o=await req(API+"?q="+encodeURIComponent("name='"+q(OLD_ROOT)+"' and mimeType='"+FOLDER+"' and 'root' in parents and trashed=false")+"&fields=files(id,name)&orderBy=createdTime");
+      if(o.files&&o.files[0]){ f=o.files[0]; await req(API+"/"+f.id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:ROOT_NAME})}); f.name=ROOT_NAME; } }
     if(!f) f=await req(API+"?fields=id,name",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:ROOT_NAME,mimeType:FOLDER})});
     return new GDir(f.id,f.name);
   }
@@ -2263,7 +2266,7 @@ function viewSettings(main){
   }
   if(Store.mode==="folder" && !Store.isGoogle){ const lo=h("button",{type:"button",class:"btn"},"Utiliser plutôt cet appareil"); lo.addEventListener("click",async()=>{ await Store.useLocal(); App.status="ok"; await IO.Team.load(); await loadAll(); route(); }); r.appendChild(lo); }
   st.appendChild(r);
-  if(Store.isGoogle) st.appendChild(h("p",{class:"sub-n"},"Les dossiers sont dans le Google Drive du compte insertiogeneve@gmail.com, dossier « "+esc(Store.rootName)+" ». Ils sont visibles sur drive.google.com et, si l'application Google Drive pour ordinateur est installée, dans l'Explorateur de fichiers."));
+  if(Store.isGoogle) st.appendChild(h("p",{class:"sub-n"},"Les dossiers sont dans le Google Drive du compte insertiogeneve@gmail.com, dossier « "+esc(Store.rootName)+" » (mêmes sous-dossiers que dans OneDrive). Ils sont visibles sur drive.google.com et, si l'application Google Drive pour ordinateur est installée, dans l'Explorateur de fichiers."));
   else st.appendChild(h("p",{class:"sub-n"},Store.supportsFolder?"Choisis le dossier OneDrive commun de l'équipe : « Documents Officiels InsertiO » (celui qui contient « 06 Les Jeunes »). L'application y crée un sous-dossier par jeune avec sa fiche, ses comptes rendus et ses documents.":"Ce navigateur ne sait pas utiliser un dossier partagé : ouvre l'application dans Microsoft Edge ou Google Chrome, sur ordinateur."));
   main.appendChild(st);
 
