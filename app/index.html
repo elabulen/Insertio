@@ -49,6 +49,7 @@ a{color:var(--blue)}
 .nav a.on{background:var(--blue-dim);color:var(--blue)}
 .save-state{font-size:12px;color:var(--text-faint);white-space:nowrap}
 .obs-perso textarea{background:#fff8e6;border-color:#f0d58a}
+.compose .field{margin-bottom:10px} .compose textarea{min-height:220px}
 .sync-chip{font-size:12px;font-weight:600;white-space:nowrap;text-decoration:none;padding:4px 10px;border-radius:999px;background:#fdecec;color:#b3261e}
 .sync-chip[data-ok="1"]{background:#e8f6ee;color:#1e7a46}
 .sync-chip:empty{display:none}
@@ -478,7 +479,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.2"; IO.ARTIFACT = false;
+IO.VERSION = "7.3"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1539,8 +1540,44 @@ const T = IO.Team = {
     this.data.membres=this.data.membres||[];
     let id=null; try{ id=sessionStorage.getItem("insertio_me"); }catch(e){}
     this.me=this.data.membres.find(m=>m.id===id)||null;
+    try{ const f=await IO.Store.getShared("envoi.json"); this.envoi=f?JSON.parse(await f.text()):{}; }catch(e){ this.envoi={}; }
     await this.loadLogo(); this.apply();
   },
+  envoi:{},
+  canSend(){ return !!(this.envoi&&this.envoi.url&&this.envoi.cle); },
+  froms(){ const L=[]; if(this.me&&this.me.mail) L.push({a:this.me.mail,n:this.me.nom}); if(this.data.mail&&!L.some(x=>x.a===this.data.mail)) L.push({a:this.data.mail,n:"Insertio Genève"}); return L; },
+  async sendDirect(to, subject, body, from){
+    const f=this.froms().find(x=>x.a===from)||this.froms()[0]||{a:"",n:"Insertio Genève"};
+    const nom=f.a===this.data.mail?"Insertio Genève":(f.n?f.n+" – Insertio":"Insertio Genève");
+    const r=await fetch(this.envoi.url,{method:"POST",body:JSON.stringify({cle:this.envoi.cle,to,from:f.a,nom,subject,text:this.withSig(body),html:this.html(body)})});
+    const o=await r.json().catch(()=>({ok:false,erreur:"réponse illisible"})); if(!o.ok) throw new Error(o.erreur||"envoi refusé"); return o;
+  },
+  /* Fenêtre « Envoyer le mail » : relire, modifier, envoyer en un clic (sans Outlook) */
+  compose(to, m){
+    const froms=this.froms(); const self=this;
+    IO.App.modal('<h2>Envoyer le mail</h2>',(sh,close)=>{
+      const g=h("div",{class:"compose"});
+      const fs=h("select",{class:"f","aria-label":"De"}); fs.innerHTML=froms.map(x=>'<option value="'+esc(x.a)+'">'+esc(x.a)+'</option>').join("")||'<option value="">noreply@insertio.ch</option>';
+      const ti=h("input",{class:"f",type:"email",value:to||"",placeholder:"E-mail du jeune","aria-label":"À"});
+      const si=h("input",{class:"f",type:"text",value:m.subject||"","aria-label":"Objet"});
+      const bt=h("textarea",{class:"f",rows:"12","aria-label":"Message"}); bt.value=self.stripSignoff(m.body||"");
+      [["De",fs],["À",ti],["Objet",si],["Message",bt]].forEach(([l,el])=>{ const d=h("div",{class:"field"}); d.appendChild(h("label",null,l)); d.appendChild(el); g.appendChild(d); });
+      if(self.data.signature) g.appendChild(h("p",{class:"sub-n"},"Ta signature avec le logo est ajoutée automatiquement. Les réponses du jeune arrivent dans la boîte choisie dans « De »."));
+      const r=h("div",{class:"btn-row"}); const sb=h("button",{type:"button",class:"btn primary"},"Envoyer"); const ob=h("a",{class:"btn",href:"#"},"Ouvrir dans Outlook plutôt"); const cb=h("button",{type:"button",class:"btn"},"Annuler");
+      r.append(sb,ob,cb); g.appendChild(r); sh.appendChild(g); setTimeout(()=>(ti.value?bt:ti).focus(),50);
+      cb.addEventListener("click",close);
+      ob.addEventListener("click",e=>{ e.preventDefault(); close(); self.openOutlook(ti.value,{subject:si.value,body:bt.value}); });
+      sb.addEventListener("click",async()=>{ const dest=ti.value.trim(); if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(dest)){ U.toast("Indique une adresse e-mail valide"); ti.focus(); return; }
+        sb.disabled=true; sb.textContent="Envoi…";
+        try{ await self.sendDirect(dest,si.value,bt.value,fs.value); close(); U.toast("Mail envoyé à "+dest+" ✓",5000); }
+        catch(e){ sb.disabled=false; sb.textContent="Envoyer"; U.toast("Envoi impossible : "+(e.message||e)+". Réessaie ou utilise « Ouvrir dans Outlook ».",8000); } });
+    });
+  },
+  retardMsg(j, r){ const p=U.firstName(j.nom), me=(this.me&&this.me.nom)||IO.App.settings.accomp||"L'équipe Insertio", tel=this.data.tel||"";
+    return {subject:"Insertio – on t'attend pour ton rendez-vous", body:["Bonjour"+(p?" "+p:"")+",","","Nous t'attendons pour ton rendez-vous d'aujourd'hui"+(r&&r.heure?" à "+U.fmtTime(r.heure):"")+" chez Insertio"+(this.data.adresse?" ("+this.data.adresse+")":"")+".","","Tu es en route ? Pas de souci, préviens-nous simplement en répondant à ce message"+(tel?" ou par WhatsApp au "+tel:"")+".","","À tout de suite,",...(this.data.signature?[]:[me])].join("\n")}; },
+  absenceMsg(j, r){ const p=U.firstName(j.nom), me=(this.me&&this.me.nom)||IO.App.settings.accomp||"L'équipe Insertio", tel=this.data.tel||"", cal=this.calLink(j.nom,j.mail);
+    const quand=r&&r.date&&r.date!==U.today()?"le "+U.dateLong(r.date):"aujourd'hui";
+    return {subject:"Insertio – ton rendez-vous "+(quand==="aujourd'hui"?"d'aujourd'hui":"du "+U.fmtDate(r.date)), body:["Bonjour"+(p?" "+p:"")+",","","Nous t'attendions "+quand+(r&&r.heure?" à "+U.fmtTime(r.heure):"")+" pour ton rendez-vous chez Insertio, mais tu n'as pas pu venir.","","J'espère que tout va bien. Pour fixer un nouveau rendez-vous, réponds simplement à ce message"+(tel?" ou écris-nous sur WhatsApp au "+tel:"")+"."+(cal?"\n\nTu peux aussi choisir directement un créneau ici :\n"+cal:""),"","À bientôt,",...(this.data.signature?[]:[me])].join("\n")}; },
   async save(){
     try{ await IO.Store.putShared("equipe.json",new Blob([JSON.stringify(this.data,null,2)],{type:"application/json"})); }
     catch(e){ U.toast("Réglages d'équipe non enregistrés : "+(e.message||e),5000); }
@@ -1630,9 +1667,12 @@ const T = IO.Team = {
   /* Ouvre le mail dans Outlook avec le message mis en forme (signature + logo) dans le presse-papiers.
      Un lien mailto ne transporte que du texte : le corps est donc collé (Ctrl+V) dans Outlook. */
   richMail(a, to, getM){
-    a.addEventListener("click", async e=>{
-      e.preventDefault();
-      const m=getM(), text=this.withSig(m.body), html=this.html(m.body);
+    a.addEventListener("click", e=>{ e.preventDefault(); const m=getM(); if(this.canSend()) this.compose(typeof to==="function"?to():to, m); else this.openOutlook(typeof to==="function"?to():to, m); });
+    return a;
+  },
+  async openOutlook(to, m){
+    {
+      const text=this.withSig(m.body), html=this.html(m.body);
       if(!this.data.signature){ const url=U.mailto(to,m.subject,text);
         if(url.length<=1800){ location.href=url; return; }
         /* Lien trop long pour Windows (le mail s'ouvrirait vide, sans objet) : le texte passe par le presse-papiers. */
@@ -1642,8 +1682,7 @@ const T = IO.Team = {
       try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]); ok=true; }catch(err){}
       location.href = ok ? U.mailto(to,m.subject,"") : U.mailto(to,m.subject,text);
       if(ok) U.toast("Outlook s'ouvre : clique dans le message et fais Ctrl+V pour coller le texte avec la signature et le logo.",9000);
-    });
-    return a;
+    }
   },
 
   /* ---------- Boîte « message au jeune » */
@@ -1656,7 +1695,7 @@ const T = IO.Team = {
       const pre=h("pre",{class:"msg"}); pre.textContent=full; box.appendChild(pre);
       if(this.calBase()){ const c=h("label",{class:"chk plain",style:"margin-top:8px"},'<input type="checkbox"'+(withCal?" checked":"")+'><span>Ajouter le lien Calendly pour que le jeune choisisse son prochain rendez-vous</span>'); c.querySelector("input").addEventListener("change",e=>{ withCal=e.target.checked; draw(); }); box.appendChild(c); }
       const r=h("div",{class:"btn-row"});
-      const o=this.richMail(h("a",{class:"btn primary",href:U.mailto(mail,m.subject,full)},"Ouvrir dans Outlook"),mail,()=>({subject:m.subject,body}));
+      const o=this.richMail(h("a",{class:"btn primary",href:U.mailto(mail,m.subject,full)},(this.canSend()?"Envoyer le mail":"Ouvrir dans Outlook")),mail,()=>({subject:m.subject,body}));
       const c=h("button",{type:"button",class:"btn"},"Copier avec le logo"); c.addEventListener("click",()=>this.copyRich(full,this.html(body)));
             r.append(o); if(rdv&&rdv.get){ r.appendChild(this.outlookBtn(rdv.j,rdv.get,"Ajouter le RDV au calendrier Outlook")); } if(this.data.signature) r.append(c); box.appendChild(r);
       box.appendChild(h("p",{class:"sub-n"},(mail?"":"Ajoute l'e-mail du jeune dans son profil pour que le destinataire soit rempli. ")+"« Ouvrir dans Outlook » crée le mail (destinataire et objet) et garde le message avec ta signature et le logo prêt à coller : clique dans le corps du mail et fais Ctrl+V. Vérifie le champ « De » : ton adresse @insertio.ch."+(rdv&&rdv.get?" Le bouton calendrier ouvre Outlook avec le rendez-vous rempli et le jeune invité : clique sur Enregistrer, Outlook lui envoie l'invitation.":"")));
@@ -1748,6 +1787,18 @@ const T = IO.Team = {
     sg.querySelector("input").addEventListener("change",e=>{ this.data.signature=e.target.checked; save(); }); as.appendChild(sg);
     as.appendChild(h("p",{class:"sub-n"},"Calendly : le lien s'ouvre avec le nom et l'e-mail du jeune déjà remplis. Avec l'offre gratuite de Calendly, les rappels automatiques ne sont pas inclus : l'accueil affiche donc chaque jour les rappels à envoyer pour les rendez-vous du lendemain."));
     main.appendChild(as);
+
+    // Envoi direct
+    const ev=h("section",{class:"dcard"}); ev.appendChild(h("h2",null,"Envoi direct des mails"));
+    ev.appendChild(h("p",{class:"sub-n"},this.canSend()?"Activé : les boutons « Mail au jeune », « Mail de retard », « Mail d'absence »… envoient directement le mail, sans ouvrir Outlook.":"Pas encore activé : les mails s'ouvrent dans Outlook. Colle ici l'adresse du service d'envoi et la clé (une seule fois, pour toute l'équipe)."));
+    const eg=h("div",{class:"row2"}); const eu=h("input",{class:"f",type:"url",value:(this.envoi&&this.envoi.url)||"",placeholder:"https://script.google.com/macros/s/…/exec","aria-label":"Adresse du service d'envoi"}); const ek=h("input",{class:"f",type:"password",value:(this.envoi&&this.envoi.cle)||"",placeholder:"Clé d'envoi","aria-label":"Clé d'envoi",autocomplete:"off"});
+    [["Adresse du service d'envoi",eu],["Clé d'envoi",ek]].forEach(([l,el])=>{ const d=h("div"); d.appendChild(h("label",{class:"flab"},l)); d.appendChild(el); eg.appendChild(d); }); ev.appendChild(eg);
+    const er=h("div",{class:"btn-row"}); const es=h("button",{type:"button",class:"btn primary"},"Enregistrer et tester"); er.appendChild(es); ev.appendChild(er);
+    es.addEventListener("click",async()=>{ this.envoi={url:eu.value.trim(),cle:ek.value.trim()}; es.disabled=true;
+      try{ const r=await fetch(this.envoi.url,{method:"POST",body:JSON.stringify({cle:this.envoi.cle,test:true})}); const o=await r.json(); if(!o.ok) throw new Error(o.erreur||"refusé");
+        await IO.Store.putShared("envoi.json",new Blob([JSON.stringify(this.envoi)],{type:"application/json"})); U.toast("Envoi direct activé pour toute l'équipe ✓",5000); IO.App.route(); }
+      catch(e){ U.toast("Test raté : "+(e.message||e)+". Vérifie l'adresse et la clé.",8000); } es.disabled=false; });
+    main.appendChild(ev);
 
     // Logo
     const lg=h("section",{class:"dcard"}); lg.appendChild(h("h2",null,"Logo"));
@@ -2992,6 +3043,10 @@ IO.V6.seance=async(main,id,nStr)=>{
   const ad=h("div"); ad.appendChild(h("span",{class:"flab"},"Avec")); ad.appendChild(inp("text",s.accomp,v=>{ s.accomp=v; save(); },{"aria-label":"Accompagnant·e"})); g.appendChild(ad);
   card.appendChild(g);
   const pf=h("div",{class:"field"}); pf.appendChild(h("label",null,"Présence")); pf.appendChild(segc(REF.PRESENCE6,s.presence||"",v=>{ s.presence=v; save(); })); card.appendChild(pf);
+  { const qr=h("div",{class:"btn-row",style:"margin-top:-6px;margin-bottom:14px"}); const rdv=()=>({date:s.date||U.today(),heure:s.heure});
+    const b1=IO.Team.richMail(h("a",{class:"btn",href:"#"},"✉ Mail de retard"),()=>j.mail,()=>IO.Team.retardMsg(j,rdv()));
+    const b2=IO.Team.richMail(h("a",{class:"btn",href:"#"},"✉ Mail d'absence"),()=>j.mail,()=>IO.Team.absenceMsg(j,rdv()));
+    qr.append(b1,b2); card.appendChild(qr); }
   const tf=h("div",{class:"field"}); tf.appendChild(h("label",null,"Type de séance")); const coachBox=h("div");
   tf.appendChild(segc([{k:"suivi",t:"Accompagnement"},{k:"coaching",t:"Coaching"}],s.type||"suivi",v=>{ s.type=v; if(v==="coaching"&&!s.theme) s.theme=coachTheme(j,n); save(); renderTitle(); renderCoach(); }));
   card.appendChild(tf); card.appendChild(coachBox);
