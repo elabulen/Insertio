@@ -81,7 +81,7 @@ a{color:var(--blue)}
 .pl .seg button{flex:1 0 auto;border:0!important;background:transparent!important;box-shadow:none;min-height:0;font:inherit;font-size:13.5px;font-weight:500;color:var(--text-dim);padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
 .pl .seg button[aria-selected=true],.pl .seg button[aria-pressed=true]{background:var(--surface)!important;color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 /* couleurs : programmes et sources */
-.c-elan{--c:#007AFF}.c-tremplin{--c:#AF52DE}.c-pole{--c:#34C759}.c-s-cal{--c:#FF2D55}.c-s-contact{--c:#5856D6}.c-s-m{--c:#FF9500}.c-s-dos{--c:#8E8E93}
+.c-elan{--c:#007AFF}.c-tremplin{--c:#AF52DE}.c-pole{--c:#34C759}.c-s-noprog{--c:#A2845E}.c-s-cal{--c:#FF2D55}.c-s-contact{--c:#636366}.c-s-m{--c:#FF9500}
 .pl-ev{display:block;width:100%;text-align:left;border:0;font:inherit;cursor:pointer;color:var(--text);background:color-mix(in srgb,var(--c) 14%,var(--surface));border-left:3px solid var(--c);border-radius:6px;padding:3px 6px;font-size:12px;line-height:1.3;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .pl .pl-ev{border:0!important;border-left:3px solid var(--c)!important;background:color-mix(in srgb,var(--c) 14%,var(--surface))!important;border-radius:6px!important;box-shadow:none!important;min-height:0!important;color:var(--text)!important}
 .pl .pl-ev:hover{background:color-mix(in srgb,var(--c) 24%,var(--surface))!important}
@@ -113,7 +113,10 @@ a{color:var(--blue)}
 .pl-day h3{margin:14px 0 6px;font-size:13px;font-weight:600;color:var(--text-faint)}.pl-day h3::first-letter{text-transform:uppercase}.pl-day h3.now{color:#FF3B30}
 .pl-day .pl-ev{padding:9px 10px;font-size:14px;margin-bottom:6px;border-radius:10px}
 .pl-empty{color:var(--text-faint);margin:14px 0 6px;font-size:14px}.pl-note{margin:12px 0 0;font-size:12.5px;color:var(--text-faint)}.pl-note a{color:var(--blue)}
-.pl-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:12px;color:var(--text-faint)}.pl-leg i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:5px}
+.pl-leg{display:flex;flex-direction:column;gap:4px;margin:0 0 12px;font-size:12.5px;color:var(--text-dim)}.pl-leg>div{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}.pl-leg b{font-weight:600;color:var(--text);margin-right:2px}.pl-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c);margin-right:6px;vertical-align:-1px}
+.pl .pl-add{border:0!important;box-shadow:none;background:var(--blue)!important;color:#fff!important;font:inherit;font-size:13.5px;font-weight:600;height:32px;padding:0 14px;border-radius:999px;cursor:pointer}
+.mail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:16px}.mb-h{display:flex;gap:12px;align-items:center}.mb-h h2{margin:0}.mb-ic{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(180deg,#3B9BFF,#0A6CFF);color:#fff;font-size:20px;flex:0 0 auto}.mb-sel{max-width:280px}
+.mail-mini{display:flex;flex-direction:column;gap:8px}.mm{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--text);padding:6px;border-radius:12px}.mm:hover{background:var(--surface-2)}.mm b{display:block;font-weight:600}.mm small{color:var(--text-faint);font-size:12.5px}.mm .mb-ic{width:34px;height:34px;font-size:17px;border-radius:10px}
 .pl-pop{display:flex;gap:16px;align-items:flex-start}.pl-pop h2{margin:0 0 4px;font-family:var(--f-body);font-size:20px;font-weight:700}.pl-pop p{margin:2px 0}.pl-when{font-weight:600}
 .pl-acts{margin-top:16px}
 @media(max-width:700px){.pl{padding:16px 14px 12px;border-radius:16px}.cm-cell{min-height:52px;align-items:center}.cm-cell>b{align-self:center}}
@@ -526,7 +529,7 @@ textarea.f{min-height:96px;line-height:1.5}
 <header class="topbar"><div class="in">
   <a class="logo" href="#/" aria-label="InsertiO, accueil"><img id="logoImg" src="logo.png" alt="InsertiO"></a>
   <nav class="nav" aria-label="Navigation principale">
-    <a href="#/">Accueil</a><a href="#/jeunes">Jeunes</a><a href="#/coaching">Coaching</a><a href="#/guide">Guide</a><a href="#/reglages">Réglages</a>
+    <a href="#/">Accueil</a><a href="#/jeunes">Jeunes</a><a href="#/coaching">Coaching</a><a href="#/mails">Mails</a><a href="#/guide">Guide</a><a href="#/reglages">Réglages</a>
   </nav>
   <button type="button" class="tbtn" id="whoBtn" hidden title="Changer de profil"></button><button type="button" class="tbtn" id="installBtn" hidden>Installer</button>
   <a class="sync-chip" id="syncChip" href="#/reglages" data-ok="0"></a>
@@ -542,7 +545,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.8"; IO.ARTIFACT = false;
+IO.VERSION = "7.9"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1793,11 +1796,11 @@ const T = IO.Team = {
     box.innerHTML='<img src="'+esc(this.logoUrl)+'" alt="InsertiO"><h1>Qui utilise l\'application ?</h1><p class="sub-n">Ton nom signe les messages et les comptes rendus. Tu vois tous les jeunes de l\'équipe.</p>';
     const list=h("div",{class:"who-list"}); box.appendChild(list);
     this.data.membres.forEach(m=>{ const b=h("button",{type:"button",class:"btn who"},'<b>'+esc(m.nom)+'</b><span class="faint">'+esc(m.fonction||m.mail||"")+'</span>');
-      b.addEventListener("click",()=>{ if(!m.pin){ this.login(m).then(()=>IO.App.route()); return; } pinForm(m); }); list.appendChild(b); });
+      b.addEventListener("click",()=>{ if(!m.pin){ this.login(m).then(()=>IO.App.route({keep:true})); return; } pinForm(m); }); list.appendChild(b); });
     const pinBox=h("form",{class:"pinbox",hidden:true}); box.appendChild(pinBox);
     const pinForm=m=>{ pinBox.hidden=false; pinBox.innerHTML='<label class="flab" for="pinIn">Code de '+esc(U.firstName(m.nom))+'</label><input class="f" id="pinIn" type="password" inputmode="numeric" autocomplete="off"><div class="btn-row"><button class="btn primary" type="submit">Entrer</button></div><p class="sub-n" id="pinErr"></p>';
       const i=pinBox.querySelector("#pinIn"); i.focus();
-      pinBox.onsubmit=async e=>{ e.preventDefault(); if(await hash(m.id,i.value)===m.pin){ await this.login(m); IO.App.route(); } else { pinBox.querySelector("#pinErr").textContent="Code incorrect."; i.select(); } }; };
+      pinBox.onsubmit=async e=>{ e.preventDefault(); if(await hash(m.id,i.value)===m.pin){ await this.login(m); IO.App.route({keep:true}); } else { pinBox.querySelector("#pinErr").textContent="Code incorrect."; i.select(); } }; };
     box.appendChild(h("p",{class:"sub-n"},'<a href="#/reglages">Réglages de l\'équipe</a>'));
     main.appendChild(box);
   },
@@ -1861,7 +1864,7 @@ const T = IO.Team = {
     const er=h("div",{class:"btn-row"}); const es=h("button",{type:"button",class:"btn primary"},"Enregistrer et tester"); er.appendChild(es); ev.appendChild(er);
     es.addEventListener("click",async()=>{ this.envoi={url:eu.value.trim(),cle:ek.value.trim()}; es.disabled=true;
       try{ const r=await fetch(this.envoi.url,{method:"POST",body:JSON.stringify({cle:this.envoi.cle,test:true})}); const o=await r.json(); if(!o.ok) throw new Error(o.erreur||"refusé");
-        await IO.Store.putShared("envoi.json",new Blob([JSON.stringify(this.envoi)],{type:"application/json"})); U.toast("Envoi direct activé pour toute l'équipe ✓",5000); IO.App.route(); }
+        await IO.Store.putShared("envoi.json",new Blob([JSON.stringify(this.envoi)],{type:"application/json"})); U.toast("Envoi direct activé pour toute l'équipe ✓",5000); IO.App.route({keep:true}); }
       catch(e){ U.toast("Test raté : "+(e.message||e)+". Vérifie l'adresse et la clé.",8000); } es.disabled=false; });
     main.appendChild(ev);
     if(IO.Plan) IO.Plan.settings(main);
@@ -1936,17 +1939,18 @@ const routes=[
   [/^#?\/?$/, m=>IO.V6.home(m)], [/^#\/jeunes$/, viewJeunes], [/^#\/coaching$/, m=>IO.V6.coaching(m)],
   [/^#\/j\/([^/]+)(?:\/(parcours|suivi|suivis|coaching|objectifs|candidatures|documents|profil|infos))?$/, (m,id,t)=>IO.V6.jeune(m,id,t)],
   [/^#\/j\/([^/]+)\/seance\/(\d+)$/, (m,id,n)=>IO.V6.seance(m,id,n)],
-  [/^#\/j\/([^/]+)\/e\/([^/]+)$/, viewEntretien], [/^#\/j\/([^/]+)\/s\/([^/]+)$/, (m,id,sid)=>IO.Suivi.view(m,id,sid)], [/^#\/guide$/, viewGuide], [/^#\/reglages$/, viewSettings],
+  [/^#\/j\/([^/]+)\/e\/([^/]+)$/, viewEntretien], [/^#\/j\/([^/]+)\/s\/([^/]+)$/, (m,id,sid)=>IO.Suivi.view(m,id,sid)], [/^#\/guide$/, viewGuide], [/^#\/reglages$/, viewSettings], [/^#\/mails$/, m=>IO.Mails.view(m)],
 ];
 function go(hash){ IO.navHash=hash; route(); }
 document.addEventListener("click",e=>{ const a=e.target.closest&&e.target.closest('a[href^="#/"]'); if(a){ e.preventDefault(); go(a.getAttribute("href")); } });
-async function route(){
+async function route(o){
+  const keep=!!(o&&o.keep), y=window.scrollY;
   if(App.view&&App.view.destroy) App.view.destroy(); App.view=null;
   await flushAll();
-  const hsh=IO.navHash||"#/"; const main=$("main"); main.innerHTML=""; main.className="wrap"; syncChip();
+  const hsh=IO.navHash||"#/"; const main=$("main"); if(keep) main.style.minHeight=main.offsetHeight+"px"; main.innerHTML=""; main.className="wrap"; syncChip();
   document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("on", hsh===a.getAttribute("href") || (a.getAttribute("href")==="#/jeunes" && hsh.startsWith("#/j/"))));
   if(App.status==="ok" && IO.Team.needsLogin() && !hsh.startsWith("#/reglages")){ IO.Team.loginView(main); return; }
-  for(const [re,fn] of routes){ const m=hsh.match(re); if(m){ App.view=(await fn(main,...m.slice(1)))||null; window.scrollTo(0,0); return; } }
+  for(const [re,fn] of routes){ const m=hsh.match(re); if(m){ App.view=(await fn(main,...m.slice(1)))||null; if(keep){ window.scrollTo(0,y); setTimeout(()=>{ main.style.minHeight=""; },400); } else window.scrollTo(0,0); return; } }
   go("#/");
 }
 
@@ -2304,7 +2308,7 @@ async function boot(){
   const ib=$("installBtn"); if(ib) ib.addEventListener("click",()=>{ if(App.installEvt){ App.installEvt.prompt(); App.installEvt=null; ib.hidden=true; } });
   setSaveState("ok"," ");
   route(); syncChip(); postePing();
-  const calSync=()=>IO.Cal&&IO.Cal.sync().then(r=>{ const hs=IO.navHash||"#/"; if(r&&(r.n||r.nouveaux)&&/^#?\/?$|^#\/jeunes$|\/infos$/.test(hs)&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) route(); });
+  const calSync=()=>IO.Cal&&IO.Cal.sync().then(r=>{ const hs=IO.navHash||"#/"; if(r&&(r.n||r.nouveaux)&&/^#?\/?$|^#\/jeunes$|\/infos$/.test(hs)&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) route({keep:true}); });
   const planSync=()=>IO.Plan&&IO.Plan.fetch();
   setTimeout(()=>{ calSync(); }, 1500); setTimeout(()=>{ IO.Plan&&IO.Plan.paint(); }, 6000); setTimeout(planSync,2500); setTimeout(()=>{ IO.V6&&IO.V6.sitePhotos&&IO.V6.sitePhotos().catch(()=>{}); },3000); window.addEventListener("resize",()=>{ clearTimeout(IO._rz); IO._rz=setTimeout(()=>IO.Plan&&IO.Plan.paint(),200); }); setInterval(()=>{ calSync(); planSync(); IO.Plan&&IO.Plan.paint(); },10*60000);
   setInterval(refreshList,20000);
@@ -2315,7 +2319,7 @@ async function refreshList(){
   if(document.hidden||App.status!=="ok"||Store.mode!=="folder"||Date.now()-lastRefresh<15000) return;
   const hsh=IO.navHash||"#/"; if(!/^#?\/?$|^#\/jeunes$/.test(hsh)) return;
   if(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
-  lastRefresh=Date.now(); try{ await IO.Team.load(); await loadAll(); route(); postePing(); }catch(e){}
+  lastRefresh=Date.now(); try{ await IO.Team.load(); await loadAll(); route({keep:true}); postePing(); }catch(e){}
 }
 window.addEventListener("focus",refreshList);
 document.addEventListener("visibilitychange",refreshList);
@@ -2889,7 +2893,7 @@ IO.V6.sitePhotos=async()=>{
     done[s.k]=done[s.k]||U.today();
   }
   try{ await IO.Store.putShared("import-site.json",new Blob([JSON.stringify(done)],{type:"application/json"})); }catch(e){}
-  if(changed){ const hs=IO.navHash||"#/"; if(/^#?\/?$|^#\/jeunes$/.test(hs)) App.route(); }
+  if(changed){ const hs=IO.navHash||"#/"; if(/^#?\/?$|^#\/jeunes$/.test(hs)) App.route({keep:true}); }
 };
 
 
@@ -2938,7 +2942,7 @@ IO.V6.home=main=>{
   const nb=h("button",{type:"button",class:"btn primary",id:"newJeune"},"Nouveau jeune"); nb.disabled=blocked; nb.addEventListener("click",IO.V6.newJeune); hd.appendChild(nb); main.appendChild(hd);
   if(blocked) return;
   if(IO.Store.mode!=="folder") main.appendChild(h("div",{class:"alert info",style:"margin-bottom:20px"},'Les dossiers sont enregistrés sur cet ordinateur seulement. Pour les partager avec l\'équipe : <a href="#/reglages">Réglages → dossier partagé</a>.'));
-  const js=App.sorted().map(ensure), today=U.today(), active=js.filter(j=>j.statut!=="clos");
+  const js=App.sorted().map(ensure), today=U.today(), active=js.filter(j=>!j.statut||j.statut==="actif");
   main.appendChild(IO.Plan.banner());
   const grid=h("div",{class:"home-grid"}); const L=h("div",{class:"stack"}), R=h("div",{class:"stack"}); grid.append(L,R); main.appendChild(grid);
   const card=(parent,title,count)=>{ const c=h("section",{class:"dcard"}); c.appendChild(h("h2",null,esc(title)+(count?' <span class="count">'+count+'</span>':''))); parent.appendChild(c); return c; };
@@ -2955,7 +2959,7 @@ IO.V6.home=main=>{
   if(IO.Cal.nouveaux.length){ const c=card(L,"Inscriptions Calendly sans dossier",IO.Cal.nouveaux.length); const ul=h("ul",{class:"rows"}); c.appendChild(ul);
     IO.Cal.nouveaux.slice(0,8).forEach(x=>{ const f=x.list[0]; const next=x.list.map(y=>y.debut).sort().reverse()[0]; const li=h("li",{class:"row"}); li.innerHTML='<div class="rmain"><b>'+esc(f.nom||f.email)+'</b><span class="faint">'+esc(f.email||"")+(f.tel?" · "+esc(f.tel):"")+" · RDV "+esc(fmtDT(next))+'</span></div>';
       const a=h("div",{class:"racts"}); const cb=h("button",{type:"button",class:"btn primary"},"Créer le dossier"); cb.addEventListener("click",async()=>{ cb.disabled=true; const j=await IO.Cal.creer(x); App.go("#/j/"+j.id+"/infos"); });
-      const ib=h("button",{type:"button",class:"btn"},"Ignorer"); ib.addEventListener("click",()=>{ IO.Cal.ignorer(x); App.route(); }); a.append(cb,ib); li.appendChild(a); ul.appendChild(li); });
+      const ib=h("button",{type:"button",class:"btn"},"Ignorer"); ib.addEventListener("click",()=>{ IO.Cal.ignorer(x); App.route({keep:true}); }); a.append(cb,ib); li.appendChild(a); ul.appendChild(li); });
     c.appendChild(h("p",{class:"sub-n"},"Personnes qui ont réservé sur Calendly mais n'ont pas encore de dossier (même e-mail ou même nom introuvable).")); }
   // Rappels de la veille (Outlook)
   // (les rappels de la veille sont dans le planning : bouton « Rappel »)
@@ -2965,6 +2969,7 @@ IO.V6.home=main=>{
   active.sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,10).forEach(j=>{ const li=h("li",{class:"row"});
     li.className="jrow"; li.innerHTML=IO.avatar(j,42)+'<div class="jm"><a href="#/j/'+j.id+'">'+esc(j.nom||"Sans nom")+'</a><div>'+IO.progTag(j)+(j.referent?' <small>· '+esc(j.referent)+'</small>':'')+'</div></div><div style="flex:0 0 180px">'+progress(j)+'</div>'; u2.appendChild(li); });
   if(js.length>10) c2.appendChild(h("a",{class:"more",href:"#/jeunes"},"Tous les jeunes →"));
+  IO.Mails.card(R);
   // À reprendre (rappels transmis)
   const rp=openRappels({seances:[]}); js.filter(j=>j.statut!=="clos").forEach(j=>openRappels(j).forEach(x=>rp.push(x)));
   const c3=card(R,"À reprendre",rp.length);
@@ -3093,7 +3098,7 @@ IO.Plan.items=()=>{
     if(P.rank(it.src)<P.rank(twin.tsrc)){ twin.debut=it.debut; twin.journee=it.journee; twin.tsrc=it.src; }   // l'horaire le plus fiable l'emporte (ex. RDV déplacé)
     if(it.j&&!twin.j){ twin.j=it.j; twin.href=it.href; twin.person=it.person; twin.titre=it.titre; }
     if(it.src==="dos"){ twin.href=it.href; twin.r=it.r; twin.titre=it.titre; if(it.sous) twin.sous=it.sous; }
-    if(!twin.sous&&it.sous) twin.sous=it.sous;
+    if(!twin.sous&&it.sous) twin.sous=it.sous; if(it.app&&!twin.app) twin.app=it.app;
   };
   js.forEach(j=>(IO.live?IO.live(j.rdv):(j.rdv||[])).forEach(r=>{ if(r.deleted||r.statut!=="prevu"||!r.date) return; const m=P.memberOf(j);
     add({src:"dos",m:m&&m.id,debut:r.date+(r.heure?"T"+r.heure:""),journee:!r.heure,titre:j.nom||"Sans nom",person:j.nom,sous:r.objet||"Rendez-vous",j,r,href:"#/j/"+j.id}); }));
@@ -3102,6 +3107,7 @@ IO.Plan.items=()=>{
     const k=(String(x.email||"").toLowerCase()||P.norm(x.nom))+"|"+deb; if(seen.has(k)) return; seen.add(k);
     const j=IO.Cal.matchJeune(js,x); const m=j&&P.memberOf(j);
     add({src:"cal",m:m&&m.id,debut:deb,titre:(j&&j.nom)||x.nom||x.email||"Inscription",person:(j&&j.nom)||x.nom,sous:x.type||"Rendez-vous Calendly",j,href:j?"#/j/"+j.id+"/infos":null}); });
+  (P.cfg.evenements||[]).forEach(e=>{ const j=e.jeune?App.jeunes.get(e.jeune):null; add({src:e.qui||"contact",app:e,debut:e.debut,journee:!!e.journee,titre:e.titre,sous:[e.lieu,j&&j.nom].filter(Boolean).join(" · "),j:null,href:j?"#/j/"+j.id:null}); });
   (P.events||[]).slice().sort((a,b)=>(a.k==="contact"?0:1)-(b.k==="contact"?0:1)).forEach(e=>add({src:e.k,debut:e.debut,journee:e.journee,titre:e.titre,sous:e.lieu||""}));
   const M=new Set(P.cfg.masques||[]);
   return out.filter(it=>!M.has(P.sig(it))&&!P.HIDE.some(re=>re.test(P.norm(it.person||it.titre)))).sort((a,b)=>String(a.debut).localeCompare(String(b.debut)));
@@ -3109,7 +3115,7 @@ IO.Plan.items=()=>{
 IO.Plan.tabs=()=>{ const T=[["tout","Tout"],["cal","Réservations"],["contact","Insertio"]]; IO.Plan.membres().forEach(m=>T.push(["m:"+m.id,U.firstName(m.nom)])); return T; };
 IO.Plan.filter=(it,tab)=>tab==="tout"?true:tab==="cal"?it.srcs.has("cal"):tab==="contact"?(it.srcs.has("contact")||it.srcs.has("cal")):(it.srcs.has(tab)||it.ms.has(tab.slice(2)));
 IO.Plan.dot=it=>{ const s=[...it.srcs].sort((a,b)=>IO.Plan.rank(a)-IO.Plan.rank(b))[0]; return s.startsWith("m:")?"m":s; };
-IO.Plan.color=it=>{ if(it.j){ const k=IO.progKind?IO.progKind(it.j):null; if(k) return k; } return "s-"+IO.Plan.dot(it); };
+IO.Plan.color=it=>{ if(it.j){ const k=IO.progKind?IO.progKind(it.j):null; return k||"s-noprog"; } if(it.srcs.has("cal")) return "s-cal"; if(it.srcs.has("contact")) return "s-contact"; return "s-m"; };
 IO.Plan.banner=()=>{ const P=IO.Plan; P.el=h("section",{class:"pl",id:"planning"}); P.paint(); return P.el; };
 IO.Plan.paint=()=>{
   const P=IO.Plan, el=P.el; if(!el) return;
@@ -3130,8 +3136,9 @@ IO.Plan.paint=()=>{
   const inRange=items.filter(it=>{ const d=String(it.debut).slice(0,10); return d>=key(start)&&d<=key(end); }).length;
   let o='<div class="pl-top"><div><h2>'+esc(title.charAt(0).toUpperCase()+title.slice(1))+'</h2><p>'+inRange+' rendez-vous</p></div>'+
     '<div class="pl-tools"><div class="seg sm" role="group"><button type="button" data-v="semaine" aria-pressed="'+(view==="semaine")+'">Semaine</button><button type="button" data-v="mois" aria-pressed="'+(view==="mois")+'">Mois</button></div>'+
-    '<div class="pl-nav"><button type="button" data-w="-1" aria-label="Précédent">‹</button><button type="button" data-w="0">Aujourd\'hui</button><button type="button" data-w="1" aria-label="Suivant">›</button></div></div></div>';
+    '<button type="button" class="pl-add" data-add>＋ Événement</button><div class="pl-nav"><button type="button" data-w="-1" aria-label="Précédent">‹</button><button type="button" data-w="0">Aujourd\'hui</button><button type="button" data-w="1" aria-label="Suivant">›</button></div></div></div>';
   o+='<div class="seg" role="tablist">'+T.map(([k,t])=>'<button type="button" role="tab" data-t="'+esc(k)+'" aria-selected="'+(k===P.tab)+'">'+esc(t)+'</button>').join("")+'</div>';
+  o+='<div class="pl-leg"><div><b>Jeunes</b> (couleur du programme)<span><i class="c-elan"></i>Élan</span><span><i class="c-tremplin"></i>Tremplin</span><span><i class="c-pole"></i>Pôle numérique</span><span><i class="c-s-noprog"></i>Programme à définir</span></div><div><b>Autres</b><span><i class="c-s-cal"></i>Réservation Calendly, dossier pas encore créé</span><span><i class="c-s-contact"></i>Agenda Insertio (contact@)</span><span><i class="c-s-m"></i>Agenda personnel d\'une coordinatrice</span></div></div>';
   const ev=(it,cls)=>{ const t=it.journee?"":String(it.debut).slice(11,16); return '<button type="button" class="pl-ev '+cls+' c-'+esc(P.color(it))+'" data-ev="'+P._items.indexOf(it)+'"><span class="pl-et">'+esc(t)+'</span> <span class="pl-en">'+esc(String(it.titre).replace(/\s+/g," ").trim())+'</span></button>'; };
   if(view==="semaine"&&!narrow){
     // grille horaire type Calendrier
@@ -3165,12 +3172,12 @@ IO.Plan.paint=()=>{
   }
   const late=P.late||[]; if(late.length) o+='<p class="pl-note">'+late.length+' rendez-vous passé'+(late.length>1?"s":"")+' sans séance renseignée : '+late.slice(0,4).map(x=>'<a href="'+esc(x.href)+'">'+esc(x.nom)+'</a>').join(", ")+(late.length>4?"…":"")+'</p>';
   const miss=!P.cfg.contact&&IO.Team.canSend();
-  o+='<div class="pl-leg"><span><i class="c-elan"></i>Élan</span><span><i class="c-tremplin"></i>Tremplin</span><span><i class="c-pole"></i>Pôle numérique</span><span><i class="c-s-cal"></i>Réservation sans dossier</span><span><i class="c-s-contact"></i>Calendrier Insertio</span><span><i class="c-s-m"></i>Calendrier personnel</span></div>';
   if(miss||P.erreurs.length) o+='<p class="pl-note">'+(miss?'Le calendrier Outlook de contact@ n\'est pas encore relié : <a href="#/reglages">Réglages → Planning</a>.':'')+(P.erreurs.length?' <span class="warn-t">'+esc(P.erreurs.join(" · "))+'</span>':'')+'</p>';
   el.innerHTML=o;
   el.querySelectorAll("[data-t]").forEach(b=>b.addEventListener("click",()=>{ P.tab=b.dataset.t; try{ localStorage.setItem("io-plan-tab",P.tab); }catch(e){} P.paint(); }));
   el.querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{ P.view=b.dataset.v; try{ localStorage.setItem("io-plan-view",P.view); }catch(e){} P.paint(); }));
   el.querySelectorAll("[data-w]").forEach(b=>b.addEventListener("click",()=>{ const w=+b.dataset.w; if(!w) P.ref=new Date(today); else if(P.view==="mois") P.ref=new Date(P.ref.getFullYear(),P.ref.getMonth()+w,1); else { P.ref=new Date(P.ref); P.ref.setDate(P.ref.getDate()+7*w); } P.paint(); }));
+  el.querySelectorAll("[data-add]").forEach(b=>b.addEventListener("click",()=>P.editEvent(null,P.view==="semaine"&&P.key(P.ref)!==tk?P.key(P.ref):tk)));
   el.querySelectorAll("[data-ev]").forEach(b=>b.addEventListener("click",e=>{ e.stopPropagation(); P.open(P._items[+b.dataset.ev]); }));
   el.querySelectorAll("[data-day]").forEach(c=>c.addEventListener("click",()=>{ const [y,m,d]=c.dataset.day.split("-").map(Number); P.ref=new Date(y,m-1,d); P.view="semaine"; try{ localStorage.setItem("io-plan-view","semaine"); }catch(e){} P.paint(); }));
 };
@@ -3187,11 +3194,81 @@ IO.Plan.open=it=>{
     if(it.href){ const a=h("a",{class:"btn primary",href:it.href},"Ouvrir le dossier"); a.addEventListener("click",close); r.appendChild(a); }
     if(it.r&&it.j&&String(it.debut).slice(0,10)===P.key(new Date())&&P.startHref){ const a=h("a",{class:"btn",href:P.startHref(it.j)},"Commencer la séance"); a.addEventListener("click",close); r.appendChild(a); }
     if(it.r&&it.j&&!it.srcs.has("cal")&&P.remindable(it.r)){ const T=IO.Team; const a=T.richMail(h("a",{class:"btn",href:T.mailLink(it.j.mail,T.reminder(it.j,it.r))},it.r.rappel?"Renvoyer le rappel":"Envoyer le rappel"),it.j.mail,()=>T.reminder(it.j,it.r)); a.addEventListener("click",()=>{ it.r.rappel=U.now(); IO.touch(it.r); App.save(it.j); }); r.appendChild(a); }
+    if(it.app){ const ed=h("button",{type:"button",class:"btn"},"Modifier"); ed.addEventListener("click",()=>{ close(); P.editEvent(it.app); }); r.appendChild(ed);
+      const ol=h("a",{class:"btn",href:P.outlookLink(it.app),target:"_blank",rel:"noopener"},"Ajouter dans Outlook"); r.appendChild(ol); }
     const m=h("button",{type:"button",class:"btn"},"Masquer du planning"); m.title="Le rendez-vous reste dans Calendly / Outlook ; il n'apparaît simplement plus ici.";
     m.addEventListener("click",async()=>{ P.cfg.masques=P.cfg.masques||[]; P.cfg.masques.push(P.sig(it)); await P.saveCfg(); close(); P.paint(); U.toast("Masqué du planning (pour toute l'équipe)"); });
     r.appendChild(m); const c=h("button",{type:"button",class:"btn"},"Fermer"); c.addEventListener("click",close); r.appendChild(c);
   });
 };
+
+/* ================================================================ Événements créés depuis l'application (+ Outlook en un clic) */
+IO.Plan.qui=()=>{ const L=[["contact","Insertio (contact@) — bloque aussi Calendly"]]; IO.Plan.membres().forEach(m=>L.push(["m:"+m.id,m.nom])); return L; };
+IO.Plan.outlookLink=(e)=>{
+  const T=IO.Team, live=e.qui==="contact"?true:(T.data.outlook||"live")==="live";
+  const base=(live?"https://outlook.live.com":"https://outlook.office.com")+"/calendar/0/deeplink/compose";
+  const q={path:"/calendar/action/compose",rru:"addevent",subject:e.titre,location:e.lieu||"",body:e.notes||""};
+  if(e.journee){ q.startdt=e.debut.slice(0,10); q.enddt=e.debut.slice(0,10); q.allday="true"; } else { q.startdt=e.debut+":00"; q.enddt=(e.fin||e.debut)+":00"; }
+  return base+"?"+Object.entries(q).map(([k,v])=>k+"="+encodeURIComponent(v)).join("&"); };
+IO.Plan.editEvent=(ev,dateKey)=>{
+  const P=IO.Plan, App=A(); const e=Object.assign({id:"",titre:"",debut:(dateKey||P.key(new Date()))+"T09:00",fin:"",journee:false,qui:IO.Team.me?"m:"+IO.Team.me.id:"contact",lieu:"",notes:"",jeune:""},ev||{});
+  if(!e.fin&&!e.journee){ const m=P.mins(e.debut)+60; e.fin=e.debut.slice(0,11)+P.pad(Math.floor(m/60)%24)+":"+P.pad(m%60); }
+  const js=[...App.jeunes.values()].filter(j=>j.statut!=="clos").sort((a,b)=>String(a.nom).localeCompare(String(b.nom)));
+  App.modal('<h2>'+(e.id?"Modifier l'événement":"Nouvel événement")+'</h2><form class="evf">'+
+    '<label class="flab">Titre</label><input class="f" name="titre" required placeholder="ex. Premier RDV, Réunion, Indisponible">'+
+    '<div class="row2"><div><label class="flab">Date</label><input class="f" type="date" name="date" required></div><div><label class="flab">Agenda</label><select class="f" name="qui">'+P.qui().map(([k,t])=>'<option value="'+esc(k)+'">'+esc(t)+'</option>').join("")+'</select></div></div>'+
+    '<label class="chk" style="margin:10px 0"><input type="checkbox" name="journee"><span>Toute la journée</span></label>'+
+    '<div class="row2 hrs"><div><label class="flab">Début</label><input class="f" type="time" name="h1" step="900"></div><div><label class="flab">Fin</label><input class="f" type="time" name="h2" step="900"></div></div>'+
+    '<div class="row2"><div><label class="flab">Lieu (facultatif)</label><input class="f" name="lieu" placeholder="Bureau, Teams…"></div><div><label class="flab">Jeune concerné (facultatif)</label><select class="f" name="jeune"><option value="">—</option>'+js.map(j=>'<option value="'+esc(j.id)+'">'+esc(j.nom)+'</option>').join("")+'</select></div></div>'+
+    '<label class="flab">Notes (facultatif)</label><textarea class="f" name="notes" rows="2"></textarea>'+
+    '<label class="chk" style="margin-top:12px"><input type="checkbox" name="outlook" checked><span>Ouvrir Outlook pour l\'enregistrer aussi dans le calendrier choisi<br><small class="faint">Un clic sur « Enregistrer » dans Outlook suffit. Pour bloquer un créneau dans Calendly, choisir l\'agenda « Insertio ».</small></span></label>'+
+    '<div class="btn-row" style="margin-top:16px"><button type="submit" class="btn primary">Enregistrer</button>'+(e.id?'<button type="button" class="btn danger" data-del>Supprimer</button>':'')+'<button type="button" class="btn" data-x>Annuler</button></div></form>',(sh,close)=>{
+    const f=sh.querySelector("form"), F=n=>f.elements[n];
+    F("titre").value=e.titre; F("date").value=e.debut.slice(0,10); F("qui").value=e.qui; F("journee").checked=!!e.journee; F("h1").value=e.journee?"09:00":e.debut.slice(11,16); F("h2").value=e.journee?"10:00":(e.fin||"").slice(11,16);
+    F("lieu").value=e.lieu||""; F("jeune").value=e.jeune||""; F("notes").value=e.notes||""; if(e.id) F("outlook").checked=false;
+    const hrs=sh.querySelector(".hrs"); const tg=()=>{ hrs.style.display=F("journee").checked?"none":""; }; F("journee").addEventListener("change",tg); tg();
+    F("h1").addEventListener("change",()=>{ const m=P.mins("T"+F("h1").value)+60; F("h2").value=P.pad(Math.floor(m/60)%24)+":"+P.pad(m%60); });
+    sh.querySelector("[data-x]").addEventListener("click",close);
+    const del=sh.querySelector("[data-del]"); if(del) del.addEventListener("click",async()=>{ await P.load(); P.cfg.evenements=(P.cfg.evenements||[]).filter(x=>x.id!==e.id); await P.saveCfg(); close(); P.paint(); U.toast("Événement supprimé de l'application (pense à le supprimer aussi dans Outlook s'il y est)",6000); });
+    f.addEventListener("submit",async ev2=>{ ev2.preventDefault();
+      const d=F("date").value, all=F("journee").checked;
+      const n={id:e.id||U.uid("ev"),titre:F("titre").value.trim(),debut:all?d:d+"T"+(F("h1").value||"09:00"),fin:all?"":d+"T"+(F("h2").value||F("h1").value||"10:00"),journee:all,qui:F("qui").value,lieu:F("lieu").value.trim(),notes:F("notes").value.trim(),jeune:F("jeune").value,par:IO.Team.me?IO.Team.me.nom:"",maj:U.now()};
+      if(!n.titre) return;
+      await P.load(); P.cfg.evenements=(P.cfg.evenements||[]).filter(x=>x.id!==n.id); P.cfg.evenements.push(n); await P.saveCfg();
+      if(F("outlook").checked) window.open(P.outlookLink(n),"_blank","noopener");
+      close(); P.ref=new Date(d+"T12:00"); P.paint(); U.toast("Événement ajouté au planning"+(F("outlook").checked?" — enregistre-le dans l'onglet Outlook qui vient de s'ouvrir":""),6000); });
+  });
+};
+/* ================================================================ Mails */
+IO.Mails={
+  boite(mail){ const k="io-boite-"+String(mail||"").toLowerCase(); let v=null; try{ v=localStorage.getItem(k); }catch(e){} return v||(mail===IO.Team.data.mail?"live":"infomaniak"); },
+  setBoite(mail,v){ try{ localStorage.setItem("io-boite-"+String(mail||"").toLowerCase(),v); }catch(e){} },
+  url(v){ return v==="live"?"https://outlook.live.com/mail/0/":v==="office"?"https://outlook.office.com/mail/":"https://mail.infomaniak.com/"; },
+  view(main){
+    const T=IO.Team, me=T.me, contact=T.data.mail||"contact@insertio.ch";
+    main.appendChild(h("div",{class:"v-head"},'<div><h1>Mails</h1><div class="meta">'+esc(me?"Session de "+me.nom:"Choisis ton profil pour voir ta boîte")+'</div></div>'));
+    const grid=h("div",{class:"mail-grid"}); main.appendChild(grid);
+    const box=(titre,mail,desc)=>{ const c=h("section",{class:"dcard mailbox"}); const v=this.boite(mail);
+      c.innerHTML='<div class="mb-h"><span class="mb-ic">✉︎</span><div><h2>'+esc(titre)+'</h2><a href="mailto:'+esc(mail)+'" class="faint">'+esc(mail)+'</a></div></div><p class="sub-n">'+esc(desc)+'</p>';
+      const r=h("div",{class:"btn-row"}); const o=h("a",{class:"btn primary",href:this.url(v),target:"_blank",rel:"noopener"},"Ouvrir la boîte"); const w=h("button",{type:"button",class:"btn"},"Écrire");
+      w.addEventListener("click",()=>{ if(T.canSend()) T.compose("",{subject:"",body:""}); else window.location.href="mailto:"; }); r.append(o,w); c.appendChild(r);
+      const sel=h("select",{class:"f mb-sel","aria-label":"Messagerie de "+mail}); sel.innerHTML='<option value="live">Outlook.com</option><option value="office">Microsoft 365 (pro / université)</option><option value="infomaniak">Infomaniak Mail</option>'; sel.value=v;
+      sel.addEventListener("change",()=>{ this.setBoite(mail,sel.value); o.href=this.url(sel.value); }); const lb=h("label",{class:"flab"},"Messagerie utilisée"); c.append(lb,sel); grid.appendChild(c); };
+    box("Contact Insertio",contact,"La boîte commune : demandes des jeunes, partenaires, confirmations Calendly.");
+    if(me&&me.mail) box("Ma boîte",me.mail,"Ta boîte personnelle de coordinatrice.");
+    else main.appendChild(h("p",{class:"sub-n"},me?"Ajoute ton adresse e-mail dans Réglages → Équipe pour voir ta boîte ici.":""));
+    const info=h("section",{class:"dcard"}); info.innerHTML='<h2>Rendez-vous reçus par mail</h2><p class="sub-n">Les réservations, changements d\'horaire, annulations et réponses au formulaire Calendly sont lus directement chez Calendly toutes les 10 minutes : le planning et les dossiers se mettent à jour tout seuls, sans avoir à ouvrir les mails de confirmation.</p>'+(T.canSend()?'':'<p class="sub-n warn-t">À activer : Réglages → Envoi direct des mails.</p>');
+    main.appendChild(info);
+  },
+  card(parent){ const T=IO.Team, me=T.me, contact=T.data.mail||"contact@insertio.ch";
+    const c=h("section",{class:"dcard mailcard"}); c.innerHTML='<h2>Mails</h2>';
+    const r=h("div",{class:"mail-mini"});
+    const add=(t,mail)=>{ const a=h("a",{class:"mm",href:this.url(this.boite(mail)),target:"_blank",rel:"noopener"},'<span class="mb-ic">✉︎</span><span><b>'+esc(t)+'</b><small>'+esc(mail)+'</small></span>'); r.appendChild(a); };
+    add("Contact",contact); if(me&&me.mail) add("Ma boîte",me.mail);
+    c.appendChild(r); const w=h("button",{type:"button",class:"btn",style:"margin-top:10px"},"Écrire un mail"); w.addEventListener("click",()=>{ if(T.canSend()) T.compose("",{subject:"",body:""}); else window.location.href="mailto:"; }); c.appendChild(w);
+    parent.insertBefore(c,parent.firstChild); }
+};
+
 IO.Plan.settings=(main)=>{
   const P=IO.Plan; const s=h("section",{class:"dcard",id:"planning-reglages"}); s.appendChild(h("h2",null,"Planning : calendriers Outlook"));
   s.appendChild(h("p",{class:"sub-n"},"Pour afficher un calendrier Outlook sur l'accueil : dans Outlook sur le web, <b>Paramètres → Calendrier → Calendriers partagés → Publier un calendrier</b>, choisir le calendrier, « Peut afficher tous les détails », <b>Publier</b>, puis copier le <b>lien ICS</b> et le coller ici. Le lien reste privé (il est enregistré dans le dossier partagé de l'équipe)."));
@@ -3230,7 +3307,7 @@ function tabInfos(body,j){
     if(c.rdv&&c.rdv.length){ s2.appendChild(h("div",{class:"sub-h"},"Rendez-vous réservés")); const ul=h("ul",{class:"rows"}); c.rdv.forEach(x=>ul.appendChild(h("li",{class:"row"},'<div class="rmain"><b>'+esc(fmtDT(x.debut))+'</b><span class="faint">'+esc(x.type||"")+(x.statut==="annulé"?" · annulé":"")+'</span></div>'))); s2.appendChild(ul); }
     if(c.maj) s2.appendChild(h("p",{class:"sub-n"},"Mis à jour depuis Calendly le "+esc(U.fmtDate(String(c.maj).slice(0,10)))+"."));
   }
-  if(IO.Team.canSend()){ const b=h("button",{type:"button",class:"btn"},"Actualiser depuis Calendly"); b.addEventListener("click",async()=>{ b.disabled=true; await IO.Cal.sync(true); App.route(); }); s2.appendChild(h("div",{class:"btn-row"})).appendChild(b); }
+  if(IO.Team.canSend()){ const b=h("button",{type:"button",class:"btn"},"Actualiser depuis Calendly"); b.addEventListener("click",async()=>{ b.disabled=true; await IO.Cal.sync(true); App.route({keep:true}); }); s2.appendChild(h("div",{class:"btn-row"})).appendChild(b); }
   body.appendChild(s2);
 }
 
@@ -3238,11 +3315,11 @@ function progControls(j,box){
   const App=A(); const row=h("div",{class:"ctrl-row"});
   const pd=h("div"); pd.appendChild(h("span",{class:"flab"},"Programme")); const ps=h("select",{class:"f","aria-label":"Programme"});
   ps.innerHTML=REF.PROG_CHOIX.map(c=>'<option value="'+esc(c.v)+'"'+(c.v===(j.programme||"")||(!c.v&&!kind(j))?" selected":"")+'>'+esc(c.t)+'</option>').join("")+(j.programme&&!REF.PROG_CHOIX.some(c=>c.v===j.programme)?'<option selected>'+esc(j.programme)+'</option>':'');
-  ps.addEventListener("change",()=>{ j.programme=ps.value; delete j.parcours.nb; App.save(j); App.route(); }); pd.appendChild(ps); row.appendChild(pd);
-  const dd=h("div"); dd.appendChild(h("span",{class:"flab"},"Début")); const di=h("input",{class:"f",type:"date","aria-label":"Début de l'accompagnement"}); di.value=debutOf(j); di.addEventListener("change",()=>{ j.parcours.debut=di.value; App.save(j); App.route(); }); dd.appendChild(di); row.appendChild(dd);
+  ps.addEventListener("change",()=>{ j.programme=ps.value; delete j.parcours.nb; App.save(j); App.route({keep:true}); }); pd.appendChild(ps); row.appendChild(pd);
+  const dd=h("div"); dd.appendChild(h("span",{class:"flab"},"Début")); const di=h("input",{class:"f",type:"date","aria-label":"Début de l'accompagnement"}); di.value=debutOf(j); di.addEventListener("change",()=>{ j.parcours.debut=di.value; App.save(j); App.route({keep:true}); }); dd.appendChild(di); row.appendChild(dd);
   if(kind(j)&&kind(j)!=="pole"){
     const nd=h("div"); nd.appendChild(h("span",{class:"flab"},"Nombre de séances")); const st=h("div",{class:"stepper"}); const minus=h("button",{type:"button","aria-label":"Une séance de moins"},"−"), val=h("b",null,String(nbSeances(j))), plus=h("button",{type:"button","aria-label":"Une séance de plus"},"+");
-    const set=v=>{ v=Math.max(Math.max(1,live(j.seances).filter(isDone).reduce((m,s)=>Math.max(m,s.n),0)),Math.min(60,v)); j.parcours.nb=v; App.save(j); App.route(); };
+    const set=v=>{ v=Math.max(Math.max(1,live(j.seances).filter(isDone).reduce((m,s)=>Math.max(m,s.n),0)),Math.min(60,v)); j.parcours.nb=v; App.save(j); App.route({keep:true}); };
     minus.addEventListener("click",()=>set(nbSeances(j)-1)); plus.addEventListener("click",()=>set(nbSeances(j)+1)); st.append(minus,val,plus); nd.appendChild(st); row.appendChild(nd);
   }
   box.appendChild(row);
@@ -3252,7 +3329,7 @@ function endBlock(j,box,unit){
   if(finished(j)){
     const s=(REF.SORTIE.find(x=>x.k===j.sortie)||{}).t||"—";
     w.innerHTML='<div><b>Parcours terminé</b><div class="sub-n">'+esc(U.fmtDate(j.parcours.finReelle))+' · '+esc(s)+' · '+(unit==="passages"?live(j.passages).length+" passage(s)":doneCount(j)+" séance(s) réalisée(s) sur "+(nbSeances(j)||"—"))+'</div></div>';
-    const r=h("button",{type:"button",class:"btn"},"Rouvrir le parcours"); r.addEventListener("click",()=>{ j.statut="actif"; App.save(j); App.route(); }); w.appendChild(r);
+    const r=h("button",{type:"button",class:"btn"},"Rouvrir le parcours"); r.addEventListener("click",()=>{ j.statut="actif"; App.save(j); App.route({keep:true}); }); w.appendChild(r);
   } else {
     w.innerHTML='<div class="sub-n">Le jeune a trouvé une solution, arrête ou change de voie ? On clôt le parcours, avec le motif, pour les statistiques.</div>';
     const b=h("button",{type:"button",class:"btn"},"Terminer le parcours"); b.addEventListener("click",()=>endDialog(j)); w.appendChild(b);
@@ -3265,7 +3342,7 @@ function endDialog(j){
   (sh,close)=>{ let s=j.sortie||""; sh.querySelector("#ed_d").value=U.today();
     const box=sh.querySelector("#ed_s"); const w=h("div",{class:"opts"}); REF.SORTIE.forEach(o=>{ const b=h("button",{type:"button",class:"opt",role:"radio","aria-checked":String(o.k===s)},'<span class="box"></span><span class="t">'+esc(o.t)+'</span>'); b.addEventListener("click",()=>{ s=o.k; w.querySelectorAll(".opt").forEach((x,i)=>x.setAttribute("aria-checked",String(REF.SORTIE[i].k===s))); }); w.appendChild(b); }); box.appendChild(w);
     sh.querySelector("#ed_no").addEventListener("click",close);
-    sh.querySelector("#ed_ok").addEventListener("click",()=>{ if(!s){ U.toast("Choisis la situation à la sortie"); return; } j.sortie=s; j.statut="clos"; j.parcours.finReelle=sh.querySelector("#ed_d").value||U.today(); j.parcours.finNote=sh.querySelector("#ed_n").value; App.save(j); close(); App.route(); });
+    sh.querySelector("#ed_ok").addEventListener("click",()=>{ if(!s){ U.toast("Choisis la situation à la sortie"); return; } j.sortie=s; j.statut="clos"; j.parcours.finReelle=sh.querySelector("#ed_d").value||U.today(); j.parcours.finNote=sh.querySelector("#ed_n").value; App.save(j); close(); App.route({keep:true}); });
   });
 }
 function tabSeances(body,j){
@@ -3297,7 +3374,7 @@ function tabCoaching(body,j){
   if(!count) ul.appendChild(h("li",{class:"empty"},"Aucune séance de coaching prévue."));
   const free=[]; for(let n=1;n<=N;n++){ if(typeOf(j,n)!=="coaching"&&!isDone(getS(j,n))) free.push(n); }
   if(free.length&&!finished(j)){ const r=h("div",{class:"btn-row"}); const sel=h("select",{class:"f","aria-label":"Séance à transformer en coaching",style:"max-width:220px"}); sel.innerHTML=free.map(n=>'<option value="'+n+'">Séance '+n+' (sem. du '+U.fmtDate(plannedDate(j,n))+')</option>').join("");
-    const b=h("button",{type:"button",class:"btn"},"Ajouter une séance de coaching"); b.addEventListener("click",()=>{ const n=+sel.value; const s=seanceFor(j,n); s.type="coaching"; s.theme=coachTheme(j,n); IO.touch(s); App.save(j); App.route(); }); r.append(sel,b); card.appendChild(r); }
+    const b=h("button",{type:"button",class:"btn"},"Ajouter une séance de coaching"); b.addEventListener("click",()=>{ const n=+sel.value; const s=seanceFor(j,n); s.type="coaching"; s.theme=coachTheme(j,n); IO.touch(s); App.save(j); App.route({keep:true}); }); r.append(sel,b); card.appendChild(r); }
 }
 
 /* ================================================================ Pôle numérique : passages */
@@ -3306,8 +3383,8 @@ function passageDialog(j,p){
   App.modal('<div class="sheet-h"><h2>'+(isNew?"Nouveau passage":"Passage du "+esc(U.fmtDate(p.date)))+'</h2></div><div class="row2"><div><label class="flab" for="pa_d">Date</label><input class="f" type="date" id="pa_d"></div><div><label class="flab" for="pa_a">Avec</label><input class="f" id="pa_a"></div></div><div class="field"><label for="pa_f">Ce qui a été fait</label><textarea class="f" id="pa_f" placeholder="Ex. CV mis à jour, inscription job-room, aide pour un formulaire OCPM…"></textarea></div><div class="btn-row"><button class="btn primary" type="button" id="pa_ok">Enregistrer</button>'+(isNew?'':'<button class="btn danger" type="button" id="pa_del">Supprimer</button>')+'<button class="btn" type="button" id="pa_no">Annuler</button></div>',
   (sh,close)=>{ sh.querySelector("#pa_d").value=p.date; sh.querySelector("#pa_a").value=p.accomp||""; sh.querySelector("#pa_f").value=p.fait||""; sh.querySelector("#pa_f").focus();
     sh.querySelector("#pa_no").addEventListener("click",close);
-    const del=sh.querySelector("#pa_del"); if(del) del.addEventListener("click",()=>{ p.deleted=true; IO.touch(p); App.save(j); close(); App.route(); });
-    sh.querySelector("#pa_ok").addEventListener("click",()=>{ p.date=sh.querySelector("#pa_d").value||U.today(); p.accomp=sh.querySelector("#pa_a").value; p.fait=sh.querySelector("#pa_f").value; IO.touch(p); if(isNew) ensure(j).passages.push(p); App.save(j); close(); App.route(); }); });
+    const del=sh.querySelector("#pa_del"); if(del) del.addEventListener("click",()=>{ p.deleted=true; IO.touch(p); App.save(j); close(); App.route({keep:true}); });
+    sh.querySelector("#pa_ok").addEventListener("click",()=>{ p.date=sh.querySelector("#pa_d").value||U.today(); p.accomp=sh.querySelector("#pa_a").value; p.fait=sh.querySelector("#pa_f").value; IO.touch(p); if(isNew) ensure(j).passages.push(p); App.save(j); close(); App.route({keep:true}); }); });
 }
 function tabPassages(body,j){
   const card=h("section",{class:"dcard"}); body.appendChild(card); progControls(j,card);
