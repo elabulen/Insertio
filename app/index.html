@@ -478,7 +478,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.1"; IO.ARTIFACT = false;
+IO.VERSION = "7.2"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1063,8 +1063,8 @@ async function dirOf(j, create){
 }
 async function subDir(d, sub, create){ return sub==="Fiches" ? d.getDirectoryHandle("Fiches",{create:!!create}) : d; }
 const Folder = {
-  kind:"folder", get label(){ return root?((root instanceof GD.GDir?"Google Drive « ":"Dossier partagé « ")+root.name+" »"):"Dossier partagé"; },
-  async status(){ if(!root) return "none"; if(root instanceof GD.GDir) return GD.valid()?"ok":"gauth"; try{ return (await perm(root,false))==="granted"?"ok":"permission"; }catch(e){ return "permission"; } },
+  kind:"folder", get label(){ return root?("Dossier partagé « "+root.name+" »"):"Dossier partagé"; },
+  async status(){ if(!root) return "none"; try{ return (await perm(root,false))==="granted"?"ok":"permission"; }catch(e){ return "permission"; } },
   async list(){
     const jd=await jeunesDir(), out=[];
     for await (const [n,h] of jd.entries()){ if(h.kind!=="directory") continue; let j=await readJson(h);
@@ -1102,99 +1102,6 @@ const Folder = {
   async deleteFile(id, sub, name){ const d=await dirOf({id},false); const sd=await subDir(d,sub); await sd.removeEntry(name); },
 };
 
-
-/* ---------------- Google Drive (marche partout, y compris iPad) ----------------
-   Imite l'API « dossier » du navigateur (FileSystemDirectoryHandle) au-dessus de Google Drive,
-   pour réutiliser telle quelle la logique du dossier partagé. */
-const GD = IO.GDrive = (function(){
-  const CLIENT_ID="979933303362-286rqr784f2dqcm9c35uqd8u3hbalk84.apps.googleusercontent.com";
-  const SCOPE="https://www.googleapis.com/auth/drive";
-  const ROOT_NAME="Documents Officiels InsertiO", OLD_ROOT="InsertiO – Dossiers jeunes";
-  const FOLDER="application/vnd.google-apps.folder";
-  const API="https://www.googleapis.com/drive/v3/files", UP="https://www.googleapis.com/upload/drive/v3/files";
-  let token=null, exp=0, client=null, pending=null, email=null;
-  try{ const t=JSON.parse(localStorage.getItem("io-gtok")||"null"); if(t&&t.exp>Date.now()+60000){ token=t.token; exp=t.exp; email=t.email||null; } }catch(e){}
-  const valid=()=>!!token && exp>Date.now()+30000;
-  function loadGis(){ return new Promise((ok,ko)=>{ if(window.google&&google.accounts&&google.accounts.oauth2) return ok();
-    const sc=document.createElement("script"); sc.src="https://accounts.google.com/gsi/client"; sc.async=true; sc.onload=()=>ok(); sc.onerror=()=>ko(new Error("Google ne répond pas (connexion internet ?)")); document.head.appendChild(sc); }); }
-  async function signIn(silent){
-    await loadGis();
-    if(pending) return pending;
-    pending=new Promise((ok,ko)=>{
-      client=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID, scope:SCOPE, login_hint:"insertiogeneve@gmail.com",
-        callback:r=>{ pending=null; if(r.error){ ko(new Error(r.error_description||r.error)); return; }
-          token=r.access_token; exp=Date.now()+(Number(r.expires_in)||3600)*1000;
-          try{ localStorage.setItem("io-gtok",JSON.stringify({token,exp,email})); }catch(e){}
-          ok(token); },
-        error_callback:e=>{ pending=null; ko(new Error(e&&e.type==="popup_closed"?"fenêtre Google fermée":(e&&e.message)||"connexion Google impossible")); } });
-      client.requestAccessToken({prompt:silent?"":undefined});
-    });
-    return pending;
-  }
-  // Renouvelle le jeton au premier clic quand il arrive à expiration (un clic autorise la fenêtre Google)
-  document.addEventListener("pointerdown",()=>{ if(token && exp<Date.now()+10*60000 && !pending && IO.Store && IO.Store.isGoogle) signIn(true).catch(()=>{}); },true);
-  async function req(url, opt, raw){
-    if(!valid()) throw Object.assign(new Error("Connexion Google à renouveler"),{gauth:true});
-    opt=opt||{}; opt.headers=Object.assign({Authorization:"Bearer "+token},opt.headers||{});
-    let r; for(let i=0;i<4;i++){ r=await fetch(url,opt); if(r.status!==429&&r.status<500) break; await new Promise(x=>setTimeout(x,600*(i+1)*(i+1))); }
-    if(r.status===401){ token=null; try{ localStorage.removeItem("io-gtok"); }catch(e){} throw Object.assign(new Error("Connexion Google à renouveler"),{gauth:true}); }
-    if(!r.ok) throw new Error("Google Drive "+r.status+" : "+(await r.text()).slice(0,160));
-    return raw?r:(r.status===204?null:r.json());
-  }
-  const q=s=>String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-  const cache=new Map(); const TTL=4000;
-  async function children(id, fresh){
-    const c=cache.get(id); if(!fresh && c && Date.now()-c.t<TTL) return c.list;
-    let out=[], pt=""; do{ const d=await req(API+"?q="+encodeURIComponent("'"+id+"' in parents and trashed=false")+"&fields=nextPageToken,files(id,name,mimeType,modifiedTime,size)&pageSize=1000&orderBy=createdTime"+(pt?"&pageToken="+pt:"")); out=out.concat(d.files||[]); pt=d.nextPageToken; }while(pt);
-    cache.set(id,{t:Date.now(),list:out}); return out;
-  }
-  const drop=id=>cache.delete(id);
-  const nf=n=>{ const e=new Error("Introuvable : "+n); e.name="NotFoundError"; return e; };
-  class GFile{ constructor(f,parent){ this.kind="file"; this.name=f.name; this.id=f.id; this.parent=parent; this.meta=f; }
-    async getFile(){ const r=await req(API+"/"+this.id+"?alt=media",{},true); const b=await r.blob(); return new File([b],this.name,{type:b.type||"",lastModified:Date.parse(this.meta.modifiedTime)||Date.now()}); }
-    async createWritable(){ const parts=[], self=this; return { async write(d){ parts.push(d); }, async close(){ const b=new Blob(parts); await req(UP+"/"+self.id+"?uploadType=media",{method:"PATCH",body:b,headers:{"Content-Type":b.type||"application/octet-stream"}}); drop(self.parent); } }; }
-  }
-  class GDir{ constructor(id,name){ this.kind="directory"; this.id=id; this.name=name; }
-    async *entries(){ for(const f of await children(this.id)) yield [f.name, f.mimeType===FOLDER?new GDir(f.id,f.name):new GFile(f,this.id)]; }
-    async queryPermission(){ return valid()?"granted":"prompt"; }
-    async requestPermission(){ try{ await signIn(); return "granted"; }catch(e){ return "denied"; } }
-    async getDirectoryHandle(name,o){ let f=(await children(this.id)).find(x=>x.name===name&&x.mimeType===FOLDER);
-      if(!f){ if(!(o&&o.create)) throw nf(name); f=(await children(this.id,true)).find(x=>x.name===name&&x.mimeType===FOLDER);
-        if(!f){ f=await req(API+"?fields=id,name,mimeType,modifiedTime",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,mimeType:FOLDER,parents:[this.id]})}); drop(this.id); } }
-      return new GDir(f.id,f.name); }
-    async getFileHandle(name,o){ let f=(await children(this.id)).find(x=>x.name===name&&x.mimeType!==FOLDER);
-      if(!f){ if(!(o&&o.create)) throw nf(name); f=(await children(this.id,true)).find(x=>x.name===name&&x.mimeType!==FOLDER);
-        if(!f){ f=await req(API+"?fields=id,name,mimeType,modifiedTime,size",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,parents:[this.id]})}); drop(this.id); } }
-      return new GFile(f,this.id); }
-    async removeEntry(name){ const f=(await children(this.id,true)).find(x=>x.name===name); if(!f) throw nf(name);
-      await req(API+"/"+f.id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({trashed:true})}); drop(this.id); }
-  }
-  async function rootDir(){
-    const d=await req(API+"?q="+encodeURIComponent("name='"+q(ROOT_NAME)+"' and mimeType='"+FOLDER+"' and 'root' in parents and trashed=false")+"&fields=files(id,name)&orderBy=createdTime");
-    let f=d.files&&d.files[0];
-    if(!f){ // ancien nom (version 7.0) : on le renomme pour garder la même structure que OneDrive
-      const o=await req(API+"?q="+encodeURIComponent("name='"+q(OLD_ROOT)+"' and mimeType='"+FOLDER+"' and 'root' in parents and trashed=false")+"&fields=files(id,name)&orderBy=createdTime");
-      if(o.files&&o.files[0]){ f=o.files[0]; await req(API+"/"+f.id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:ROOT_NAME})}); f.name=ROOT_NAME; } }
-    if(!f) f=await req(API+"?fields=id,name",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:ROOT_NAME,mimeType:FOLDER})});
-    return new GDir(f.id,f.name);
-  }
-  // Copie d'un dossier (ordinateur → Drive), récursive, sans écraser ce qui existe déjà avec la même taille
-  async function copyTree(src, dst, rep, skip){
-    rep=rep||{fichiers:0,dossiers:0,ignores:0};
-    for await (const [n,h] of src.entries()){
-      if(/^(desktop\.ini|thumbs\.db)$/i.test(n)||n.startsWith(".")||n.startsWith("~$")||(skip&&skip(n,h))) continue;
-      if(h.kind==="directory"){ rep.dossiers++; await copyTree(h, await dst.getDirectoryHandle(n,{create:true}), rep); continue; }
-      const f=await h.getFile();
-      const ex=(await children(dst.id)).find(x=>x.name===n&&x.mimeType!==FOLDER);
-      if(ex && (Number(ex.size)===f.size || (Date.parse(ex.modifiedTime)||0)>=f.lastModified)){ rep.ignores++; continue; } // déjà là, ou plus récent sur Drive
-      const fh=ex?new GFile(ex,dst.id):await dst.getFileHandle(n,{create:true}); const w=await fh.createWritable(); await w.write(f); await w.close(); rep.fichiers++;
-      if(IO.App&&IO.App.progress) IO.App.progress(rep);
-    }
-    return rep;
-  }
-  return { signIn, valid, rootDir, copyTree, GDir, get rootName(){ return ROOT_NAME; }, signOut(){ token=null; try{ localStorage.removeItem("io-gtok"); }catch(e){} } };
-})();
-
 /* ---------------- Façade */
 const Store = IO.Store = {
   a: Local,
@@ -1210,25 +1117,12 @@ const Store = IO.Store = {
     await IO.KV.set("shared:"+name, null); },
   async sharedDir(sub){ if(this.a.kind!=="folder"||!root) return null; try{ return await (await root.getDirectoryHandle("Reglages")).getDirectoryHandle(sub); }catch(e){ return null; } },
   get rootName(){ return root?root.name:""; },
-  get isFsFolder(){ return !!(root && !(root instanceof GD.GDir)); },
   get mode(){ return this.a.kind; },
-  get isGoogle(){ return !!(root && root instanceof GD.GDir); },
-  async useGoogle(){ await GD.signIn(); const g=await GD.rootDir(); root=g; jdName=null; dirMap.clear(); this.a=Folder; await IO.KV.set("mode","gdrive"); await IO.KV.set("gdriveRoot",{id:g.id,name:g.name}); return g.name; },
-  /* Copie tout le dossier partagé de l'ordinateur (« 06 Les Jeunes » + « Reglages ») vers Google Drive, puis bascule sur Drive */
-  async migrateFolderToGoogle(){
-    const src=root; if(!src || src instanceof GD.GDir) throw new Error("ouvre d'abord l'application avec le dossier OneDrive connecté");
-    await GD.signIn(); const g=await GD.rootDir(); const rep={fichiers:0,dossiers:0,ignores:0};
-    // Copie TOUT le dossier (01 Gouvernance … 06 Les Jeunes … 99 Archives, Reglages, fichiers à la racine) : même structure que OneDrive
-    await GD.copyTree(src, g, rep, (nm,hh)=>hh.kind==="directory" && nm==="Jeunes");
-    root=g; jdName=null; dirMap.clear(); this.a=Folder; await IO.KV.set("mode","gdrive"); await IO.KV.set("gdriveRoot",{id:g.id,name:g.name});
-    return rep;
-  },
   get label(){ return this.a.label; },
   async init(){
     try{ if(navigator.storage && navigator.storage.persist) await navigator.storage.persist(); }catch(e){}
     const mode=await IO.KV.get("mode"); const h=await IO.KV.get("rootHandle");
     if(mode==="folder" && h){ root=h; this.a=Folder; return this.status(); }
-    if(mode==="gdrive"){ const g=await IO.KV.get("gdriveRoot"); if(g&&g.id){ root=new GD.GDir(g.id,g.name); this.a=Folder; return GD.valid()?"ok":"gauth"; } }
     if(mode!=="local") return "none"; // nouvel ordinateur : on n'enregistre rien tant que le dossier partagé n'est pas choisi
     return this.status();
   },
@@ -1242,7 +1136,7 @@ const Store = IO.Store = {
     root=h; jdName=null; dirMap.clear(); this.a=Folder; await IO.KV.set("rootHandle",h); await IO.KV.set("mode","folder"); return h.name;
   },
   async useHandle(h){ root=h; dirMap.clear(); this.a=Folder; await IO.KV.set("mode","folder"); try{ await IO.KV.set("rootHandle",h); }catch(e){} }, // tests
-  async reconnect(){ if(!root) return "none"; const p=await perm(root,true); return p==="granted"?"ok":(root instanceof GD.GDir?"gauth":"permission"); },
+  async reconnect(){ if(!root) return "none"; const p=await perm(root,true); return p==="granted"?"ok":"permission"; },
   async useLocal(){ this.a=Local; await IO.KV.set("mode","local"); },
   list(){ return this.a.list(); }, get(id){ return this.a.get(id); }, save(j){ return this.a.save(j); }, remove(id){ return this.a.remove(id); },
   listFiles(id){ return this.a.listFiles(id); }, addFile(id,sub,blob,name,ow){ return this.a.addFile(id,sub,blob,name,ow); },
@@ -1910,16 +1804,14 @@ function save(j, now){
     try{ const out=await Store.save(j); if(out!==j){ Object.keys(j).forEach(k=>{ if(!(k in out)) delete j[k]; }); Object.assign(j,out); }
       if(j._merged){ delete j._merged; U.toast("Dossier fusionné avec les modifications d'un·e collègue"); }
       App.jeunes.set(j.id,j); setSaveState("ok"); }
-    catch(e){ console.error(e); setSaveState("err");
-      if(e.gauth){ App.status="gauth"; (App.unsaved=App.unsaved||new Set()).add(j.id); U.toast("Connexion Google à renouveler : clique sur « Se connecter à Google Drive ». Tes modifications seront enregistrées juste après.",8000); syncChip&&syncChip(); return; }
-      U.toast("Enregistrement impossible : "+(App.status!=="ok"?"reconnecte le dossier partagé (Réglages)":e.message||e),5000); } };
+    catch(e){ console.error(e); setSaveState("err"); U.toast("Enregistrement impossible : "+(App.status!=="ok"?"reconnecte le dossier partagé (Réglages)":e.message||e),5000); } };
   if(now) return run(); timers.set(j.id,setTimeout(run,600));
 }
 async function flushAll(){ for(const [id,t] of timers){ clearTimeout(t); const j=App.jeunes.get(id); if(j) await save(j,true); } }
 window.addEventListener("pagehide",()=>{ flushAll(); });
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") flushAll(); });
 
-async function loadAll(){ App.jeunes.clear(); if(App.status!=="ok") return; try{ (await Store.list()).forEach(j=>App.jeunes.set(j.id,j)); }catch(e){ console.error(e); if(e.gauth){ App.status="gauth"; return; } U.toast("Lecture des dossiers impossible : "+(e.message||e),5000); } }
+async function loadAll(){ App.jeunes.clear(); if(App.status!=="ok") return; try{ (await Store.list()).forEach(j=>App.jeunes.set(j.id,j)); }catch(e){ console.error(e); U.toast("Lecture des dossiers impossible : "+(e.message||e),5000); } }
 function sorted(){ return [...App.jeunes.values()].sort((a,b)=>(a.nom||"").localeCompare(b.nom||"","fr")); }
 
 /* ================================================================ Navigation */
@@ -1952,24 +1844,6 @@ async function connectFolder(){
   }catch(e){ if(e.name!=="AbortError") U.toast("Dossier non choisi : "+(e.message||e),7000); }
 }
 App.connectFolder=connectFolder;
-async function connectGoogle(){
-  try{
-    U.toast("Connexion à Google Drive…",3000);
-    let rep=null;
-    if(Store.isFsFolder){ U.toast("Copie du dossier OneDrive vers Google Drive… (ne ferme pas l'application)",8000); rep=await Store.migrateFolderToGoogle(); }
-    else await Store.useGoogle();
-    App.status="ok";
-    try{ const loc=await Store.localAdapter.list(); if(loc.length){ const r2=await Store.copyLocalToFolder(); rep=rep||{fichiers:0}; rep.local=r2.jeunes; } }catch(e){}
-    await IO.Team.load(); await loadAll(); postePing();
-    U.toast("Google Drive connecté"+(rep?(" · "+(rep.fichiers||0)+" fichier(s) copiés"+(rep.local?(", "+rep.local+" dossier(s) de cet appareil transférés"):"")):""),7000);
-    route();
-  }catch(e){ U.toast("Connexion Google impossible : "+(e.message||e),8000); }
-}
-async function reconnectGoogle(){ try{ await IO.GDrive.signIn(); App.status="ok";
-    if(App.unsaved&&App.unsaved.size){ for(const id of [...App.unsaved]){ const j=App.jeunes.get(id); if(j){ await save(j,true); } App.unsaved.delete(id); } U.toast("Modifications enregistrées sur Google Drive"); }
-    await IO.Team.load(); await loadAll(); postePing(); route(); }catch(e){ U.toast("Connexion Google impossible : "+(e.message||e),7000); } }
-App.connectGoogle=connectGoogle; App.reconnectGoogle=reconnectGoogle;
-App.progress=(r)=>{ const el=$("saveState"); if(el){ el.dataset.state="saving"; el.textContent="Copie : "+r.fichiers+" fichier(s)…"; } };
 /* Chaque ordinateur laisse une trace dans Reglages/postes : on voit ainsi quels ordinateurs partagent vraiment le même dossier */
 async function posteId(){ let id=await IO.KV.get("posteId"); if(!id){ id=U.uid("pc"); await IO.KV.set("posteId",id); } return id; }
 async function postePing(){
@@ -1986,21 +1860,16 @@ async function postesList(){
   return out.sort((a,b)=>String(b.vu).localeCompare(String(a.vu)));
 }
 App.postePing=postePing;
-function syncChip(){ const el=$("syncChip"); if(!el) return; const f=Store.mode==="folder"&&App.status==="ok"; el.dataset.ok=f?"1":"0"; el.textContent=f?(Store.isGoogle?"● Google Drive":"● Dossier partagé"):"● Pas synchronisé"; el.title=f?Store.label:"Les dossiers ne sont pas enregistrés dans le dossier OneDrive partagé"; }
+function syncChip(){ const el=$("syncChip"); if(!el) return; const f=Store.mode==="folder"&&App.status==="ok"; el.dataset.ok=f?"1":"0"; el.textContent=f?"● Dossier partagé":"● Pas synchronisé"; el.title=f?Store.label:"Les dossiers ne sont pas enregistrés dans le dossier OneDrive partagé"; }
 function banner(main){
   syncChip();
   if(App.status==="permission"){ const b=h("div",{class:"alert crit banner"},'<b>Dossier partagé à reconnecter.</b> Pour des raisons de sécurité, le navigateur demande ton accord à chaque ouverture. '); const btn=h("button",{type:"button",class:"btn primary"},"Reconnecter"); btn.addEventListener("click",async()=>{ App.status=await Store.reconnect(); if(App.status==="ok"){ await IO.Team.load(); await loadAll(); route(); } }); b.appendChild(btn); main.appendChild(b); return true; }
-  if(App.status==="gauth"){ const b=h("div",{class:"alert crit banner"},'<b>Reconnecte Google Drive.</b> Par sécurité, Google demande de confirmer la connexion de temps en temps (compte insertiogeneve@gmail.com). '); const btn=h("button",{type:"button",class:"btn primary"},"Se connecter à Google Drive"); btn.addEventListener("click",reconnectGoogle); b.appendChild(btn); main.appendChild(b); return true; }
   if(App.status==="none"){
-    const g=h("div",{class:"alert crit banner"},'<b>Connecte l\'application pour commencer.</b> Connecte-toi avec le compte de l\'association <b>insertiogeneve@gmail.com</b> : les dossiers des jeunes sont partagés par toute l\'équipe, sur ordinateur, iPad et téléphone. ');
-    const gb=h("button",{type:"button",class:"btn primary"},"Se connecter avec Google"); gb.addEventListener("click",connectGoogle); g.appendChild(gb); main.appendChild(g); return true; }
-  if(false){
     const b=h("div",{class:"alert crit banner"},'<b>Connecte le dossier partagé pour commencer.</b> Sur cet ordinateur, choisis le dossier OneDrive <b>« Documents Officiels InsertiO »</b> (celui qui contient « 06 Les Jeunes »). Les dossiers déjà créés sur cet ordinateur y seront transférés. ');
     if(Store.supportsFolder){ const btn=h("button",{type:"button",class:"btn primary"},"Choisir le dossier partagé"); btn.addEventListener("click",connectFolder); b.appendChild(btn); }
     else b.appendChild(h("span",null,"Ouvre l'application dans Google Chrome sur ordinateur."));
     main.appendChild(b); return true; }
-  if(Store.mode==="local"){ const b=h("div",{class:"alert banner"},'<b>Attention : les dossiers sont enregistrés seulement sur cet appareil.</b> Tes collègues ne les voient pas. '); const btn=h("button",{type:"button",class:"btn primary"},"Se connecter avec Google"); btn.addEventListener("click",connectGoogle); b.appendChild(btn); main.appendChild(b); }
-  if(Store.isFsFolder && App.status==="ok"){ const b=h("div",{class:"alert banner"},'<b>Nouveau : Google Drive.</b> Pour utiliser l\'application aussi sur iPad et téléphone, passe sur Google Drive (compte insertiogeneve@gmail.com). Tout le dossier OneDrive est copié automatiquement, rien n\'est supprimé. '); const btn=h("button",{type:"button",class:"btn primary"},"Passer sur Google Drive"); btn.addEventListener("click",connectGoogle); b.appendChild(btn); main.appendChild(b); }
+  if(Store.mode==="local"){ const b=h("div",{class:"alert banner"},'<b>Attention : les dossiers sont enregistrés seulement sur cet ordinateur.</b> Tes collègues ne les voient pas et rien ne va dans OneDrive. '); if(Store.supportsFolder){ const btn=h("button",{type:"button",class:"btn primary"},"Connecter le dossier partagé"); btn.addEventListener("click",connectFolder); b.appendChild(btn); } main.appendChild(b); }
   return false;
 }
 
@@ -2010,7 +1879,7 @@ function viewHome(main){
   const hello=h("div",{class:"page-h"},'<div><h1>'+(App.settings.accomp?"Bonjour "+esc(U.firstName(App.settings.accomp)):"Bonjour")+'</h1><p class="sub-n">'+esc(new Date().toLocaleDateString("fr-CH",{weekday:"long",day:"numeric",month:"long",year:"numeric"}))+' · '+esc(Store.label)+'</p></div>');
   const acts=h("div",{class:"btn-row"}); const nb=h("button",{type:"button",class:"btn primary",id:"newJeune"},"Nouveau jeune"); nb.addEventListener("click",newJeuneDialog); nb.disabled=blocked; acts.appendChild(nb);
   hello.appendChild(acts); main.appendChild(hello);
-  if(Store.mode!=="folder" && App.status!=="none") main.appendChild(h("div",{class:"alert info"},'<b>Dossiers enregistrés sur cet ordinateur seulement.</b> Pour les partager avec l\'équipe et les retrouver dans l\'Explorateur de fichiers, choisis le dossier OneDrive commun dans <a href="#/reglages">Réglages</a>.'));
+  if(Store.mode!=="folder") main.appendChild(h("div",{class:"alert info"},'<b>Dossiers enregistrés sur cet ordinateur seulement.</b> Pour les partager avec l\'équipe et les retrouver dans l\'Explorateur de fichiers, choisis le dossier OneDrive commun dans <a href="#/reglages">Réglages</a>.'));
   if(blocked) return;
   if(!App.settings.accomp) main.appendChild(h("div",{class:"alert info"},'<b>Première utilisation ?</b> Indique ton nom dans <a href="#/reglages">Réglages</a> : il signe les messages aux jeunes. Le <a href="#/guide">guide</a> explique le déroulé des entretiens.'));
   const js=sorted(); const today=U.today();
@@ -2257,18 +2126,15 @@ function viewSettings(main){
   const st=h("section",{class:"dcard"}); st.appendChild(h("h2",null,"Où sont rangés les dossiers"));
   st.appendChild(h("p",null,'Actuellement : <b>'+esc(Store.label)+'</b>'+(App.status==="permission"?' · <span class="warn-t">à reconnecter</span>':'')));
   const r=h("div",{class:"btn-row"});
-  if(!Store.isGoogle){ const gb=h("button",{type:"button",class:"btn primary"},Store.isFsFolder?"Passer sur Google Drive (copie tout)":"Se connecter avec Google Drive"); gb.addEventListener("click",connectGoogle); r.appendChild(gb); }
-  else if(App.status!=="ok"){ const gb=h("button",{type:"button",class:"btn primary"},"Se reconnecter à Google Drive"); gb.addEventListener("click",reconnectGoogle); r.appendChild(gb); }
-  if(Store.supportsFolder && !Store.isGoogle){
-    const pf=h("button",{type:"button",class:"btn",id:"pickFolder"},Store.mode==="folder"?"Changer de dossier partagé":"Choisir un dossier de l'ordinateur");
+  if(Store.supportsFolder){
+    const pf=h("button",{type:"button",class:"btn primary",id:"pickFolder"},Store.mode==="folder"?"Changer de dossier partagé":"Choisir le dossier partagé");
     pf.addEventListener("click",connectFolder);
     r.appendChild(pf);
     if(Store.mode==="folder"){ const cp=h("button",{type:"button",class:"btn"},"Copier ici les dossiers enregistrés sur cet appareil"); cp.addEventListener("click",async()=>{ try{ const rep=await Store.copyLocalToFolder(); await loadAll(); U.toast(rep.jeunes+" dossier(s) copié(s), "+rep.fichiers+" fichier(s)"); }catch(e){ U.toast("Copie impossible : "+(e.message||e),5000); } }); r.appendChild(cp); }
   }
-  if(Store.mode==="folder" && !Store.isGoogle){ const lo=h("button",{type:"button",class:"btn"},"Utiliser plutôt cet appareil"); lo.addEventListener("click",async()=>{ await Store.useLocal(); App.status="ok"; await IO.Team.load(); await loadAll(); route(); }); r.appendChild(lo); }
+  if(Store.mode==="folder"){ const lo=h("button",{type:"button",class:"btn"},"Utiliser plutôt cet appareil"); lo.addEventListener("click",async()=>{ await Store.useLocal(); App.status="ok"; await IO.Team.load(); await loadAll(); route(); }); r.appendChild(lo); }
   st.appendChild(r);
-  if(Store.isGoogle) st.appendChild(h("p",{class:"sub-n"},"Les dossiers sont dans le Google Drive du compte insertiogeneve@gmail.com, dossier « "+esc(Store.rootName)+" » (mêmes sous-dossiers que dans OneDrive). Ils sont visibles sur drive.google.com et, si l'application Google Drive pour ordinateur est installée, dans l'Explorateur de fichiers."));
-  else st.appendChild(h("p",{class:"sub-n"},Store.supportsFolder?"Choisis le dossier OneDrive commun de l'équipe : « Documents Officiels InsertiO » (celui qui contient « 06 Les Jeunes »). L'application y crée un sous-dossier par jeune avec sa fiche, ses comptes rendus et ses documents.":"Ce navigateur ne sait pas utiliser un dossier partagé : ouvre l'application dans Microsoft Edge ou Google Chrome, sur ordinateur."));
+  st.appendChild(h("p",{class:"sub-n"},Store.supportsFolder?"Choisis le dossier OneDrive commun de l'équipe : « Documents Officiels InsertiO » (celui qui contient « 06 Les Jeunes »). L'application y crée un sous-dossier par jeune avec sa fiche, ses comptes rendus et ses documents.":"Ce navigateur ne sait pas utiliser un dossier partagé : ouvre l'application dans Microsoft Edge ou Google Chrome, sur ordinateur."));
   main.appendChild(st);
 
   if(Store.mode==="folder"&&App.status==="ok"){
