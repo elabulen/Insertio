@@ -482,7 +482,7 @@ textarea.f{min-height:96px;line-height:1.5}
 (function(){
 "use strict";
 const IO = window.IO = window.IO || {};
-IO.VERSION = "7.4"; IO.ARTIFACT = false;
+IO.VERSION = "7.5"; IO.ARTIFACT = false;
 IO.SCHEMA = 4;
 
 /* ------------------------------------------------------------------ Utilitaires */
@@ -1979,7 +1979,7 @@ function viewJeunes(main){
     const rows=sorted().filter(j=>(!f.statut||j.statut===f.statut)&&(!f.mine||IO.Team.isMine(j))&&(!needle||[j.nom,j.programme,j.referent,j.commune].join(" ").toLowerCase().includes(needle)));
     if(!rows.length){ box.innerHTML='<p class="empty">Aucun jeune ne correspond.</p>'; return; }
     box.innerHTML='<table class="tbl"><thead><tr><th>Nom</th><th>Âge</th><th>Programme</th><th>Avancement</th><th>Prochain RDV</th><th>Référent·e</th></tr></thead><tbody>'+
-      rows.map(j=>{ const n=IO.nextRdv(j), a=U.ageOf(j.naissance); return '<tr><td><a href="#/j/'+j.id+'"><b>'+esc(j.nom||"Sans nom")+'</b></a>'+(j.statut!=="actif"?' <span class="pill num">'+esc(statutLabel(j.statut))+'</span>':'')+'</td><td>'+(a!=null?a:"")+'</td><td>'+progPill(j)+'</td><td style="min-width:170px">'+IO.V6.progressCell(j)+'</td><td>'+(n?esc(rdvWhen(n)):'<span class="faint">—</span>')+'</td><td>'+esc(j.referent||"")+'</td></tr>'; }).join("")+'</tbody></table>';
+      rows.map(j=>{ const n=IO.nextRdv(j), a=IO.ageJ(j); return '<tr><td><a href="#/j/'+j.id+'"><b>'+esc(j.nom||"Sans nom")+'</b></a>'+(j.statut!=="actif"?' <span class="pill num">'+esc(statutLabel(j.statut))+'</span>':'')+'</td><td>'+(a!=null?a:"")+'</td><td>'+progPill(j)+'</td><td style="min-width:170px">'+IO.V6.progressCell(j)+'</td><td>'+(n?esc(rdvWhen(n)):'<span class="faint">—</span>')+'</td><td>'+esc(j.referent||"")+'</td></tr>'; }).join("")+'</tbody></table>';
   }
   q.addEventListener("input",render); st.addEventListener("change",render); render(); q.focus();
 }
@@ -2012,7 +2012,7 @@ async function viewJeune(main, id, tab){
   if(banner(main)) return;
   const j=await getJ(id); if(!j){ main.appendChild(h("p",{class:"empty"},"Dossier introuvable.")); return; }
   tab=(!tab||tab==="suivi")?"parcours":tab;
-  const a=U.ageOf(j.naissance);
+  const a=IO.ageJ(j);
   const head=h("div",{class:"page-h jhead"});
   head.innerHTML='<div><a class="back" href="#/jeunes">← Jeunes</a><h1>'+esc(j.nom||"Sans nom")+'</h1><p class="sub-n">'+[a!=null?a+" ans":"",j.referent?"Référent·e : "+esc(j.referent):"",statutLabel(j.statut)].filter(Boolean).join(" · ")+' '+progPill(j)+'</p></div>';
   const ha=h("div",{class:"btn-row"});
@@ -2909,16 +2909,21 @@ IO.V6.jeune=async(main,id,tab)=>{
 const normNom=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z]+/g," ").trim();
 const sameNom=(a,b)=>{ a=normNom(a); b=normNom(b); if(!a||!b) return false; if(a===b) return true; const A1=a.split(" ").sort().join(" "), B1=b.split(" ").sort().join(" "); return A1===B1; };
 IO.Cal={ inscrits:[], nouveaux:[], last:0, busy:false };
+IO.ageJ=j=>{ const a=U.ageOf(j.naissance); if(a!=null) return a; const d=parseInt(String(j.ageDecl||"").replace(/\D+/g," ").trim(),10); return (d>=10&&d<=99)?d:null; };
+IO.Cal.rep=(c,re)=>{ const x=(c.reponses||[]).find(y=>re.test(String(y.q||""))); return x?String(x.r||"").trim():""; };
 IO.Cal.matchJeune=(js,x)=>{ const em=String(x.email||"").toLowerCase(); return js.find(j=>em&&String(j.mail||"").toLowerCase()===em)||js.find(j=>j.calendly&&String(j.calendly.email||"").toLowerCase()===em&&em)||js.find(j=>sameNom(j.nom,x.nom)); };
 IO.Cal.apply=(j,list)=>{
   const mine=list.filter(x=>x.statut!=="annulé"||true).sort((a,b)=>String(b.debut).localeCompare(String(a.debut)));
   const withQ=mine.find(x=>x.reponses&&x.reponses.length)||mine[0]; const tel=(mine.find(x=>x.tel)||{}).tel||"";
   const c={email:(mine.find(x=>x.email)||{}).email||"", tel, reponses:(withQ&&withQ.reponses)||[], rdv:mine.map(x=>({debut:x.debut,type:x.type,statut:x.statut,id:x.id})).slice(0,30)};
   const before=JSON.stringify({m:j.mail,t:j.tel,c:j.calendly&&{e:j.calendly.email,t:j.calendly.tel,r:j.calendly.reponses,d:j.calendly.rdv}});
+  const before2=before+"|"+(j.ageDecl||"")+"|"+(j.commune||"");
   if(!j.mail&&c.email) j.mail=c.email; if(!j.tel&&c.tel) j.tel=c.tel;
+  const age=IO.Cal.rep(c,/(^|\W)[âa]ge(\W|$)/i); if(age&&!j.naissance) j.ageDecl=age;
+  const com=IO.Cal.rep(c,/commune|domicile/i); if(com&&!j.commune) j.commune=com;
   j.calendly=Object.assign({},j.calendly||{},c);
-  const after=JSON.stringify({m:j.mail,t:j.tel,c:{e:c.email,t:c.tel,r:c.reponses,d:c.rdv}});
-  if(before!==after){ j.calendly.maj=U.now(); return true; } return false;
+  const after=JSON.stringify({m:j.mail,t:j.tel,c:{e:c.email,t:c.tel,r:c.reponses,d:c.rdv}})+"|"+(j.ageDecl||"")+"|"+(j.commune||"");
+  if(before2!==after){ j.calendly.maj=U.now(); return true; } return false;
 };
 IO.Cal.sync=async(force)=>{
   const App=A(); if(!IO.Team.canSend()||App.status!=="ok"||IO.Cal.busy) return; if(!force&&Date.now()-IO.Cal.last<10*60000) return;
