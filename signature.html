@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Signature e-mail – Insertio</title>
+<style>
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f2f2f7;color:#1c2135;padding:28px 18px}
+  .card{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;padding:26px 24px;box-shadow:0 8px 28px rgba(0,0,0,.07)}
+  h1{font-size:22px;margin:0 0 6px}
+  p{color:#545b76;line-height:1.5;margin:6px 0}
+  .sig{margin:22px 0;padding:18px;border:1px dashed #d9ddec;border-radius:14px;background:#fff}
+  button{width:100%;border:0;background:#5568DB;color:#fff;font:inherit;font-size:17px;font-weight:600;padding:14px;border-radius:14px;cursor:pointer}
+  button.done{background:#34C759}
+  ol{color:#545b76;line-height:1.6;padding-left:20px}
+  small{color:#8e8e93}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Signature e-mail Insertio</h1>
+  <p>Pour l'ajouter dans Outlook sur iPad ou iPhone.</p>
+
+  <div class="sig" id="sig"><table cellpadding="0" cellspacing="0" style="font-family:Segoe UI,Arial,sans-serif;font-size:10pt;color:#545B76;border-collapse:collapse"><tr><td style="padding-right:14px;border-right:2px solid #5568DB;vertical-align:middle"><a href="https://insertio.ch"><img src="https://insertio.ch/app/logo.png" width="130" height="34" alt="InsertiO" style="display:block;width:130px;height:auto;border:0"></a></td><td style="padding-left:14px;vertical-align:middle;line-height:1.55"><b style="color:#1C2135;font-size:11pt">Insertio Genève</b><br>Association genevoise d'insertion socio-professionnelle<br><a href="tel:+41782514898" style="color:#545B76">+41 78 251 48 98</a> · <a href="mailto:contact@insertio.ch" style="color:#545B76">contact@insertio.ch</a><br>Rue Le-Royer 24, 1227 Les Acacias · <a href="https://insertio.ch" style="color:#545B76">insertio.ch</a></td></tr></table></div>
+
+  <button type="button" id="copy">Copier la signature</button>
+
+  <ol>
+    <li>Touche <b>Copier la signature</b> ci-dessus.</li>
+    <li>Ouvre <b>Outlook</b> → icône du compte en haut à gauche → <b>⚙️ Paramètres</b> → <b>Courrier</b> → <b>Signature</b>.</li>
+    <li>Choisis le compte <b>contact@insertio.ch</b> (« Signature par compte »).</li>
+    <li>Efface le texte existant, puis <b>touche longuement → Coller</b>.</li>
+    <li>Reviens en arrière : c'est enregistré.</li>
+  </ol>
+  <p><small>Si le bouton ne marche pas : appuie longuement sur la signature, choisis « Tout sélectionner » puis « Copier », et colle-la dans Outlook.</small></p>
+</div>
+<script>
+document.getElementById("copy").addEventListener("click", async function(){
+  var el=document.getElementById("sig"), html=el.innerHTML, text=el.innerText, b=this;
+  try{
+    await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]);
+  }catch(e){
+    var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    try{ document.execCommand("copy"); }catch(_){ }
+  }
+  b.textContent="Copiée ✓ — colle-la dans Outlook"; b.classList.add("done");
+});
+</script>
+</body>
+</html>
